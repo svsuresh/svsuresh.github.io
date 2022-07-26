@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/replace-gene-ids-in-ucsc-gtf">Oct 5, 2017 - Replace gene IDs in UCSC gtf</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+UCSC has a wonderful tool called <a href="https://genome.ucsc.edu/cgi-bin/hgTables" target="_blank">Table browser</a> to export, intersect and sequence information of reference genome data in context of user supplied data where user data is optional. User can export data in several standard formats. One of them is gtf format. gtf format is limited version of gff3.&nbsp; User can learn how to export data in gtf from <a href="https://genome.ucsc.edu/FAQ/FAQdownloads.html#download37" target="_blank">here</a> hosted on UCSC.One of the problems that users face while analyzing RNAseq data (esp by Tophat/Cufflinks or New tuxedo protocol) is that both gene ID and Transcript ID are same. Once you download, gtf track, take a back up of it before you proceed any further.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Example gtf record would look like this:</div>
+<div style="text-align: justify;">
+<span itemscope="" itemtype="http://schema.org/Answer"><br /><b>chr22&nbsp;&nbsp;
+ hg38_refGene&nbsp;&nbsp;&nbsp; exon&nbsp;&nbsp;&nbsp; 50798655&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50799637&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene_id "NR_026981"; transcript_id "NR_026981";</b></span></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Steps to follow:</div>
+<div style="text-align: justify;">
+<span itemscope="" itemtype="http://schema.org/Answer"></span></div>
+<ol>
+<li>In hgtables, Choose NCBI refseq as track and in output format,</li>
+<li>Choose selected fields from primary and related tables and click on 
+get output.It would take you to a page where you can choose the output. </li>
+<li>Select name and name2 fields and click on get output. This would output transcript name and gene name. <br />Example ouput would look like this:<br /><b>NR_026981&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RPL23AP82</b></li>
+<li>Now replace genid (in UCSC gtf) with gene symbol from freshly exported list.</li>
+</ol>
+For step 4, use following code:<br />
+<b>$ awk&nbsp; 'NR==FNR{A[$1]=$2;next} $2 in A{$2=A[$2]}1' &lt;file from step3&gt; FS='[";]' OFS='"' &lt;your gtf&gt; | sed 's/""/";/g'&nbsp;</b><br />
+<br />
+Example data and code:<br />
+<br />
+$ cat test.gtf<br /><br />
+chr22&nbsp;&nbsp; hg38_refGene&nbsp;&nbsp;&nbsp; exon&nbsp;&nbsp;&nbsp; 50798655&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50799637&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene_id "NR_026981"; transcript_id "NR_026981";<br /><br />
+$ cat test.hgtables<br /><br />
+NR_026981&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RPL23AP82<br /><br />
+$ awk&nbsp; 'NR==FNR{A[$1]=$2;next} $2 in A{$2=A[$2]}1' test.hgtables FS='[";]' OFS='"' test.gtf | sed 's/""/";/g'<br /><br />
+chr22&nbsp;&nbsp; hg38_refGene&nbsp;&nbsp;&nbsp; exon&nbsp;&nbsp;&nbsp; 50798655&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50799637&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene_id "RPL23AP82"; transcript_id "NR_026981";<br />
+<br />
+Output from step 3 will have extra two lines at the start (starting with #. Remove them) <br />
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/uninstall-perl-modules-when-make" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/rnaseq-ballgown-analysis" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,43 @@
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat </span>test_15082020.txt 
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## ﻿chr1        207679307        207679307        pan1
+## chr1        207684192        207684192        pan1
+## chr1        207685786        207685786        pan1
+## chr1        207685965        207685965        pan1
+## chr1        207692049        207692049        pan1
+</code></pre></div></div>
+
+<p>Now we have to use these coordinates to get matching rsIDs from standard
+vcf file. Let us look at the contents of the reference vcf</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zgrep <span class="nt">-v</span> <span class="s2">"#"</span> ref.sorted.vcf.gz
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 1    207679307   rs4844600   A   C,G .   .   RS=4844600;RSPOS=207679307;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050328000b05110536000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;PM;PMC;S3D;SLO;NSM;REF;SYN;ASP;G5;HD;GNO;KGPhase1;KGPhase3;CAF=0.1496,.,0.8504;COMMON=1;TOPMED=0.16070177115188583,0.00227765035677879,0.83702057849133537
+## 1    207684192   rs12037841  T   G   .   .   RS=12037841;RSPOS=207684192;dbSNPBuildID=120;SSR=0;SAO=0;VP=0x050100080005110136000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;GNO;KGPhase1;KGPhase3;CAF=0.06649,0.9335;COMMON=1;TOPMED=0.12155963302752293,0.87844036697247706
+## 1    207685786   rs4266886   T   C   .   .   RS=4266886;RSPOS=207685786;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050100080005110536000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;HD;GNO;KGPhase1;KGPhase3;CAF=0.1426,0.8574;COMMON=1;TOPMED=0.16106810652395514,0.83893189347604485
+## 1    207685965   rs4562624   A   C,T .   .   RS=4562624;RSPOS=207685965;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050100080005110136000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;GNO;KGPhase1;KGPhase3;CAF=0.06669,0.9333,.;COMMON=1;TOPMED=0.12107384046890927,0.87892615953109072,.
+## 1    207692048   rs386638846 CATC    CGTT    .   .   RS=386638846;RSPOS=207692049;dbSNPBuildID=138;SSR=0;SAO=0;VP=0x050000080005000002000800;GENEINFO=CR1:1378;WGT=1;VC=MNV;INT;ASP
+## 1    207692049   rs6656401   A   G,T .   .   RS=6656401;RSPOS=207692049;dbSNPBuildID=116;SSR=0;SAO=0;VP=0x05016808000511053e030100;GENEINFO=CR1:1378;WGT=1;VC=SNV;PM;PMC;SLO;INT;ASP;G5;HD;GNO;KGPhase1;KGPhase3;MTP;OM;CAF=0.06669,0.9333,.;COMMON=1;TOPMED=0.09828937308868501,0.87834480122324159,0.02336582568807339
+</code></pre></div></div>
+
+<p>I skipped headers in listing the variants. We are going to use
+<strong>bedtools</strong> for annotation. Input for bedtools is bed file and bed
+files are zero indexed. Hence we have to convert the text to bed format.
+Converted bed file is used in intersecting the input vcf file. Every
+thing can be done in a single line i.e conversion to bed file and
+subsequent intersection with reference dbsnp. Let us do that.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sed</span> <span class="s2">"s/^chr//g"</span> test_15082020.txt |  <span class="nb">awk</span> <span class="nt">-v</span> <span class="nv">OFS</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span> <span class="s1">'{$2=$2-1;print $1,$2,$3,$4}'</span> | bedtools intersect <span class="nt">-wa</span> <span class="nt">-wb</span> <span class="nt">-a</span> stdin <span class="nt">-b</span> ref.sorted.vcf.gz
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 1    207684191   207684192   pan1    1   207684192   rs12037841  T   G   .   .   RS=12037841;RSPOS=207684192;dbSNPBuildID=120;SSR=0;SAO=0;VP=0x050100080005110136000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;GNO;KGPhase1;KGPhase3;CAF=0.06649,0.9335;COMMON=1;TOPMED=0.12155963302752293,0.87844036697247706
+## 1    207685785   207685786   pan1    1   207685786   rs4266886   T   C   .   .   RS=4266886;RSPOS=207685786;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050100080005110536000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;HD;GNO;KGPhase1;KGPhase3;CAF=0.1426,0.8574;COMMON=1;TOPMED=0.16106810652395514,0.83893189347604485
+## 1    207685964   207685965   pan1    1   207685965   rs4562624   A   C,T .   .   RS=4562624;RSPOS=207685965;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050100080005110136000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;GNO;KGPhase1;KGPhase3;CAF=0.06669,0.9333,.;COMMON=1;TOPMED=0.12107384046890927,0.87892615953109072,.
+## 1    207692048   207692049   pan1    1   207692048   rs386638846 CATC    CGTT    .   .   RS=386638846;RSPOS=207692049;dbSNPBuildID=138;SSR=0;SAO=0;VP=0x050000080005000002000800;GENEINFO=CR1:1378;WGT=1;VC=MNV;INT;ASP
+## 1    207692048   207692049   pan1    1   207692049   rs6656401   A   G,T .   .   RS=6656401;RSPOS=207692049;dbSNPBuildID=116;SSR=0;SAO=0;VP=0x05016808000511053e030100;GENEINFO=CR1:1378;WGT=1;VC=SNV;PM;PMC;SLO;INT;ASP;G5;HD;GNO;KGPhase1;KGPhase3;MTP;OM;CAF=0.06669,0.9333,.;COMMON=1;TOPMED=0.09828937308868501,0.87834480122324159,0.02336582568807339
+</code></pre></div></div>
+
+<p>Now we got all the columns including the data in 4th column. Now you can
+extract all the columns of your choice</p>

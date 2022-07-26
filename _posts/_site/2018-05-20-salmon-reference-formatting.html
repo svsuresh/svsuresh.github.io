@@ -1,0 +1,120 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div>
+<div>
+Salmon and Salmon output downstream analysis requires two files as reference:<br />
+<ol style="text-align: left;">
+<li>Transcriptome sequence (not genome sequence) in fasta (fa) or fasta.gz (fa.gz) format</li>
+<li>Mapping between Transcripts and corresponding genes</li>
+</ol>
+</div>
+User can use either entire transcriptome or part transcriptome. NCBI provides sequences files for full transcriptome. For partial sequence, I would suggest UCSC table browser.<br />
+<br />Now let us first deal with NCBI full transcriptome sequence:<br />
+<ol style="text-align: left;">
+<li>File name is <b>GRCh38_latest_rna.fna.gz</b> and can be downloaded from here: ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers. This file would suffice for indexing (by Salmon) and subsequent quantification.</li>
+<li>Downstream tools like DESEQ2 and Wasabi/Sleuth need transcript to gene mapping file and they should match with those used in quantification. Following is the bash script that generates transcript to gene mapping using the fasta headers from <b>GRCh38_latest_rna.fna.gz</b>.</li>
+</ol>
+</div>
+====================<br />
+$ zgrep \&gt; GRCh38_latest_rna.fna.gz | sed 's/),\strans.*//g' | sed 's/),\s.*RNA//g'&nbsp; | awk -v OFS="\t" -F " " '{print $1,$NF}' | awk '{gsub("[&gt;,(,)]","",$0)}1'&nbsp; &gt; GRCh38_t2g.tsv<br />
+====================<br /><br />
+This tsv will be used in DESEQ2 object making and also in Sleuth object post Wasabi data transformation. Let us look at the output:<br /><br />
+=====================<br />
+$ zgrep \&gt; GRCh38_latest_rna.fna.gz | sed 's/),\strans.*//g' | sed 's/),\s.*RNA//g'&nbsp; | awk -v OFS="\t" -F " " '{print $1,$NF}' | awk '{gsub("[&gt;,(,)]","",$0)}1' | head<br />
+<br />
+NM_000014.5&nbsp;&nbsp;&nbsp; A2M<br />
+NM_000015.2&nbsp;&nbsp;&nbsp; NAT2<br />
+NM_000016.5&nbsp;&nbsp;&nbsp; ACADM<br />
+NM_000017.3&nbsp;&nbsp;&nbsp; ACADS<br />
+NM_000018.3&nbsp;&nbsp;&nbsp; ACADVL<br />
+NM_000019.3&nbsp;&nbsp;&nbsp; ACAT1<br />
+NM_000020.2&nbsp;&nbsp;&nbsp; ACVRL1<br />
+NM_000021.3&nbsp;&nbsp;&nbsp; PSEN1<br />
+NM_000022.3&nbsp;&nbsp;&nbsp; ADA<br />
+NM_000023.3&nbsp;&nbsp;&nbsp; SGCA<br />
+=====================<br />
+<br />Apparently sleuth is sensitive to duplicate entries. So be careful about them. By the way, Salmon only takes NM entries from NCBI header. It doesn't use entire header. For eg. NCBI header is "&gt;NM_000014.5 Homo sapiens alpha-2-macroglobulin (A2M), transcript variant 1, mRNA". Salmon uses only "&gt;NM_000014.5" from the header.<br />
+<br />
+Now let us have a look at partial transcriptome. To get partial transcriptome use <a href="https://genome.ucsc.edu/cgi-bin/hgTables">UCSC table browser</a>. Navigate to website, and follow the screenshots:<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<br />
+Choose the group (genes and Gene predictions), track (NCBI RefSeq), region (of interest) and output format. <br /><br />
+<div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-Q7kZKmujrsY/WwFe_BhX74I/AAAAAAAABCk/fWYk8yGiqiooXK4rPU2BD8F7489M8u8WwCLcBGAs/s1600/ucsc_tb1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="742" data-original-width="1600" height="296" src="https://4.bp.blogspot.com/-Q7kZKmujrsY/WwFe_BhX74I/AAAAAAAABCk/fWYk8yGiqiooXK4rPU2BD8F7489M8u8WwCLcBGAs/s640/ucsc_tb1.png" width="640" /></a></div>
+Choose the fields to output and click on get output:<br /><br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-cNHZLXW5w8g/WwFfpQ1h1QI/AAAAAAAABCs/rxjv40LAQXEJGMsZ5zRbbMXW0qM4yhmSQCLcBGAs/s1600/ucsc_tb2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="675" data-original-width="897" height="480" src="https://2.bp.blogspot.com/-cNHZLXW5w8g/WwFfpQ1h1QI/AAAAAAAABCs/rxjv40LAQXEJGMsZ5zRbbMXW0qM4yhmSQCLcBGAs/s640/ucsc_tb2.png" width="640" /></a></div>
+Output would look like:<br /><br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-LJ8dJ3HJNbU/WwFf4FFJ9kI/AAAAAAAABCw/qoO83s6e1kQR4l3He_m81SSRgv2YgfdPwCLcBGAs/s1600/ucsc_tb3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="717" data-original-width="970" height="472" src="https://1.bp.blogspot.com/-LJ8dJ3HJNbU/WwFf4FFJ9kI/AAAAAAAABCw/qoO83s6e1kQR4l3He_m81SSRgv2YgfdPwCLcBGAs/s640/ucsc_tb3.png" width="640" /></a></div>
+<br />
+Now we need transcript, transcript coordinates and genes. Let us have a look at the downloaded file:<br />
+=================================<br />
+$ head chr22_ucsc_grch38_refseq.gtf <br />
+<br />
+#name&nbsp;&nbsp;&nbsp; chrom&nbsp;&nbsp;&nbsp; strand&nbsp;&nbsp;&nbsp; txStart&nbsp;&nbsp;&nbsp; txEnd&nbsp;&nbsp;&nbsp; name2<br />
+NR_132320&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp; 10940596&nbsp;&nbsp;&nbsp; 10961529&nbsp;&nbsp;&nbsp; FRG1FP<br />
+NR_110761&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; 11897405&nbsp;&nbsp;&nbsp; 11956534&nbsp;&nbsp;&nbsp; LOC102723769<br />
+NM_001005239&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; 15528158&nbsp;&nbsp;&nbsp; 15529139&nbsp;&nbsp;&nbsp; OR11H1<br />
+NM_001136213&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; 15690025&nbsp;&nbsp;&nbsp; 15721631&nbsp;&nbsp;&nbsp; POTEH<br />
+NR_046571&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp; 15700385&nbsp;&nbsp;&nbsp; 15703354&nbsp;&nbsp;&nbsp; POTEH-AS1<br />
+NR_132385&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; 15746673&nbsp;&nbsp;&nbsp; 15778289&nbsp;&nbsp;&nbsp; LINC01297<br />
+NR_122113&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; 15784953&nbsp;&nbsp;&nbsp; 15827434&nbsp;&nbsp;&nbsp; DUXAP8<br />
+NR_073459&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp; 15805697&nbsp;&nbsp;&nbsp; 15815897&nbsp;&nbsp;&nbsp; BMS1P18<br />
+NR_073460&nbsp;&nbsp;&nbsp; chr22&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp; 15805697&nbsp;&nbsp;&nbsp; 15815897&nbsp;&nbsp;&nbsp; BMS1P17<br />
+===================================<br />
+<br />
+We will deduplicate transcript names (as it is necessary for Sleuth workflow) and then extract the chromosome name, coordinates and transcript names:<br />
+=========================================<br />
+$ awk 'BEGIN {!/#/} !a[$1]++'&nbsp; chr22_ucsc_grch38_refseq.gtf | awk -v OFS="\t" '!/#/ {print $2,$4,$5,$1}' &gt; chr22_ucsc_grch38_refseq.bed<br />
+=========================================<br />
+<br />About code:<br />
+awk 'BEGIN {!/#/} !a[$1]++'&nbsp; chr22_ucsc_grch38_refseq.gtf - De dups all lines that doesn't start with&nbsp; # and dedup is based on column 1.Rest of the code reorders the columns.<br />
+<br />
+Let us look at the bed first:<br />
+==========================<br />
+$ head chr22_ucsc_grch38_refseq.bed<br />
+chr22&nbsp;&nbsp;&nbsp; 10940596&nbsp;&nbsp;&nbsp; 10961529&nbsp;&nbsp;&nbsp; NR_132320<br />
+chr22&nbsp;&nbsp;&nbsp; 11897405&nbsp;&nbsp;&nbsp; 11956534&nbsp;&nbsp;&nbsp; NR_110761<br />
+chr22&nbsp;&nbsp;&nbsp; 15528158&nbsp;&nbsp;&nbsp; 15529139&nbsp;&nbsp;&nbsp; NM_001005239<br />
+chr22&nbsp;&nbsp;&nbsp; 15690025&nbsp;&nbsp;&nbsp; 15721631&nbsp;&nbsp;&nbsp; NM_001136213<br />
+chr22&nbsp;&nbsp;&nbsp; 15700385&nbsp;&nbsp;&nbsp; 15703354&nbsp;&nbsp;&nbsp; NR_046571<br />
+chr22&nbsp;&nbsp;&nbsp; 15746673&nbsp;&nbsp;&nbsp; 15778289&nbsp;&nbsp;&nbsp; NR_132385<br />
+chr22&nbsp;&nbsp;&nbsp; 15784953&nbsp;&nbsp;&nbsp; 15827434&nbsp;&nbsp;&nbsp; NR_122113<br />
+chr22&nbsp;&nbsp;&nbsp; 15805697&nbsp;&nbsp;&nbsp; 15815897&nbsp;&nbsp;&nbsp; NR_073459<br />
+chr22&nbsp;&nbsp;&nbsp; 15805697&nbsp;&nbsp;&nbsp; 15815897&nbsp;&nbsp;&nbsp; NR_073460<br />
+chr22&nbsp;&nbsp;&nbsp; 15805697&nbsp;&nbsp;&nbsp; 15820884&nbsp;&nbsp;&nbsp; NR_133911<br />
+==========================<br />
+<div style="text-align: justify;">
+<br />Let us use this information to extract sequences for transcripts:<br /><br />
+To extract transcriptome sequence from genome sequence, we need bedtools installed on the machine. Bedtools provide getFasta function to extract sequence of interest if one provides reference sequence (in fasta or gzipped fasta format) and a bed file with coordinates and names. In current example, I used chr22 (genomic) sequence only. User can use full genome or regions of interest sequence.&nbsp; User can download the chromosome specific sequence (fa) from <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg38/chromosomes/">UCSC</a> and <a href="ftp://ftp.ensembl.org/pub/release-86/fasta/homo_sapiens/dna/">ensembl</a>. Please remember use the sequence and annotation from same source (NCBI, UCSC, ENSEMBL) through out the analysis. For eg,&nbsp; if you use ensembl sequence in alignment, it is better to use ensembl transcripts and ensembl genes for annotation. Same goes with NCBI and UCSC. I have used UCSC-Refseq for most of the work.</div>
+<br />=============================== <br />
+bedtools getfasta -name -fi hg38.chr22.fa -bed chr22_ucsc_grch38_refseq_dedup.bed &gt; chr22_ucsc_grch38_refseq_dedup.fa<br />
+===============================<br />
+This would create fasta sequences only for transcripts and puts in output.&nbsp; This fasta you should use indexing for salmon. Please note that I took chr22 as an example only.<br /><br />
+Now to extract transcript to gene mapping:<br />
+===================== <br />
+$ awk -v OFS="\t" '{print $1,$4}' chr22_ucsc_grch38_refseq_dedup.bed&gt; t2g.tsv<br />
+$ head&nbsp;t2g.tsv<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000026<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000106<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000185<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000262<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000268<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000343<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000355<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000362<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000395<br />
+chr22&nbsp;&nbsp;&nbsp; NM_000398<br />
+========================<br />
+This is the tsv file one should be using in downstream DESEQ2 and Wasabi-Sleuth workflow</div>
+</div>

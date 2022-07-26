@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/extract_three_prime_utr_genes">Apr 4, 2021 - Extract genes and corresponsing transcripts with more than one 3' UTRs from a gtf</a></h1>
+            <div class="post-content">
+            <p>One of the requests I have come across is to extract genes with more than one 3’ UTR exons. This is not tricky. However, scripts to do this are complex and gtf parsers are either half written or one has to write their own scripts to extract half tab separate file and Key-value (like dictionary in python) pair fields. Fortunately, I have come across a tool called <a href="https://gffutils.readthedocs.io/en/latest/">GFFutils</a> that helps us to do this.</p>
+
+<p>Please download the example gtf from <a href="https://raw.githubusercontent.com/csoneson/jcc/master/inst/extdata/Homo_sapiens.GRCh38.90.chr22.gtf.gz">here</a>. File is for chr22 only and it is around 100 kb. Idea here is to extract features of interest and then fields of interest, followed by grouping of data by genes, transcripts, followed by counting of 3’UTR feature, then filter the data where in count must be more than 1. Following is the code:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gtf_extract <span class="nt">-f</span> three_prime_utr <span class="nt">--fields</span> gene_id,gene_name,transcript_id,feature Homo_sapiens.GRCh38.90.chr22.gtf  | datamash <span class="nt">-f</span> <span class="nt">-s</span> <span class="nt">-g2</span>,3 count 3  | <span class="nb">awk</span> <span class="nt">-v</span> <span class="nv">OFS</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span> <span class="s1">'NR ==1 {print "Gene_ID", "Gene_symbol","transcript", "3\047_UTR_Count"}; $5 &gt;1 {print $1,$2,$3,$5}'</span> 
+</code></pre></div></div>
+
+<p>Following is the partial output</p>
+
+<pre><code class="language-code">Gene_ID Gene_symbol transcript  3'_UTR_Count
+ENSG00000283809 AC007326.4  ENST00000638240 2
+ENSG00000099889 ARVCF   ENST00000263207 2
+ENSG00000099968 BCL2L13 ENST00000399777 2
+ENSG00000099968 BCL2L13 ENST00000498133 3
+ENSG00000015475 BID ENST00000342111 3
+ENSG00000242259 C22orf39    ENST00000509549 21
+ENSG00000093009 CDC45   ENST00000263201 2
+ENSG00000093009 CDC45   ENST00000404724 2
+ENSG00000093009 CDC45   ENST00000407835 2
+ENSG00000093009 CDC45   ENST00000428937 5
+ENSG00000093009 CDC45   ENST00000437685 2
+............
+</code></pre>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/extract_lines_from_multi_sequence_multiline_fasta" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/duplicate_dataframe" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

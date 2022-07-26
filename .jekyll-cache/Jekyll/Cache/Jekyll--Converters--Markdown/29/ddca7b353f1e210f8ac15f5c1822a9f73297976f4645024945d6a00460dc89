@@ -1,0 +1,42 @@
+I"<p>One of the requests I came across to use basic python (without importing external libraries) for parsing multiline fastas with gaps in sequence. Example fasta is as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span>seq1
+atgc
+c t ga
+<span class="o">&gt;</span>seq2
+atcgc
+actg
+</code></pre></div></div>
+<p>Here is the python code:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="nb">input</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1">#input = "test.fa"
+</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="s">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">w</span><span class="p">:</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">w</span><span class="p">.</span><span class="n">read</span><span class="p">().</span><span class="n">split</span><span class="p">(</span><span class="s">"&gt;"</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+    <span class="n">_id</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">_sequence</span> <span class="o">=</span> <span class="s">""</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">:]).</span><span class="n">replace</span><span class="p">(</span><span class="s">" "</span><span class="p">,</span><span class="s">""</span><span class="p">)</span>
+    <span class="n">gc_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_sequence</span><span class="p">.</span><span class="n">upper</span><span class="p">().</span><span class="n">count</span><span class="p">,</span> <span class="p">[</span><span class="s">"G"</span><span class="p">,</span> <span class="s">"C"</span><span class="p">]))</span>
+    <span class="n">gc_perc</span> <span class="o">=</span> <span class="p">(</span><span class="n">gc_count</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">_sequence</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span>
+    <span class="n">_temp_ouput</span> <span class="o">=</span> <span class="p">[</span><span class="n">_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_sequence</span><span class="p">),</span> <span class="n">gc_perc</span><span class="p">]</span>
+    <span class="n">output</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">_temp_ouput</span><span class="p">)</span>
+
+<span class="p">[</span><span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
+
+</code></pre></div></div>
+
+<p>ouput from the code</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%</span> <span class="p">.</span><span class="o">/</span><span class="n">test</span><span class="p">.</span><span class="n">py</span> <span class="n">test</span><span class="p">.</span><span class="n">fa</span> 
+
+<span class="p">[</span><span class="s">'seq1'</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'seq2'</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mf">55.55555555555556</span><span class="p">]</span>
+</code></pre></div></div>
+:ET

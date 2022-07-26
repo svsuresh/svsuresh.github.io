@@ -1,0 +1,17 @@
+---
+layout: post
+title: One liners in bioinformatics (ever updating)
+date: '2020-09-03T17:51:00.007+05:30'
+author: suresh
+tags:
+- awk
+- genomics
+- bioinformatics
+- bash
+- sed
+modified_time: '2020-09-03T18:13:25.672+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8029090693574016718
+blogger_orig_url: https://digibio.blogspot.com/2020/09/one-liners-in-bioinformatics.html
+---
+
+<ol style="text-align: left;"><li>&nbsp;Read length of a fastq file using awk<br />$ awk 'NR%4==2 {print length}' input.fastq | sort -n | uniq -c | sort -rh | head -1 </li><li><br /></li></ol>

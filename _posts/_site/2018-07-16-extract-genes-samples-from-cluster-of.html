@@ -1,0 +1,35 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Many a times, very simple tasks seem to be difficult for eg. extracting members of a cluster. For a biologist, clustering of genes or pathways or samples very common. Then the question comes how to extract the genes of a particular cluster. Let us say you have a dendrogam with 7 clusters and you would like to extract genes of cluster 5.<br />
+Let us do a small simulation and then extract genes from a cluster of interest. Remember you can also do the same for any cluster or for any other variable (for eg sample, pathway, network module).</div>
+===================================<br />
+&gt; data &lt;- replicate(20, rnorm(100, mean =10, sd=10))<br />
+&gt; rownames(data) &lt;- paste("Gene", c(1:nrow(data)))<br />
+&gt; colnames(data) &lt;- paste("Sample", c(1:ncol(data)))<br />
+&gt; library(stats) <br />
+&gt; d &lt;- dist(data, method = "euclidean")<br />
+&gt; hc &lt;- hclust(d, method = "ward.D2")<br />
+&gt; plot(hc)<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-z587cWPpijs/W0zeuu3eohI/AAAAAAAABKY/b49djfiElxMwK0bCObf3OfXFPD3_RAHYQCLcBGAs/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="755" data-original-width="969" height="497" src="https://3.bp.blogspot.com/-z587cWPpijs/W0zeuu3eohI/AAAAAAAABKY/b49djfiElxMwK0bCObf3OfXFPD3_RAHYQCLcBGAs/s640/Rplot01.png" width="640" /></a></div>
+<div style="text-align: justify;">
+Now how do we extract the genes of interest? To do that, first we need to define the number of clusters in such a way that genes of interest fall in an independent cluster. How do we do that? We keep partitioning dendrogram till we identify the cluster with genes of interest. We can partition the data&nbsp; by defining a limit/boundary on height of dendrogram. For eg. in above diagram, if we cut the tree at 130 , we are left with three clusters (count always from the top, highlighted in red color below)</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-Zh2MOznFOgk/W-cIeVtUJeI/AAAAAAAAAyc/TRQP-6pk1eMRNoO74u_MUYSbawwBlhfUwCLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="794" data-original-width="624" height="640" src="https://1.bp.blogspot.com/-Zh2MOznFOgk/W-cIeVtUJeI/AAAAAAAAAyc/TRQP-6pk1eMRNoO74u_MUYSbawwBlhfUwCLcBGAs/s640/Rplot02.png" width="502" /></a></div>
+Now let us say,&nbsp; we cut the tree at 110, we will have 5 clusters.<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-3fg1KEYj_SY/W-cPBLhLN8I/AAAAAAAAAy8/IYB_dd0GjrIQ9j-4vXzrB6So1Ke_13aDACLcBGAs/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="794" data-original-width="624" height="640" src="https://2.bp.blogspot.com/-3fg1KEYj_SY/W-cPBLhLN8I/AAAAAAAAAy8/IYB_dd0GjrIQ9j-4vXzrB6So1Ke_13aDACLcBGAs/s640/Rplot.png" width="502" /></a></div>
+<div class="separator" style="clear: both; text-align: justify;">
+Now we know how to partition the dendrogram. After partitioning the dendrogram, we can extract the genes from the cluster of interest. For eg. let us say we want to extract genes from 5th cluster after partitioning the data with a height of 110.&nbsp;</div>
+<div class="separator" style="clear: both; text-align: justify;">
+Let us extract all the genes for which cluster is assigned 5 and their expression values. </div>
+============================================== <br />
+# Cut the tree at 110<br />
+h=110<br />
+k=cutree(hc,h=h)<br />
+# Extract the genes assigned to cluster 5<br />
+names(k[k==5])<br />
+&nbsp;# Now extract the expression values&nbsp; for the genes in cluster 5<br />
+data[names(k[k==5]),]<br />
+===============================================<br />
+&nbsp;(Note: Dendrogram produced above may not be same each time we run the code as data is randomly simulated. Set seed to get consistent dendrograms)</div>

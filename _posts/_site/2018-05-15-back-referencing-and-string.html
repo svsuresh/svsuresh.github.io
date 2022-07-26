@@ -1,0 +1,30 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+<a href="https://www.gnu.org/software/parallel/" target="_blank">GNU-Parallel</a> is one of the parallel job executing programs available for GNU-Linux that can be easily learnt and used. Recently, I got a request to rename bunch of files. It is easy to do with other renaming programs and then pipe the new file names to old files, for eg with sed. It involves pattern identification, reuse the pattern and append strings to the pattern. Instead of that,&nbsp; I decided to do it in parallel.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+But first look at the problem and expected output: User has following files: file1_1.hiseq.fq.gz,&nbsp; file1_2.hiseq.fq.gz, file2_1.hiseq.fq.gz and file2_2.hiseq.fq.gz. Now user wants to reshuffle so that file: file1_1.hiseq.fq.gz will be file_1.R1.fq.gz.&nbsp;</div>
+<div style="text-align: justify;">
+</div>
+<ol>
+<li>Now let us create the gzipped files (without any data inside it as we need only file names).<br /><br />$ touch file{1..2}_{1..2}.hiseq.fq.gz<br />$ ls<br />file1_1.hiseq.fq.gz&nbsp; file1_2.hiseq.fq.gz&nbsp; file2_1.hiseq.fq.gz&nbsp; file2_2.hiseq.fq.gz</li>
+</ol>
+<br />
+<ol>
+<li></li>
+<li style="text-align: justify;">Now let us rename them. Instead of replacing the original files, let us copy the same files, but with new names.<br /><br />$ parallel cp {} '{= s:([0-9]+)_([0-9]+)\.hiseq:_$1\.R$2: =}' ::: *.gz</li>
+<br />
+<li>Let us look at the output:<br />$ ls<br />file1_1.hiseq.fq.gz&nbsp; file_1.R1.fq.gz&nbsp; file2_1.hiseq.fq.gz&nbsp; file_2.R1.fq.gz<br />file1_2.hiseq.fq.gz&nbsp; file_1.R2.fq.gz&nbsp; file2_2.hiseq.fq.gz&nbsp; file_2.R2.fq.gz</li>
+</ol>
+<div style="text-align: justify;">
+Now, what happened here?</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+In the old file names there is a pattern (1_1.hiseq in first file): digit_digit. Now we have to put an underscore before first digit (1_1.hiseq will be _1_1.hiseq) and append R to the second digit (_1_1.hiseq will be_1_R1.hiseq). Replace second underscore with . (dot) so that_1_R1.hiseq will be _1.R1.hiseq and replace .hiseq with empty (i.e remove .hiseq). For this we made first and second digit as pattern and then we backreferenced them using $. For back referencing, pattern must be () and backreference numbering is from left to right.&nbsp; &nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+</div>

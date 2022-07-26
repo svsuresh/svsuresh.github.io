@@ -1,0 +1,65 @@
+<p>Following is an example and code to append “&gt;” on every second line (from start) including very first line.</p>
+
+<p><strong>input</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>test.fa
+
+Gene1
+AAAGTTGTTGCAG
+Gene2
+ACATACGATTCCGGAGAGG
+</code></pre></div></div>
+<p><strong>output</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">awk</span> <span class="s1">'{ if ((NR % 2) == 1) printf("&gt;")}1'</span> test.fa
+
+<span class="o">&gt;</span>Gene1
+AAAGTTGTTGCAG
+<span class="o">&gt;</span>Gene2
+ACATACGATTCCGGAGAGG
+
+<span class="nv">$ </span><span class="nb">sed</span>  <span class="s1">'1~2 s/^/&gt;/'</span> test.fa
+<span class="o">&gt;</span>Gene1
+AAAGTTGTTGCAG
+<span class="o">&gt;</span>Gene2
+ACATACGATTCCGGAGAGG
+</code></pre></div></div>
+
+<p>Now let us do some thing else. User wants</p>
+<ul>
+  <li>Remove all headers in a file</li>
+  <li>Use file name as fasta header</li>
+  <li>Print only the sequences</li>
+</ul>
+
+<p>Confused? Look at the input and expected output:</p>
+
+<p><strong>input</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cat test.fa
+
+&gt;gene1
+ATGCTA
+&gt;gene2
+TGATGCT
+&gt;gene3
+TAGTATG 
+</code></pre></div></div>
+<p><strong>Expected output</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> &gt;test.fa
+ATGCTA
+TGATGCT
+TAGTATG
+</code></pre></div></div>
+<p><strong>Code</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> $  awk 'BEGIN {print "&gt;"ARGV[1]};!/^&gt;/{print}' test.fa
+
+&gt;test.fa
+ATGCTA
+TGATGCT
+TAGTATG
+
+$ cat &lt;(echo "&gt;"$basename test.fa) &lt;(grep -v "&gt;" test.fa) 
+&gt; test.fa
+ATGCTA
+TGATGCT
+TAGTATG
+</code></pre></div></div>
+<p>(<strong>Note</strong>: There is an extra space in later code)</p>

@@ -1,0 +1,52 @@
+---
+layout: post
+title: Collapse rows using gather and spread functions
+date: '2018-04-28T12:52:00.001+05:30'
+author: suresh
+tags:
+- tidyr
+- dataframe
+- cran-R
+modified_time: '2018-04-28T12:53:01.525+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-3890017616661214411
+blogger_orig_url: https://digibio.blogspot.com/2018/04/gather-and-spread-dataframe.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Sometimes, R makes life difficult. Following here is a data frame where rows are duplicate and there are several NAs.<br />
+&gt; test<br />
+indiv.ID X86912632 X86920881 X86922082 X86927699<br />
+1 Alxis_3702 CTGA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+2 Alxis_3702 TCTG &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+3 Alxis_3702 &lt;NA&gt; G &lt;NA&gt; &lt;NA&gt;<br />
+4 Alxis_3702 &lt;NA&gt; &lt;NA&gt; C &lt;NA&gt;<br />
+5 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+6 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+7 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+8 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+9 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+10 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+<br />
+Life would be easier if there is a function that removes all rows with NAs and append values or some other function to each column (sum, average, min, max etc). Then convert to wide format where duplicate column names are appended some string. But such a function doesn't exist. some thing like a collapse dataframe function. <br />
+<br />
+Ok. we have a round about way. Let us say, we have imported the data as data frame by name test. Following is the code:<br />
+========================<br />
+test %&gt;% gather(k, v, -indiv.ID) %&gt;% na.omit() %&gt;% mutate(k=make.unique(k)) %&gt;% spread(k,v)<br />
+========================<br />
+What does the code mean (every step before %&gt;%):<br />
+<ol style="text-align: left;">
+<li>Use data frame test</li>
+<li>Convert the data to long format (for this you would need tidyr library)</li>
+<li>Remove rows with NA </li>
+<li>Convert any duplicate names to unique names and replace the column values ( you would need dplyr library)</li>
+<li>Convert the data to wide format </li>
+</ol>
+Output would look like this:<br />
+indiv.ID X86912632 X86912632.1 X86920881 X86922082<br />
+1 Alxis_3702 CTGA TCTG G C<br />
+<br />
+<br />
+Tip: How do you convert text "&lt;NA&gt;" in text file to NA values in data frame? While importing define na argument as below:<br />
+========= <br />
+test=read.csv("test2.txt", header = T, sep = "\t", stringsAsFactors = F, na="&lt;NA&gt;") <br />
+=========</div>

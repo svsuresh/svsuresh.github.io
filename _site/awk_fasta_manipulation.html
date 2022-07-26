@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/awk_fasta_manipulation">Jan 17, 2021 - Manipulate fasta file with AWK</a></h1>
+            <div class="post-content">
+            <p>There were two requests to manipulate a fasta with awk.</p>
+<ol>
+  <li>Break a sequnece in two halves. Print second half before first half</li>
+  <li>Extract middle 150bp from each sequence</li>
+</ol>
+
+<p>input fasta sequence:</p>
+<pre><code class="language-code">$ cat test.fa 
+&gt;read1
+CAGGTCTGGCTGGATGAAGGGCACGGCATAGGTCTGACCTGCCAGGGAGTGCTGCATCCTCACAGGAGTCATGGTGCTGCTGAAGATGTCTCCAGAGACCTTCTGCAGGTACTGCAGGGCATCCGCCATCTGCTGGACGGCCTCCTCTCGCCG
+&gt;read2
+CATCTGCGGAGGCTGCCGTGACGTAGGGTATGGGCCTAAATAGGCCATTGTGAGTCATGAGCTTGGTCTGTAGAGGCTGACTGGAGAAAGTTCTGGGCCTGGAGAGGCTGCCGGGAGGTAGGAGTGGTGAGGTCGACTTGAGAAAGTTCAGGGCCTGGAGAGAAGGCTGGGAGGCAGGAGCTGGGTCTAAAGAGGCCATTGTAACGATGGAGCTGTGCCTGTGGAGGCTGTTGTGAGGCAGTAGCCT
+&gt;read3
+TTGAGGTGGGAGGATCGCTTCAGCCTGGAAGGTTGAGGCTGCAGTCAGCTGCGATAGCACTACTACACTCCAGCCTTGGACAACAGAGGGAGACCTTTCGCTGTCACCCCTCTAGAATCCACGTATACGAAAATTCCAAATGTTAGTTGGGCATAGTGGCAAGCACCTGTAGTCTCAGCCACGTGGGAGG
+</code></pre>
+<p>Now let’s break this into two halves and print the second half before first half. Before any parsing, we need to flatten the fasta sequence i.e convert the multiline fasta sequence into single line sequence for each entry. We can do it with awk or with specialized tools such as seqkit.</p>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">seqkit</span> <span class="nx">seq</span> <span class="o">-</span><span class="nx">w</span> <span class="mi">0</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fa</span>  <span class="o">|</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\n"</span> <span class="err">'</span><span class="o">/^&gt;</span><span class="sr">/ {getline seq}{L=length</span><span class="se">(</span><span class="sr">seq</span><span class="se">)</span><span class="sr">; L2=int</span><span class="se">(</span><span class="sr">L/</span><span class="mi">2</span><span class="p">);</span> <span class="k">print</span> <span class="nv">$0</span><span class="p">,</span> <span class="nb">substr</span><span class="p">(</span><span class="nx">seq</span><span class="p">,</span><span class="nx">L2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="nb">substr</span><span class="p">(</span><span class="nx">seq</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="nx">L2</span><span class="p">)</span> <span class="p">}</span><span class="err">'</span>
+<span class="o">&gt;</span><span class="nx">read1</span>
+<span class="nx">CTGCTGAAGATGTCTCCAGAGACCTTCTGCAGGTACTGCAGGGCATCCGCCATCTGCTGGACGGCCTCCTCTCGCCGCAGGTCTGGCTGGATGAAGGGCACGGCATAGGTCTGACCTGCCAGGGAGTGCTGCATCCTCACAGGAGTCATGGTG</span>
+<span class="o">&gt;</span><span class="nx">read2</span>
+<span class="nx">GTGGTGAGGTCGACTTGAGAAAGTTCAGGGCCTGGAGAGAAGGCTGGGAGGCAGGAGCTGGGTCTAAAGAGGCCATTGTAACGATGGAGCTGTGCCTGTGGAGGCTGTTGTGAGGCAGTAGCCTCATCTGCGGAGGCTGCCGTGACGTAGGGTATGGGCCTAAATAGGCCATTGTGAGTCATGAGCTTGGTCTGTAGAGGCTGACTGGAGAAAGTTCTGGGCCTGGAGAGGCTGCCGGGAGGTAGGA</span>
+<span class="o">&gt;</span><span class="nx">read3</span>
+<span class="nx">TTTCGCTGTCACCCCTCTAGAATCCACGTATACGAAAATTCCAAATGTTAGTTGGGCATAGTGGCAAGCACCTGTAGTCTCAGCCACGTGGGAGGTTGAGGTGGGAGGATCGCTTCAGCCTGGAAGGTTGAGGCTGCAGTCAGCTGCGATAGCACTACTACACTCCAGCCTTGGACAACAGAGGGAGACC</span>
+</code></pre></div></div>
+
+<p>Now let’s extract only the middle 150 bp part from each sequence</p>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\n"</span> <span class="err">'</span><span class="o">/^&gt;</span><span class="sr">/ {getline seq}{print $0,substr</span><span class="se">(</span><span class="sr">seq,length</span><span class="se">(</span><span class="sr">seq</span><span class="se">)</span><span class="sr">/</span><span class="mi">2</span><span class="o">-</span><span class="mi">75</span><span class="p">,</span><span class="mi">150</span><span class="p">)}</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fa</span>
+<span class="o">&gt;</span><span class="nx">read1</span>
+<span class="nx">CAGGTCTGGCTGGATGAAGGGCACGGCATAGGTCTGACCTGCCAGGGAGTGCTGCATCCTCACAGGAGTCATGGTGCTGCTGAAGATGTCTCCAGAGACCTTCTGCAGGTACTGCAGGGCATCCGCCATCTGCTGGACGGCCTCCTCTCG</span>
+<span class="o">&gt;</span><span class="nx">read2</span>
+<span class="nx">TTGTGAGTCATGAGCTTGGTCTGTAGAGGCTGACTGGAGAAAGTTCTGGGCCTGGAGAGGCTGCCGGGAGGTAGGAGTGGTGAGGTCGACTTGAGAAAGTTCAGGGCCTGGAGAGAAGGCTGGGAGGCAGGAGCTGGGTCTAAAGAGGCC</span>
+<span class="o">&gt;</span><span class="nx">read3</span>
+<span class="nx">TCAGCCTGGAAGGTTGAGGCTGCAGTCAGCTGCGATAGCACTACTACACTCCAGCCTTGGACAACAGAGGGAGACCTTTCGCTGTCACCCCTCTAGAATCCACGTATACGAAAATTCCAAATGTTAGTTGGGCATAGTGGCAAGCACCTG</span>
+</code></pre></div></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/break_multifasta_with_awk" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/dplyr_column_ops" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/zero-length-assertions-in-bash-and">Aug 4, 2018 - Zero length assertions in bash and python 3</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+In one of my earlier posts, I posted an example zero length assertions in R. In this note, we have examples for zero length assertions in bash and python 3. Let us take an example file first and the run the code.<br />
+=============================================== <br />
+Protein of unknown function (DUF1466)&nbsp;&nbsp;&nbsp; RCS1&nbsp;&nbsp;&nbsp; #N/A<br />
+Ras family&nbsp;&nbsp;&nbsp; Small GTPase superfamily&nbsp;&nbsp;&nbsp; GO:0003924|GO:0005525<br />
+Sugar-tranasporters, 12 TM&nbsp;&nbsp;&nbsp; Molybdate-anion transporter&nbsp;&nbsp;&nbsp; GO:0015098|GO:0015689|GO:0016021<br />
+Sodium:dicarboxylate symporter family&nbsp;&nbsp;&nbsp; Sodium:dicarboxylate symporter&nbsp;&nbsp;&nbsp; GO:0015293|GO:0016021<br />
+mTERF&nbsp;&nbsp;&nbsp; Transcription termination factor, mitochondrial/chloroplastic&nbsp;&nbsp;&nbsp; GO:0003690|GO:0006355<br />
+==============================================<br />
+Now the user wants every thing before GO terms and #N/A. The easier way is to cut last column out with awk or bash. However, let us use look ahead to get want we want. Let us start with bash (file name is lookaround.txt):<br />
+==================================== <br />
+$&nbsp; grep -Po '.*(?=\t[GO|\#NA])' lookaround.txt<br />
+====================================<br />
+This code looks for string "GO" or "#NA" preceded by a tab. This would print:<br />
+====================================<br />
+Protein of unknown function (DUF1466)&nbsp;&nbsp;&nbsp; RCS1<br />Ras family&nbsp;&nbsp;&nbsp; Small GTPase superfamily<br />Sugar-tranasporters, 12 TM&nbsp;&nbsp;&nbsp; Molybdate-anion transporter<br />Sodium:dicarboxylate symporter family&nbsp;&nbsp;&nbsp; Sodium:dicarboxylate symporter<br />mTERF&nbsp;&nbsp;&nbsp; Transcription termination factor, mitochondrial/chloroplastic <br />
+====================================<br />
+Let us do it in python 3 (mind your indents):<br />
+===============================<br />
+&gt;import re<br />&gt;with open("lookaround.txt", "r") as f:<br />&nbsp;&nbsp;&nbsp; test = f.readlines()<br />
+&gt;bout = [re.search(r'.*\t(?=[GO|\\#NA])', i).group(0) for i in test]<br />&gt;print(*bout, sep='\n')<br />
+======================================<br />
+output is:<br />
+=========================================== <br />
+Protein of unknown function (DUF1466)&nbsp;&nbsp; RCS1&nbsp;&nbsp;&nbsp; <br />Ras family&nbsp; Small GTPase superfamily&nbsp;&nbsp;&nbsp; <br />Sugar-tranasporters, 12 TM&nbsp; Molybdate-anion transporter <br />Sodium:dicarboxylate symporter family&nbsp;&nbsp; Sodium:dicarboxylate symporter&nbsp; <br />mTERF&nbsp;&nbsp; Transcription termination factor, mitochondrial/chloroplastic&nbsp; <br />
+==========================================</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/plot-number-matrix-in-r" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/lookaround-in-r-for-non-word-and-word" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

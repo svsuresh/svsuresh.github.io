@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/gene-expression-and-circos-plot">Jul 23, 2014 - Gene expression and Circos plot</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+Circos plots are high density, circular plots visualizing data at a higher level. Tiling, expression,&nbsp; variations (sequence, structure and CN) data can be drawn using Circos maps. However, circular representation of genome is not new. For eg. Bacterial genomes, Plasmids were represented by circular diagrams earlier. But they are not as dense as circos handles. One can know more about circos at http://circos.ca/.<br />
+<br />
+In R, circos plots can be drawn using either RCircos and OmicCircos. Incidentally, both are from same institute. I used both of them. Here RCircos is explained.<br />
+<br />
+For drawing circos plots in R, following packages and data is necessary:<br />
+1) RCircos (http://cran.r-project.org/web/packages/RCircos/index.html).<br />
+2) Ideogram data for the organism of interest. Example given below is for mouse (<i>Mus musculus</i>)<br />
+3) Gene symbols with coordinates for entire genome or genes that are affected in user study (for differential genes, genes with clinical SNPs)<br />
+4) User data. In this example, mouse expression data is used and download it here: https://drive.google.com/file/d/0B0MpwluEDxNuMEZ4MU9aUkNyMTg/edit?usp=sharing.<br />
+<br />
+Data contains two columns: Affymetrix probes and their differential expression values (after analysis, between two groups) We will be using only probes and their expression values in drawing circos map.<br />
+<br />
+In general circos map will have following components:<br />
+1) Ideogram map <br />
+2) Gene symbols<br />
+3) Connectors between ideogram map and gene symbols (i.e arrows from ideogram map to gene symbols)<br />
+4) User tracks <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-H5WCJPStjxs/U89-1TQ1i6I/AAAAAAAAAHY/KMpQaDDDrgY/s1600/circos+r.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="480" src="http://1.bp.blogspot.com/-H5WCJPStjxs/U89-1TQ1i6I/AAAAAAAAAHY/KMpQaDDDrgY/s640/circos+r.png" width="640" /></a></div>
+In general (for RCircos), ideogram map is track zero. It has two sides: in and out. From ideogram map, towards inside, tracks would start with 1 and as you go to the center, track numbers increase. From ideogram map, towards outside, tracks would start 1 and as you go away from ideogram map, track numbers increase. <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-TF60lMJkQ1Q/U8-CFpTY68I/AAAAAAAAAHk/ORWGbX02j5c/s1600/circos+r1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="480" src="http://4.bp.blogspot.com/-TF60lMJkQ1Q/U8-CFpTY68I/AAAAAAAAAHk/ORWGbX02j5c/s640/circos+r1.png" width="640" /></a></div>
+<br />
+First user needs to draw ideogram and ideogram data (for several organisms) can be obtained from UCSC genome browser tables. Here I have used data for mouse (<i>Mus musculus</i>). Format expected is: Chromomosome, chromStart, chromEnd, name, gieStain and file I used can be downloaded from here: https://drive.google.com/file/d/0B0MpwluEDxNudEZuUlRCQmlSZGs/edit?usp=sharing.<br />
+<br />
+Before drawing Circos map, following things needs to be done:<br />
+1) For the affymetrix probes, we need to get their coordinates, gene name, chromosome number. For this we would be use biomart service<br />
+2) Merge annotation file (from biomart) with expression values.<br />
+<br />
+Let us fetch the annotations for differentially expressed mouse probes and the link to download probes is (given above): https://drive.google.com/file/d/0B0MpwluEDxNuMEZ4MU9aUkNyMTg/edit?usp=sharing. Shared file is tar.gz and it contains top 10 significant, differentially expressed probes and their expression values.<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-yNcJYdhpRew/U8-EZ_o2FxI/AAAAAAAAAHw/fZqN1Wft-uI/s1600/probes.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="400" src="http://3.bp.blogspot.com/-yNcJYdhpRew/U8-EZ_o2FxI/AAAAAAAAAHw/fZqN1Wft-uI/s400/probes.png" width="363" /></a></div>
+<br />
+Steps to load probes and their expression values:<br />
+<br />
+1) Download the data, unzip and untar to get a text file with name:<br />
+2) Import the data in R<br />
+<br />
+$ top=read.table("toptable.txt", header=TRUE)<br />
+<br />
+Steps to fetch probe set information using biomart in R:<br />
+1) Load biomart package in R<br />
+<br />
+$ library(biomaRt)<br />
+<br />
+2)&nbsp; Use ensembl mart<br />
+<br />
+$ ensembl=useMart("ensembl")<br />
+<br />
+3) Use mouse gene database in ensembl mart<br />
+<br />
+$ mm_ensembl=useDataset("mmusculus_gene_ensembl", mart=ensembl) <br />
+<br />
+4) Define what we need from ensembl mouse database and store them in an object <br />
+<br />
+$ mm_attr1=listAttributes(mm_ensembl)[c(98,6:8,60),]<br />
+<br />
+We need following information: Original probes that are used for querying database, Chromosome name, Gene start, Gene end and Gene symbol (MGI). Numbers 98, 6, 7, 8 and 60 code for these in the database.<br />
+<br />
+5) Fetch the information for the probes, once we define what we want and store the information <br />
+<br />
+$ bm_mm_ensembl=getBM(attributes=c(mm_attr1[,1]),filters='affy_mouse430_2',values=top[1], mart=mm_ensembl)<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-8LuqIcSD2gs/U8-H2ueuDGI/AAAAAAAAAH8/hDJBFapRFtw/s1600/ensembl.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="188" src="http://1.bp.blogspot.com/-8LuqIcSD2gs/U8-H2ueuDGI/AAAAAAAAAH8/hDJBFapRFtw/s640/ensembl.png" width="640" /></a></div>
+<br />
+<br />
+6) Change the first column heading (this would be helpful when merging two files later: user uploaded file and annotations from Ensembl)<br />
+<br />
+$ colnames(bm_mm_ensembl)[1]="Probe"<br />
+<br />
+7) Extract chromosome numbers, start position, end position and gene symbol and sort&nbsp; chromosome number and start position. Store the information. This would be used in circos plot in drawing genes track.<br />
+<br />
+$ gene_label=bm_mm_ensembl[order(bm_mm_ensembl$chromosome_name,bm_mm_ensembl$start_position),][2:5]<br />
+<br />
+8) Change the column names for better representation.<br />
+<br />
+$ colnames(gene_label)=c("Chromosome","Start", "End", "Symbol")<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-Yu4kJ66eV5o/U8-IjcaZRfI/AAAAAAAAAIM/TUaR2YWe65s/s1600/gene_label.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="340" src="http://4.bp.blogspot.com/-Yu4kJ66eV5o/U8-IjcaZRfI/AAAAAAAAAIM/TUaR2YWe65s/s640/gene_label.png" width="640" /></a></div>
+<br />
+9) Merge probe expression data with annotation data i.e to get chromosome number, coordinates, symbol and expression values for each probe. Two data frames , top (imported data) and bm_mm_ensembl (annotation data) are merged by common column (common column heading- "Probe"). <br />
+<br />
+<br />
+$ final_expr=merge(top,bm_mm_ensembl, by="Probe")[,c(3:6,2)]<br />
+<br />
+10) Being careful, sort the values by chromosome and start coordinates<br />
+<br />
+$ final_expr1=final_expr[order(final_expr$chromosome_name,final_expr$start_position),]<br />
+<br />
+11) Change the column names for better representation<br />
+<br />
+$ colnames(final_expr1)=c("Chromosome", "Sart", "End", "Symbol","FoldChange")<br />
+Please note that names should not have any spaces.<br />
+<br />
+Now let us draw the R Circos map for the probes and their expression values:<br />
+<br />
+12) Import ideogram values in to R and store them. <br />
+<br />
+$ mi=read.delim2("mouse_ideogram_ucsc.txt", head=TRUE)<br />
+<br />
+13) Load RCircos package in R and rcircos package can be down loaded from http://cran.r-project.org/web/packages/RCircos/index.html. Package is available in Bioc repositories.<br />
+<br />
+$ library(RCircos)<br />
+<br />
+14) Define core components in drawing:&nbsp; number of tracks, chromosomes to be excluded in drawing (if there are any), how may tracks we need inside and how many outside and&nbsp; ideogram information.<br />
+<br />
+$ RCircos.Set.Core.Components(cyto.info=mi, chr.exclude=NULL, tracks.inside=10, tracks.outside=2)<br />
+<br />
+15) Since we want the map be drawn and stored as an image file, provide a name for the file, it's resolution.<br />
+<br />
+$ png(file="mm_expression_demo.png", height=8, width=8, unit="in",type="cairo", res=300)<br />
+<br />
+Please note that this start drawing image in the back ground (in R parlance, this would open a device) and all the subsequent drawings/steps would be performed in the background and user would not be able to see those in terminal. User has to stop drawing images (i. e close the device)&nbsp; at the end to see final image.<br />
+<br />
+16) Start drawing the map<br />
+<br />
+&nbsp;$ RCircos.Set.Plot.Area(); <br />
+<br />
+17)&nbsp; Supply the title to the image<br />
+<br />
+$ title("Mouse expression circos plot demo");<br />
+<br />
+18) Draw the ideogram<br />
+<br />
+$ RCircos.Chromosome.Ideogram.Plot();<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-4gs7Ktw_72w/U8-PIdgfXCI/AAAAAAAAAIc/ZFsVpz31jcA/s1600/mm_expression_demo1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://4.bp.blogspot.com/-4gs7Ktw_72w/U8-PIdgfXCI/AAAAAAAAAIc/ZFsVpz31jcA/s640/mm_expression_demo1.png" width="640" /></a></div>
+<br />
+19) Display gene names on the ideogram plot, out side<br />
+<br />
+$ RCircos.Gene.Name.Plot(gene.data=gene_label,name.col=4,track.num=2, side="out")<br />
+<br />
+Please note that user can draw either all the genes (in mouse genome) or selected set of genes (of user choice). Format to be followed is: 4 columns with Chromomsome, Start, End,Symbol<br />
+<br />
+20) Connect the gene names with ideogram plots by connectors, on out side<br />
+<br />
+$ RCircos.Gene.Connector.Plot(genomic.data=gene_label,track.num=1, side="out")<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-LtHCnZn0Dtg/U8-Qg5oEJQI/AAAAAAAAAIk/MG8eiN8hYXA/s1600/mm_expression_demo2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://2.bp.blogspot.com/-LtHCnZn0Dtg/U8-Qg5oEJQI/AAAAAAAAAIk/MG8eiN8hYXA/s640/mm_expression_demo2.png" width="640" /></a></div>
+21) Plot probe data as heatmap (in track 5).<br />
+<br />
+$ RCircos.Heatmap.Plot(heatmap.data=final_expr1, data.col=5,track.num=5, side="in") <br />
+<br />
+22) Plot probe data as scatter plot (in track 6) <br />
+<br />
+RCircos.Scatter.Plot(scatter.data=final_expr1, data.col=5,track.num=6, side="in", by.fold=1)<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-muaQGoB04Rs/U8-RR_wxEcI/AAAAAAAAAIs/c4qwVEE6pSg/s1600/mm_expression_demo.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://3.bp.blogspot.com/-muaQGoB04Rs/U8-RR_wxEcI/AAAAAAAAAIs/c4qwVEE6pSg/s640/mm_expression_demo.png" width="640" /></a></div>
+23) Stop drawing image in the back ground (i.e close the device).<br />
+$ dev.off()<br />
+<br />
+<span id="docs-internal-guid-8438ca70-6284-8d88-17ca-93b71312a6d4">Please note that RCircos is strict about data type (for eg. chromosome coordinates, expression values should be numeric, integers, but not factors.) and sorting (for chromosome sorting) </span><br />
+<br />
+<br />
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/convert-bam-files-to-cram-files" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/gene-expressoin-and-treemaps" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

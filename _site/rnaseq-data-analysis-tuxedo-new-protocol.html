@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/rnaseq-data-analysis-tuxedo-new-protocol">Oct 1, 2017 - RNAseq data analysis- Tuxedo new protocol</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+RNAseq data analysis is a key tool in analyzing the expression trends between any two types (levels- eg. tumor, normal) under a given category ( factor - eg. disease). This can be applicable for more than 2 groups and more than 1 category based on analysis design. In this note, let us attempt a classical data analysis problem. We have NGS data for following and the data can be downloaded from <a href="https://github.com/griffithlab/rnaseq_tutorial/wiki/RNAseq-Data" target="_blank">here</a> and the sample information (for eg. strand information RF is obtained from tutorials outlined <a href="https://github.com/griffithlab/rnaseq_tutorial" target="_blank">here</a>):</div>
+<ol style="text-align: left;">
+<li>3 normal samples</li>
+<li>3 tumor samples</li>
+</ol>
+<div style="text-align: justify;">
+In general, RNAseq data can be used variant calling and differential expression (of genes, transcripts and exons). <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-MxuQEyElulg/WdCNcCruiZI/AAAAAAAAA2Y/VLLalka4fAYGglB91bPQUzOrOorZvv7OQCLcBGAs/s1600/RNAseq%2Bworkflow_01102017.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="333" data-original-width="900" height="236" src="https://1.bp.blogspot.com/-MxuQEyElulg/WdCNcCruiZI/AAAAAAAAA2Y/VLLalka4fAYGglB91bPQUzOrOorZvv7OQCLcBGAs/s640/RNAseq%2Bworkflow_01102017.png" width="640" /></a></div>
+In this note, we will concentrate on Tuxedo protocol 2/ new tuxedo suite&nbsp; in this note. Work flow involves an aligner (HiSat2), an assembler (StringTie) and Analysis library (Ballgown- implemented in R). Tuxedo protocol 1 is covered else where in this <a href="https://digibio.blogspot.in/2015/09/rnaseq-data-analysis-and-tuxedo-workflow.html" target="_blank">blog</a>. <br />
+<br />
+We will find the differentially expressed genes between two groups using HiSat2 work flows. HiSat2-StringTie-Ballgown workflow used in this note is explained below in two flow charts: one by tools used and another by input and output:</div>
+<br />
+<b>Work flow by tools used</b>: <br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-NuCob6aNB4A/WdCWJXM278I/AAAAAAAAA3U/CJ0Tt7046d4CX-lq2ZAAi0fWK6iN9Pn1gCLcBGAs/s1600/hisat_stringtie_ballgown_01102017.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="535" data-original-width="869" height="394" src="https://1.bp.blogspot.com/-NuCob6aNB4A/WdCWJXM278I/AAAAAAAAA3U/CJ0Tt7046d4CX-lq2ZAAi0fWK6iN9Pn1gCLcBGAs/s640/hisat_stringtie_ballgown_01102017.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+</div>
+<div class="" style="clear: both; text-align: left;">
+<b>Work flow by input and output</b></div>
+<div style="text-align: left;">
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-RnLg6Bye5e0/WdCQ6jaThsI/AAAAAAAAA2w/y0jU_xQHB6UIQg0OEt4mEjXGjccfNM_EgCLcBGAs/s1600/hisat2_input_output.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="480" data-original-width="953" height="322" src="https://2.bp.blogspot.com/-RnLg6Bye5e0/WdCQ6jaThsI/AAAAAAAAA2w/y0jU_xQHB6UIQg0OEt4mEjXGjccfNM_EgCLcBGAs/s640/hisat2_input_output.png" width="640" /></a></div>
+<div style="text-align: justify;">
+<div class="separator" style="clear: both; text-align: justify;">
+We know that most of the steps in data analysis are individual steps and can be parallelized as there are many files to analyze. So let us use a tool called <a href="https://www.gnu.org/software/parallel/" target="_blank">GNU-Parallel</a> and it is very easy to use for this work flow. </div>
+<br />
+Let us work step by step:<br />
+<br />
+Note: User has a choice to organize the output. I prefer to store all my results tool wise i.e all the outputs from a fastqc are stored in a folder called fastqc with sample names appended to each output. However, HiSat2 workflow requires sample centric workflow i.e each sample has a folder and the output from all the tools for that sample is stored in sample folder. For eg. Sample A.fq will have a folder called Sample A and all the output from fastqc, hisat2, stringtie will be stored sample A folder.&nbsp;&nbsp;</div>
+</div>
+<div class="separator" style="clear: both; text-align: justify;">
+I have used tool specific folder creation and user can modify the script as per user convenience. However, I switched to sample centric storage only at the end so that ballgown can load the data.</div>
+<h4 class="separator" style="clear: both; text-align: justify;">
+&nbsp;</h4>
+<h4 class="separator" style="clear: both; text-align: justify;">
+Extract reference sequence file</h4>
+<br />
+<div style="text-align: justify;">
+Reference files needed for RNAseq data analysis are reference fasta and reference annotation i.e transcript information (chromosomal coordinates of gene, transcript, exon in an organism). Reference sequence file is in fasta format (.fa) and annotation information is in .gtf format.</div>
+<div class="separator" style="clear: both; text-align: justify;">
+Sample reads we have align to chromosome 22. Hence we need to download chromosome 22 sequence and chromosome 22 annotation. Steps are:</div>
+<ol style="text-align: left;">
+<li>Download human genome sequence from <a href="http://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz">UCSC</a> (hg 38 is current version)</li>
+<li>Extract chromosome 22 sequence<br />
+<b>$ faFilter -name=chr22 hg38.fa hg38.chr22.fa</b></li>
+</ol>
+<div>
+Syntax for faFilter is chromosome name (chr22) inside reference fasta (hg38.fa) and the name to be saved (hg38.chr22.fa). You can download faFilter from <a href="https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64" target="_blank">Kentutils</a> github page. Of course, there are several other tools to do this. But this is a tool with simple syntax.<br />
+<br />
+<h4 style="text-align: left;">
+Validate reference sequence file<span style="font-weight: normal;">&nbsp;</span></h4>
+<h4 style="text-align: justify;">
+<span style="font-weight: normal;">Now that we have made a new reference sequence file for chromosome 22 (hg38.chr22.fa), we need to validate it for it's size and number of bases. Run following commands.</span><b>&nbsp;</b></h4>
+<h4 style="text-align: justify;">
+<b>$ seqkit stats hg38.chr22.fa</b></h4>
+<div style="text-align: left;">
+<div align="justify" style="line-height: 100%; margin-bottom: 0in;">
+<b>output</b>:</div>
+<div align="justify" style="line-height: 100%; margin-bottom: 0in;">
+file&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           format  type&nbsp; num_seqs     sum_len&nbsp;&nbsp;&nbsp;     min_len&nbsp;&nbsp;&nbsp;     avg_len&nbsp;&nbsp;&nbsp;     max_len</div>
+<div align="justify" style="line-height: 100%; margin-bottom: 0in;">
+hg38.chr22.fa&nbsp;  FASTA   DNA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50,818,468&nbsp;  50,818,468  50,818,468  50,818,468</div>
+<div align="justify" style="line-height: 100%; margin-bottom: 0in;">
+<br /></div>
+<b>$ wget -q&nbsp; https://genome.ucsc.edu/goldenpath/help/hg38.chrom.sizes -O - | grep -w chr22<br />
+output: </b></div>
+<div style="text-align: left;">
+chr22&nbsp;&nbsp; &nbsp;50818468</div>
+Download seqkit from <a href="http://bioinf.shenwei.me/seqkit/download/" target="_blank">here</a>. Seqkit outputs the type of the reference file which we know and size of the sequence (length). We have compared this length with that from UCSC, form chromosome 22. They match and this confirms that chromosome sequence we have is of chromosome 22.<br />
+<br />
+<b>Build reference index files for HiSat2</b><br />
+<div style="text-align: justify;">
+Reference sequence file (.fa) needs to be indexed for alignment. HiSat2 creates both global and local index files for reference sequences. User can provide splice sites and reference transcript files for better indexing as this is a RNAseq data. Splice site calculation is done by script provided by same group. If you don't want to mess up the indexing, you can download the HiSat2 index files direct from <a href="ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/" target="_blank">here</a>. They are huge as they are for entire genome. For partial reference sequences, it is better to index locally.&nbsp;&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<ol style="text-align: left;">
+<li>Download gtf&nbsp; from <a href="http://genome.ucsc.edu/cgi-bin/hgTables" target="_blank">UCSC</a> or you can download it from here (<a href="http://hg38_ucsc_refseq_gtf.gz/">hg38_ucsc_refseq_gtf.gz</a> - 9MB&nbsp; ).</li>
+<li>Extract chromosome 22 annotation&nbsp; <br />
+<b>$ zgrep -w chr22 hg38_ucsc_refseq_gtf.gz &gt; chr22_</b><b><b>hg38_ucsc_refseq_gtf.gz</b> </b></li>
+<li>Extract exons only from chromosome 22 gtf by using . This would be helpful in calculating splice sites <br />
+<b>$ hisat2_extract_exons.py hg38_ucsc_refseq_chr22.gtf&nbsp; &gt; hg38_ucsc_refseq_chr22_exons.gtf</b></li>
+<li>Build splice sites <br />
+<b>$ hisat2_extract_splice_sites.py hg38_ucsc_refseq_chr22.gtf&nbsp; &gt; hg38_ucsc_refseq_chr22_splice.gtf</b></li>
+<li>Index reference sequence file (chr22 fa), annotation (gtf) and calculated splice site file.<b><br />
+$ hisat2-build -p 6 --ss hg38_ucsc_refseq_chr22_splice.gtf --exon hg38_ucsc_refseq_chr22_exons.gtf hg38.chr22.fa hg38.chr22</b>-p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -- threads (6 here)<br />
+--ss&nbsp;&nbsp;&nbsp;&nbsp; -- splice site file<br />
+--exon -- exon file<br />
+hg38.chr22.fa -- reference sequence file<br />
+hg38.chr22 -- base name for index file<br />
+<br />This would create 8 index files with .bt2 extension.</li>
+</ol>
+<h4 style="text-align: left;">
+List raw files</h4>
+<h4 style="text-align: left;">
+<span style="font-weight: normal;">Keep all sequence files (.fastq or .fq) in a directory called raw_data.</span></h4>
+<div style="text-align: left;">
+<b>$mkdir raw_data</b><br />
+<br />
+<h4 style="text-align: left;">
+Sequence quality check using FastQC and MultiQC:&nbsp;</h4>
+</div>
+<h4 style="text-align: left;">
+</h4>
+<h4 style="text-align: justify;">
+<span style="font-weight: normal;">FastQC runs several sanity checks on each sequence and MultiQC summaizes output from FastQC. Since there are 6 files, there would be 6 outputs from FastQC and MultiQC summarizes all of them.</span></h4>
+<div style="text-align: justify;">
+<span style="font-weight: normal;"><b><br />$ mkdir fastqc<br />$ parallel --dry-run&nbsp; fastqc -q -o fastqc/ ::: raw_data/*.gz </b>(This would pick up fastq.gz from raw_data directory and creates output files in a directory called fastqc (-o fastqc option and a dry run would be displayed on screen without actual execution).<b><br />$ parallel fastqc -q -o fastqc/ ::: raw_data/*.gz&nbsp;</b></span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;"><br />Now, navigate to fastqc folder and execute mutliqc to summarize fastqc results.<b><br />$ multiqc . </b>(. means current directory and multiqc automatically finds fastqc output and summarizes multiqc. This would create multiqc_report.html and mutqc_data. Results are summarized in multiqc_report.html and open it with&nbsp; a browser).&nbsp;</span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">If you look at the raw data quality, you would observe that there is Illumina universal adapter contamination and other issues. Other issues such as low quality and sequence duplication at the start of the sequence are very common to RNAseq and can be neglected. Let us remove the adapter sequences using a tool called cutadapt.</span></div>
+<h4 style="text-align: left;">
+Remove adapter sequences</h4>
+<div style="text-align: left;">
+Adapter sequences can be removed using cutadapt and the command is given below. This would remove adapters and saves trimmed sequences in a different folder called cutadapt.</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+<b>$ mkdir cutadapt<br />$ ls raw_data/*.gz| sed 's/r[1-2].fastq.gz$//' | parallel 'cutadapt -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT&nbsp; -o&nbsp; ./cutadapt/{/.}r1_cutadapt.fastq.gz -p&nbsp; ./cutadapt/{/.}r2_cutadapt.fastq.gz {}r1.fastq.gz {}r2.fastq.gz &amp;&gt; ./cutadapt/{/.}cutadapt.log'&nbsp;&nbsp; </b><b>&nbsp;</b></div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;">$ ls raw_data/*.gz - lists all gz files in raw_data folder<br />$ sed 's/r[1-2].fastq.gz$//' - Sed would remove extension (r1.fastq.gz and r2.fastq.gz) from all the files as this would be used as regular expression (common pattern) later</span></div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;">Rest of the the command would store ouput in cutadapt folder and log&nbsp; files would be stored as .log files in cutadapt directory. These log files will have all kinds of information such as sequences removed etc. Parallel{/.} would remove file path and file extension.</span></div>
+<h4 style="text-align: left;">
+Summarize Cutadapt results with MultiQC<span style="font-weight: normal;">&nbsp;</span></h4>
+<h4 style="text-align: left;">
+<span style="font-weight: normal;">Navigate to cutadapt directory and execute multiqc inside it.</span></h4>
+<div style="text-align: left;">
+<b>$ cd cutadapt</b><br />
+<b>$ multiqc . </b></div>
+<br />
+This would create a summary html file and open it with a browser<br />
+<h4 style="text-align: left;">
+<span style="font-weight: normal;"> </span></h4>
+<h4 style="text-align: left;">
+<span style="font-weight: normal;"><b><br />Rerun fastQC on trimmed sequences</b></span></h4>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><b><br />$ cd cutadapt</b></span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><b>$ parallel fastqc -q&nbsp; ::: *.gz</b></span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><br />This would create fastqc otuput in the same directory. Now in this directory, we have trimmed sequences (12) and fastqc output. Now run multiqc in the same directory. This would pick up output files from both fastqc and cutadapt and summarizes both the results<br /><b>$ multiqc .</b></span></div>
+<h4 style="text-align: left;">
+<span style="font-weight: normal;"><b>&nbsp;</b></span></h4>
+<h4 style="text-align: left;">
+<span style="font-weight: normal;"><b>Align trimmed sequences</b></span></h4>
+<div style="text-align: left;">
+Now important part of the analysis. Let us align the sequences with hisat2. We already created reference index files and we trimmed sequence files. Let us align the sequences to reference and use it's annotations. For this let us created a folder called hisat2 and put all the output there.</div>
+<div style="text-align: left;">
+<b><br />$ mkdir hisat2</b></div>
+<div style="text-align: left;">
+<b>$ find cutadapt/*.fastq.gz | xargs basename -a | sed 's/_r[1-2].*fastq.gz$//' |uniq | parallel&nbsp;&nbsp; --progress 'hisat2&nbsp; --rg-id={} --rg SM:{} --rg PL:ILLUMINA -x ../../reference/hg38/hg38.chr22 --dta&nbsp; --rna-strandness RF -1 cutadapt/{}_r1_cutadapt.fastq.gz -2 cutadapt/{}_r2_cutadapt.fastq.gz -S ./hisat2/{}.cutadapt.sam &amp;&gt; ./hisat2/{}.hisat.log'<br />&nbsp;</b><br />
+<br />
+$ find cutadapt/*.fastq.gz<b> </b>-- find fastq.gz files in cutadapt directory<br />
+$ xargs basename -a -- remove file paths<br />
+$ sed 's/_r[1-2].*fastq.gz$//' -- remove _r1.fastq.gz and _r2.fastq.gz from file names which can be used as pattern later on<br />
+$ uniq - display only unique names<br />
+$ rg-id = read group id. We are supplying a common name. For eg. hcc1395_normal_rep1_r1_cutadapt.fastq.gz and hcc1395_normal_rep1_r2_cutadapt.fastq.gz will have hcc1395_normal_rep1 as group ID<br />
+$ rg-sm = read group sample name same as above<br />
+$ rg-PL = Platform (Illumina here)<br />
+-x = basename of index (read above for basename)<br />
+&nbsp;--dta - report alignments for downstream analysis (stringtie)<br />
+--rna-strandess = RF. This information is obtained from the site mentioned above<br />
+<br />
+Above command displays the progress and stores the aligned files in HiSat2 directory. Since this is a paired end sequencing, we have one sam file for two fastq sequences (R1 and R2). Hence there are 6 sam files (3 for normal and 3 for tumor). Log files are also stored in hisat2 directory. If there are any issues, look into log files.<br />
+<br />
+<h4 style="text-align: left;">
+Convert sam to bam, sort and index bam files</h4>
+<div style="text-align: left;">
+Now sam files are in hisat2 directory and we need to convert them to bam file, index each bam file and then index them. </div>
+<div style="text-align: left;">
+</div>
+<b>$ find hisat2/*.sam | parallel&nbsp; 'samtools view -bh {} | samtools sort - -o {.}.bam; samtools index {.}.bam'</b><br />
+<br />
+Now that bam files are ready, we can do two things:<br />
+- merge bams to corresponding groups. For eg. all normal bams into one final bam and all tumor bams into one final tumor bam. <br />
+- Treat each bam separate till last. This is what i prefer.<br />
+<br />
+Let us do both. Let us merge the bam files into corresponding final group bams. But grouped bams will not be used in downstream analysis as the code used for individual bams can be applied to grouped bam. <br />
+<br />
+<h4 style="text-align: left;">
+Bam file statistics</h4>
+<div style="text-align: left;">
+$ mkdir bamstats <br />
+$ find hisat2/hcc*.bam | xargs basename -a | parallel&nbsp; 'samtools flagstat ./hisat2/{} &gt; ./bamstats/{}.stats'&nbsp;</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+This would create one statistics file per bam file in hisat2 directory and bam files should start with hcc.</div>
+<h4 style="text-align: left;">
+Merge bams </h4>
+<div style="text-align: left;">
+As I mentioned above, one can merge all normal bams into one single normal bam and all tumor bams into one tumor bam.&nbsp;</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+Merge all normal bams to one single normal bam:</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+<b>$ bamtools merge -in ./hisat2/hcc1395_normal_rep1.cutadapt.bam -in ./hisat2/hcc1395_normal_rep2.cutadapt.bam -in ./hisat2/hcc1395_normal_rep3.cutadapt.bam -out ./hisat2/normal.bam</b></div>
+</div>
+<div style="text-align: left;">
+<br />
+<div style="text-align: left;">
+Merge all tumor bams to one single tumor bam:<br />
+<br />
+<b>$ bamtools
+merge -in ./hisat2/hcc1395_tumor_rep1.cutadapt.bam -in
+./hisat2/hcc1395_tumor_rep2.cutadapt.bam -in
+../hisat2/hcc1395_tumor_rep3.cutadapt.bam -out tumor.bam</b></div>
+</div>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><b><br /></b></span>
+<br />
+<div style="text-align: justify;">
+<span style="font-weight: normal;">Now you will have two additional bam files in hisat2 directory, normal and tumor bam. However, let us run rest of the analysis on individual bams and then use ballgown package for differential expression. Please note that the same script can be used for combined bams as well.</span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;"><br /></span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">Extract transcript information from bam (as transcripts, introns, exons) and corresponding quantitative information. StringTie can build transcripts, exons and intron information (as transcript.gtf for each sample) along with quantitative information. In this step, let us create a directory by name "stringtie" and 6 subdirectories so that stringtie creates all the necessary files. This is because stringtie creates several files by common name (such as i.tab, e.tab etc).&nbsp; Once we do this, we can load the files in R as ballgown looks for a directory structure, for loading input files. In addition, tool provided by hisat2 (</span><span style="font-weight: normal;">
+
+
+ 
+ 
+ 
+ <style type="text/css">p { margin-bottom: 0.1in; line-height: 120%; }</style></span>stringtie_expression_matrix.pl)<span style="font-weight: normal;"> needs directory structure. </span></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">Using StringTie, we are going to do many things:</span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">1) Create transcript, exon, intron&nbsp; files (transcripts.gtf, e.tab, i.tab etc) one for each bam file using StringTie</span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">2) Merge all transcripts (merged transcript file for all the samples)</span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">3) Extract FPKM, TPM and Coverage file individually for all samples. This can be used for further analysis, if user wants to.&nbsp;</span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">&nbsp;4) Create necessary files and load them into R via Ballgown library.</span></div>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">&nbsp;</span><span style="font-weight: normal;"><b><br /></b></span></div>
+<h4 style="text-align: left;">
+<span style="font-weight: normal;"><b>Create transcripts using StringTie</b></span></h4>
+<div style="text-align: left;">
+<span style="font-weight: normal;">$ mkdir stringtie&nbsp;</span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;">$ ls hisat2/*hcc*.bam | xargs basename -a | cut -f1 -d "." | parallel mkdir stringtie/{}</span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;">$&nbsp; ls -d stringtie/* | parallel echo {/} | parallel --progress 'stringtie -G ../../reference/hg38/hg38_ucsc_refseq_chr22.gtf --rf&nbsp; -e -B -o ./stringtie/{}/transcripts.gtf -A ./stringtie/{}/gene_abundances.tsv -C ./stringtie/{}/cov_ref.gtf --rf ./hisat2/{}.cutadapt.bam &amp;&gt; ./stringtie/{}/stringtie.log'</span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;">2nd command would create 6 directories under stringtie directory and the names will match those bam files from hisat2.&nbsp;</span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;">3rd command would create output from StringTie in each sample directory. Each sample directory will have 9 files including log. If every thing goes well, log files would be empty.&nbsp; In above command we created, output files necessary for ballgown, coverage file, abundance file and transcript file.</span></div>
+<h4 style="text-align: left;">
+<span style="font-weight: normal;"><b>Merge all the transcripts</b></span></h4>
+<div style="text-align: left;">
+<span style="font-weight: normal;">Now, let us merge all the transcripts.</span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><b> $ cd stringtie&nbsp;</b></span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><b>$ find | grep transc | xargs stringtie --merge&nbsp; -G /home/suresh/reference/hg38/hg38_ucsc_refseq_chr22.gtf -o merge_transcripts.gtf&nbsp;</b></span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;">This would create merged transcripts.gtf file for further analysis. <b>&nbsp;</b></span><br />
+<br />
+<h4 style="text-align: left;">
+<span style="font-weight: normal;"><b>Compare output transcript (transcript.gtf) with reference gtf</b></span></h4>
+<div style="text-align: left;">
+<span style="font-weight: normal;">Once transcript map for each sample. We want to compare this transcript map with reference transcript information (reference gtf).</span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><b>
+
+
+ 
+ 
+ 
+ <style type="text/css">p { margin-bottom: 0.1in; line-height: 120%; }</style>
+
+
+</b></span></div>
+<div align="justify" style="line-height: 100%; margin-bottom: 0in;">
+<b>$ cd stringtie </b></div>
+<div align="justify" style="line-height: 100%; margin-bottom: 0in;">
+<b>$ find
+|grep -P trans.*.gtf$ | grep -v merge | parallel --progress
+gffcompare  -G -r ~/reference/hg38/hg38_ucsc_refseq_chr22.gtf -o
+{//}/strcmp {}</b></div>
+<b>
+
+</b><br />
+<div style="text-align: left;">
+</div>
+<span style="font-weight: normal;">Above command would find transcript gtf in all the subdirectories of stringtie directory, but skips those files with merge string in it. gffcompare will compare transcripts.gtf in each subdirectory and creates several files post comparison. Basename of all the files created by gffcompare will have strcmp to them. You would need to look at <b>strcmp.stats</b> file for overall matching. </span></div>
+<div style="text-align: left;">
+<span style="font-weight: normal;"><br /></span></div>
+<div style="text-align: left;">
+<h3>
+Count and extract FPKM, Coverage, TPM </h3>
+</div>
+</div>
+<h4 style="text-align: justify;">
+<span style="font-weight: normal;"><b>&nbsp;</b></span></h4>
+<h4 style="text-align: justify;">
+<span style="font-weight: normal;"><b>Extract and count FPKMs for all the samples</b>:</span></h4>
+<div style="text-align: justify;">
+<span style="font-weight: normal;">$ cd stringtie <br />$ perl&nbsp; ../stringtie_expression_matrix.pl&nbsp; --expression_metric=FPKM --result_dirs='hcc1395_normal_rep1,hcc1395_normal_rep2,hcc1395_normal_rep3,hcc1395_tumor_rep1,hcc1395_tumor_rep2,hcc1395_tumor_rep3' --transcript_matrix_file=transcript_fpkm_all_samples.tsv --gene_matrix_file=gene_fpkm_all_samples.tsv<br />(note:&nbsp; Download <a href="http://stringtie_expression_matrix.pl/">stringtie_expression_matrix.pl</a> and keep it in analysis folder. Stringtie folder on my machine is a subfolder of analysis which is why in command line, it is kept above stringtie folder. Be careful with double -- while copying)</span></div>
+<div style="text-align: left;">
+<br /></div>
+<h4 style="text-align: left;">
+Extract and count coverage for all samples</h4>
+</div>
+<div style="text-align: left;">
+</div>
+<div style="text-align: left;">
+$ cd stringtie <br />
+$ perl&nbsp; ../stringtie_expression_matrix.pl&nbsp; --expression=coverage --result_dirs='hcc1395_normal_rep1,hcc1395_normal_rep2,hcc1395_normal_rep3,hcc1395_tumor_rep1,hcc1395_tumor_rep2,hcc1395_tumor_rep3' --transcript_matrix_file=transcript_coverage_all_samples.tsv --gene_matrix_file=gene_coverage_all_samples.tsv<br />
+<br />
+<h4 style="text-align: left;">
+Extract and count TPMs for all samples</h4>
+<div style="text-align: left;">
+$ cd stringtie</div>
+<div style="text-align: left;">
+$ perl&nbsp; ../stringtie_expression_matrix.pl&nbsp; --expression_metric=TPM --result_dirs='hcc1395_normal_rep1,hcc1395_normal_rep2,hcc1395_normal_rep3,hcc1395_tumor_rep1,hcc1395_tumor_rep2,hcc1395_tumor_rep3' --transcript_matrix_file=transcript_samples.tsv --gene_matrix_file=gene_tpms_all_samples.tsv</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+Now we are done with Sequence quality check, sequence trimming, alignment and post alignment. Let us do analysis with Ballgown package in R.&nbsp;</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+This page is already long. Let me create a new page for ballgown analysis and you can view it <a href="https://digibio.blogspot.com/2017/10/rnaseq-ballgown-analysis.html" target="_blank">here</a>. </div>
+</div>
+<div>
+<ol style="text-align: left;">
+</ol>
+</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/rnaseq-ballgown-analysis" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/fastq-screen-and-ngs-data-analysis" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

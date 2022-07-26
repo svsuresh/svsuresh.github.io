@@ -1,0 +1,125 @@
+<p>In general, biologists have to repeat experiments multiple times to
+reproduce the results and for statistical analysis. Many a times,
+biologist may have to average (mean, median or mode) or do any other
+transformation for replicates (duplicates, triplicates etc).</p>
+
+<p>Let us create example data with 3 samples (3 triplicates each, named
+from sample 1 through 9) and for 6 genes.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">structure</span><span class="p">(</span><span class="w">
+    </span><span class="nf">list</span><span class="p">(</span><span class="w">
+        </span><span class="n">Sample_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">4.9</span><span class="p">,</span><span class="w"> </span><span class="m">2.45</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">46.55</span><span class="p">,</span><span class="w"> </span><span class="m">14.7</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">55.9</span><span class="p">,</span><span class="w"> </span><span class="m">7.99</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1.57</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1.57</span><span class="p">,</span><span class="w"> </span><span class="m">53.42</span><span class="p">,</span><span class="w"> </span><span class="m">4.71</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1.26</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">52.73</span><span class="p">,</span><span class="w"> </span><span class="m">10.04</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">66.4</span><span class="p">,</span><span class="w"> </span><span class="m">23.24</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2.19</span><span class="p">,</span><span class="w"> </span><span class="m">3.28</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">65.56</span><span class="p">,</span><span class="m">9.83</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">74.11</span><span class="p">,</span><span class="w"> </span><span class="m">18.96</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">66.88</span><span class="p">,</span><span class="w"> </span><span class="m">13.38</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_9</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">50.78</span><span class="p">,</span><span class="w"> </span><span class="m">13.08</span><span class="p">)</span><span class="w">
+    </span><span class="p">),</span><span class="w">
+    </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Gene1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene4"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene5"</span><span class="p">,</span><span class="s2">"Gene6"</span><span class="p">),</span><span class="w">
+    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data.frame"</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now let’s look at the data</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">str</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 'data.frame':    6 obs. of  9 variables:
+##  $ Sample_1: num  0 4.9 2.45 0 46.55 ...
+##  $ Sample_2: num  1 2 0 1 55.9 7.99
+##  $ Sample_3: num  0 1.57 0 1.57 53.42 ...
+##  $ Sample_4: num  0 1.26 0 0 52.73 ...
+##  $ Sample_5: num  0 0 0 0 66.4 ...
+##  $ Sample_6: num  2.19 3.28 0 0 65.56 ...
+##  $ Sample_7: num  0 0 0 0 74.1 ...
+##  $ Sample_8: num  0 0 0 0 66.9 ...
+##  $ Sample_9: num  0 0 0 0 50.8 ...
+</code></pre></div></div>
+
+<p>Now, let us average over the replicates</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data.frame</span><span class="p">(</span><span class="n">apply</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">as.matrix</span><span class="p">(</span><span class="n">df</span><span class="p">),</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="w">
+    </span><span class="n">nrow</span><span class="p">(</span><span class="n">df</span><span class="p">),</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">ncol</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="p">)),</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">rowMeans</span><span class="p">),</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">row.names</span><span class="p">(</span><span class="n">df</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##               X1        X2       X3
+## Gene1  0.3333333  0.730000  0.00000
+## Gene2  2.8233333  1.513333  0.00000
+## Gene3  0.8166667  0.000000  0.00000
+## Gene4  0.8566667  0.000000  0.00000
+## Gene5 51.9566667 61.563333 63.92333
+## Gene6  9.1333333 14.370000 15.14000
+</code></pre></div></div>
+
+<p>Explanation for the code is: we are converting data frame to array (3
+dimensional) with following dimentions: 3 groups (no of columns/number
+of replicates- here it is triplicates), with 6 rows and 3 columns.
+Groups and columns vary as per the replicates. Let us say we have 10
+samples with duplicate samples, then the groups would be 5, and columns
+would be 2. Post convertion of array into (6 rowsx3 columnsx3 groups),
+we are taking row means for every row in each group. Then we are
+printing the output.</p>
+
+<p>We can do the same with <strong>aggregate</strong> function</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">t</span><span class="p">(</span><span class="n">aggregate</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">df</span><span class="p">),</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="nf">rep</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="p">(</span><span class="n">ncol</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">/</span><span class="m">3</span><span class="p">),</span><span class="n">each</span><span class="o">=</span><span class="m">3</span><span class="p">)),</span><span class="w"> </span><span class="n">mean</span><span class="p">)[,</span><span class="m">-1</span><span class="p">])</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##             [,1]      [,2]     [,3]
+## Gene1  0.3333333  0.730000  0.00000
+## Gene2  2.8233333  1.513333  0.00000
+## Gene3  0.8166667  0.000000  0.00000
+## Gene4  0.8566667  0.000000  0.00000
+## Gene5 51.9566667 61.563333 63.92333
+## Gene6  9.1333333 14.370000 15.14000
+</code></pre></div></div>
+
+<p>Now what if your data has triplicate name, as below and you want to
+average</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">structure</span><span class="p">(</span><span class="w">
+    </span><span class="nf">list</span><span class="p">(</span><span class="w">
+        </span><span class="n">Sample_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">4.9</span><span class="p">,</span><span class="w"> </span><span class="m">2.45</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">46.55</span><span class="p">,</span><span class="w"> </span><span class="m">14.7</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">55.9</span><span class="p">,</span><span class="w"> </span><span class="m">7.99</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1.57</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1.57</span><span class="p">,</span><span class="w"> </span><span class="m">53.42</span><span class="p">,</span><span class="w"> </span><span class="m">4.71</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1.26</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">52.73</span><span class="p">,</span><span class="w"> </span><span class="m">10.04</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">66.4</span><span class="p">,</span><span class="w"> </span><span class="m">23.24</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2.19</span><span class="p">,</span><span class="w"> </span><span class="m">3.28</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">65.56</span><span class="p">,</span><span class="m">9.83</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">74.11</span><span class="p">,</span><span class="w"> </span><span class="m">18.96</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">66.88</span><span class="p">,</span><span class="w"> </span><span class="m">13.38</span><span class="p">),</span><span class="w">
+        </span><span class="n">Sample_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">50.78</span><span class="p">,</span><span class="w"> </span><span class="m">13.08</span><span class="p">)</span><span class="w">
+    </span><span class="p">),</span><span class="w">
+    </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Gene1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene4"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Gene5"</span><span class="p">,</span><span class="s2">"Gene6"</span><span class="p">),</span><span class="w">
+    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data.frame"</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="m">3</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##       Sample_1 Sample_1 Sample_1 Sample_2 Sample_2 Sample_2 Sample_3 Sample_3
+## Gene1     0.00        1     0.00     0.00        0     2.19        0        0
+## Gene2     4.90        2     1.57     1.26        0     3.28        0        0
+## Gene3     2.45        0     0.00     0.00        0     0.00        0        0
+##       Sample_3
+## Gene1        0
+## Gene2        0
+## Gene3        0
+</code></pre></div></div>
+
+<p>Averaging such files much easier. Do as follows:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">limma</span><span class="o">::</span><span class="n">avearrays</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##         Sample_1  Sample_2 Sample_3
+## Gene1  0.3333333  0.730000  0.00000
+## Gene2  2.8233333  1.513333  0.00000
+## Gene3  0.8166667  0.000000  0.00000
+## Gene4  0.8566667  0.000000  0.00000
+## Gene5 51.9566667 61.563333 63.92333
+## Gene6  9.1333333 14.370000 15.14000
+</code></pre></div></div>

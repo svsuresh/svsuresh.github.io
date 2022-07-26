@@ -1,0 +1,90 @@
+---
+layout: post
+title: Calculate coverage from bam files using IGV tools
+date: '2014-07-17T15:04:00.002+05:30'
+author: suresh
+tags:
+- bam
+- coverage
+- igvtools
+modified_time: '2019-02-04T09:21:05.226+05:30'
+thumbnail: https://3.bp.blogspot.com/-XQzVc6QDClE/U8eX4tKkqnI/AAAAAAAAAGM/XsysvHfm-cw/s72-c/total.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-3191601126462011960
+blogger_orig_url: https://digibio.blogspot.com/2014/07/calculate-coverage-from-bam-files-using.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+One of the recurrent needs in NGS to calculate per position coverage and per position and per base coverage. IGV tools can be helpful in such calculations. </div>
+<div style="text-align: justify;">
+Link to download IGV tools is available under "Install igvtools" 
+section in page: 
+https://software.broadinstitute.org/software/igv/download. Download igvtools package. Igvtools is available as zip and unzip the zipped files. Put the files in system path or where user can access. </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: left;">
+</div>
+<div style="text-align: left;">
+Requirements:</div>
+<div style="text-align: left;">
+1) Samtools and IGVtools are installed</div>
+<div style="text-align: left;">
+2) Bam file is indexed using samtools.</div>
+<div style="text-align: left;">
+3) User knows the reference genome version (for eg. hg19, hg18) </div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+Overall coverage calculation at each position:</div>
+<div style="text-align: left;">
+$&nbsp; sh /&lt;path to igvtools&gt;/igvtools count&nbsp; -w 1&nbsp;&nbsp; &lt;filename&gt;.bam&nbsp; &lt;filename&gt;.wig&nbsp; hg19</div>
+<br />
+Example screenshot:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-XQzVc6QDClE/U8eX4tKkqnI/AAAAAAAAAGM/XsysvHfm-cw/s1600/total.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="88" src="https://3.bp.blogspot.com/-XQzVc6QDClE/U8eX4tKkqnI/AAAAAAAAAGM/XsysvHfm-cw/s1600/total.png" width="320" /></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<br />
+<br />
+<div style="text-align: center;">
+After calculation</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-JhItHCtgBqM/U8eX5I4o1wI/AAAAAAAAAGQ/BYchIJ0ZAmo/s1600/total1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="320" src="https://1.bp.blogspot.com/-JhItHCtgBqM/U8eX5I4o1wI/AAAAAAAAAGQ/BYchIJ0ZAmo/s1600/total1.png" width="179" /></a></div>
+<br />
+<br />
+<br />
+Coverage calculation at each position per each base (A,C,G,T,N)<br />
+<br />
+$&nbsp; sh /&lt;path to igvtools&gt;/igvtools count&nbsp; -w 1&nbsp; --bases &lt;filename&gt;.bam&nbsp; &lt;filename&gt;.wig&nbsp; hg19<br />
+Example screen shot:<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-VFfrnWDBYj0/U8eX3w1E7ZI/AAAAAAAAAF0/8QUvnGyu2xY/s1600/all_bases.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="85" src="https://4.bp.blogspot.com/-VFfrnWDBYj0/U8eX3w1E7ZI/AAAAAAAAAF0/8QUvnGyu2xY/s1600/all_bases.png" width="320" /></a></div>
+<div style="text-align: center;">
+After calculation</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-QYAPla3YIoc/U8eX4U4LItI/AAAAAAAAAGI/dwqTV6Nj3Ys/s1600/all_bases2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="198" src="https://2.bp.blogspot.com/-QYAPla3YIoc/U8eX4U4LItI/AAAAAAAAAGI/dwqTV6Nj3Ys/s1600/all_bases2.png" width="320" /></a></div>
+<div style="text-align: center;">
+<br /></div>
+</div>
+<br />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52918388-1', 'auto');
+  ga('send', 'pageview');
+
+</script>

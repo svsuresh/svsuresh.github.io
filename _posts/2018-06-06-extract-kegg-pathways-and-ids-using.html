@@ -1,0 +1,87 @@
+---
+layout: post
+title: Extract KEGG pathways and IDs using gene symbols
+date: '2018-06-06T20:20:00.000+05:30'
+author: suresh
+tags:
+- KEGG pathway
+- bioservices
+- python
+modified_time: '2018-06-06T20:20:40.552+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5106210712018068109
+blogger_orig_url: https://digibio.blogspot.com/2018/06/extract-kegg-pathways-and-ids-using.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Well, some times we need to reinvent the wheel when things change. With the advent of NGS and other technologies in bioinformatics, we see many questions that were addressed a decade ago. Tools that existed earlier, do not exist any more. One of the requests I got was to extract KEGG pathway IDs and pathways using gene symbols. Let us do this in python using bioservices library.&nbsp; Bioservices is a python libraries for accessing web services from several bioinformatics servers. You can visit them <a href="http://bioservices.readthedocs.io/en/master/">here</a>.&nbsp; Example genes are furnished along with the code. Examples are human genes. Probably i will add other genes (from prokaryotes) when I get another request. Let us do this with a very simple script. Install bioservices library from pypi, pip3, conda, system repos whichever you like. This script works with python 3.6 and bioservices 1.5.2 (as of today, June 6th, 2018).</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+code (make sure that indentation is correct. Python is very strict about indenting): </div>
+<div style="text-align: justify;">
+==================== </div>
+<div style="text-align: justify;">
+&gt; genes=["CRK","RUNX1","PSMD11","JUP"]<br />&gt; print(genes)<br />['CRK', 'RUNX1', 'PSMD11', 'JUP']<br /><br />&gt; for i in genes:<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; j=k.get_pathway_by_gene(i,"hsa")<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for keys,values in j.items():<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print(i,keys, values, sep="\t")<br /><br />RK hsa04010 MAPK signaling pathway</div>
+<div style="text-align: justify;">
+CRK hsa04012 ErbB signaling pathway</div>
+<div style="text-align: justify;">
+CRK hsa04015 Rap1 signaling pathway</div>
+<div style="text-align: justify;">
+CRK hsa04062 Chemokine signaling pathway</div>
+<div style="text-align: justify;">
+CRK hsa04510 Focal adhesion</div>
+<div style="text-align: justify;">
+CRK hsa04666 Fc gamma R-mediated phagocytosis</div>
+<div style="text-align: justify;">
+CRK hsa04722 Neurotrophin signaling pathway</div>
+<div style="text-align: justify;">
+CRK hsa04810 Regulation of actin cytoskeleton</div>
+<div style="text-align: justify;">
+CRK hsa04910 Insulin signaling pathway</div>
+<div style="text-align: justify;">
+CRK hsa05100 Bacterial invasion of epithelial cells</div>
+<div style="text-align: justify;">
+CRK hsa05131 Shigellosis</div>
+<div style="text-align: justify;">
+CRK hsa05200 Pathways in cancer</div>
+<div style="text-align: justify;">
+CRK hsa05206 MicroRNAs in cancer</div>
+<div style="text-align: justify;">
+CRK hsa05211 Renal cell carcinoma</div>
+<div style="text-align: justify;">
+CRK hsa05220 Chronic myeloid leukemia</div>
+<div style="text-align: justify;">
+RUNX1 hsa04530 Tight junction</div>
+<div style="text-align: justify;">
+RUNX1 hsa04659 Th17 cell differentiation</div>
+<div style="text-align: justify;">
+RUNX1 hsa05200 Pathways in cancer</div>
+<div style="text-align: justify;">
+RUNX1 hsa05202 Transcriptional misregulation in cancer</div>
+<div style="text-align: justify;">
+RUNX1 hsa05220 Chronic myeloid leukemia</div>
+<div style="text-align: justify;">
+RUNX1 hsa05221 Acute myeloid leukemia</div>
+<div style="text-align: justify;">
+PSMD11 hsa03050 Proteasome</div>
+<div style="text-align: justify;">
+PSMD11 hsa05169 Epstein-Barr virus infection</div>
+<div style="text-align: justify;">
+JUP hsa05200 Pathways in cancer</div>
+<div style="text-align: justify;">
+JUP hsa05202 Transcriptional misregulation in cancer</div>
+<div style="text-align: justify;">
+JUP hsa05221 Acute myeloid leukemia</div>
+<div style="text-align: justify;">
+JUP hsa05226 Gastric cancer</div>
+<div style="text-align: justify;">
+JUP hsa05412 Arrhythmogenic right ventricular cardiomyopathy (ARVC)</div>
+<div style="text-align: justify;">
+============================================
+</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+</div>

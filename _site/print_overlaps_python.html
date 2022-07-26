@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/print_overlaps_python">Oct 29, 2020 - Generate substrings in python</a></h1>
+            <div class="post-content">
+            <p>Let us say you are asked to generate substrings of a large string with a defined length and overlap, following is python(3) script.</p>
+
+<h4 id="import-the-libraries">Import the libraries</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+</code></pre></div></div>
+<h4 id="collect-user-input-as-three-arguments-first-input-is-a-string-and-will-be-converted-as-string-second-argument-is-length-of-the-substring-and-third-argument-is-overlap-window-size-all-must-be-supplied-by-a-space-in-between">Collect user input, as three arguments. First input is a string and will be converted as string. Second argument is length of the substring and third argument is overlap window size. All must be supplied by a space in between.</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">Len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">Wind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+</code></pre></div></div>
+<h4 id="if-user-enters-a-window-size-larger-than-or-equal-to-string-size-the-code-stops">If user enters a window size larger than or equal to string size, the code stops.</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">Wind</span> <span class="o">&gt;=</span> <span class="n">Len</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"String is smaller than or equal to over lapping window"</span><span class="p">)</span>
+    <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">()</span>
+</code></pre></div></div>
+<h4 id="now-let-us-generate-stard-and-end-positions-of-the-substrings-on-user-input-string">Now, let us generate stard and end positions of the substrings on user input string</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Start</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">Len</span><span class="p">,</span> <span class="n">Len</span> <span class="o">-</span> <span class="n">Wind</span><span class="p">))</span>
+<span class="n">End</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">Len</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Len</span> <span class="o">-</span> <span class="n">Wind</span><span class="p">))</span>
+</code></pre></div></div>
+<h4 id="store-output-in-a-list-named-test">Store output in a list named “test”</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test</span> <span class="o">=</span> <span class="p">[</span><span class="n">string</span><span class="p">[</span><span class="n">i</span><span class="p">:</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">)]</span>
+</code></pre></div></div>
+<h4 id="now-in-the-list-count-the-unique-strings-and-print-the-substring-and-number-of-their-occurences">Now, in the list count the unique strings and print the substring and number of their occurences.</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">values</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">unique</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">counts</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s">"</span><span class="se">\t</span><span class="s">"</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+</code></pre></div></div>
+<h4 id="save-the-script-as-print_overlapspy">Save the script as **print_overlaps.py”.</h4>
+<p>Command line argument would as follows below with an example:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">python3</span> <span class="n">print_overlaps</span><span class="p">.</span><span class="n">py</span> <span class="n">mystring</span> <span class="mi">3</span> <span class="mi">2</span>
+</code></pre></div></div>
+<p><strong>Note</strong> Output is sorted alphabetically.</p>
+
+<h4 id="output-looks-like-below">Output looks like below:</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">python3</span> <span class="n">print_overlaps</span><span class="p">.</span><span class="n">py</span> <span class="n">mystring</span> <span class="mi">4</span> <span class="mi">2</span>
+
+<span class="n">myst</span> 	 <span class="mi">1</span>
+<span class="n">ring</span> 	 <span class="mi">1</span>
+<span class="n">stri</span> 	 <span class="mi">1</span>
+</code></pre></div></div>
+<h4 id="another-example">another example:</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">python3</span> <span class="n">print_overlaps</span><span class="p">.</span><span class="n">py</span> <span class="n">mystring</span> <span class="mi">5</span> <span class="mi">3</span>
+<span class="n">mystr</span> 	 <span class="mi">1</span>
+<span class="n">strin</span> 	 <span class="mi">1</span>
+</code></pre></div></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/install_vep_focal" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/break_string" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

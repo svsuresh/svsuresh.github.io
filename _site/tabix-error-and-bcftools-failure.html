@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/tabix-error-and-bcftools-failure">Aug 15, 2020 - Tabix error and bcftools failure in handling unsorted vcf</a></h1>
+            <div class="post-content">
+            <p style="text-align: justify;">Sometimes, established tools drive us nuts. Following is an example. I have a vcf that is not sorted. Download it from <a href="https://drive.google.com/file/d/1AmBQOlt2sLn68Dfduv-y50S5_0aSQKfd/view?usp=sharing">here</a> (bgzipped, please un-gzip for the use) .Now let us follow the standard procedure to index this unsorted file.</p><ol style="text-align: justify;"><li>bgzip the file</li><li>Use tabix to index the file.&nbsp;</li></ol><p style="text-align: justify;">Now you would get following error:</p><p style="text-align: justify;">========================================</p><p style="text-align: justify;">$ tabix -p vcf ref.vcf.gz <br />[ti_index_core] the file out of order at line 59</p><p style="text-align: justify;">==========================================</p><p style="text-align: justify;">Since VCF is not sorted, tabix is throwing this error. Next logical step would be to use bcftools (I am using bcftools 1.10.2) to sort the vcf using "sort" function. Now run bcftools to sort the vcf. Following error you would get:</p><p style="text-align: justify;">=============================================================== <br /></p><p style="text-align: justify;">$ bcftools sort ref.vcf.gz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />Writing to /tmp/bcftools-sort.RNcNFP<br />[W::vcf_parse] Contig '1' is not defined in the header. (Quick workaround: index the file with tabix.)<br />Error encountered while parsing the input at 1:207684192<br />Cleaning<br />==============================================================</p><p style="text-align: justify;">Where should user go now? Tabix fails because vcf is not sorted and bcftools fails that chromosome number is not defined in header and fails to sort because of that. In addition to failing, it is suggesting user to use a tool that fails because of sorting.&nbsp;</p><p style="text-align: justify;">Fortunately, vcftools comes to the rescue. <br />===========================<br />$ vcf-sort ref.vcf.gz<br />===========================</p><p style="text-align: justify;">This populates vcf that can be used for indexing and tabix works as intended now, as the vcf is sorted. <br /></p>
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/annotate-text-file-with-dbsnp-reference" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/text_to_rsid" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,65 @@
+<div style="text-align: justify;">
+One of the user issues, I came across, is to retain a single sequence for each group. User didn't mention the length or other criteria. However, headers have lot more information than group it self.&nbsp;</div>
+<div style="text-align: justify;">
+Example fasta file is below:</div>
+<div style="text-align: justify;">
+====================================================================== </div>
+<div style="text-align: justify;">
+&gt;group_1_samplenameA</div>
+<div style="text-align: justify;">
+CGCTTCAACGGAATGGATCTACGTTACAGCCTGCATAAAGAAAACGGAGTTGCCGAGGACG</div>
+<div style="text-align: justify;">
+AAAGCGACTTTAGGTTCTGTCCGTTGTCTTTGGCGGAAA</div>
+<div style="text-align: justify;">
+&gt;group_2_samplenameB</div>
+<div style="text-align: justify;">
+AAATTCAACGGAATGGATCTACGTTACAGCCTGCATAAAGAAAACGGAGTTGCCGAGGACG</div>
+<div style="text-align: justify;">
+AAAGCGACTTTAGGTTCTGTCCGTTGTCTTTGGCGGAAG</div>
+<div style="text-align: justify;">
+&gt;group_3_samplenameC</div>
+<div style="text-align: justify;">
+CGCTTCAACGGAATGGATCTACGTTACAGCCTGCATAAAGAAAACGGAGTTGCCGAGGACG</div>
+<div style="text-align: justify;">
+AAAGCGACTTTAGGTTCTGTCCGTTGTCTTTGGCGGAAA</div>
+<div style="text-align: justify;">
+&gt;group_3_samplenameD</div>
+<div style="text-align: justify;">
+CGCTTCAACGGAATGGATCTACGTTACAGCCTGCATAAAGAAAACGGAGTTGCCGAGGACGA</div>
+<div style="text-align: justify;">
+=======================================================================</div>
+<div style="text-align: justify;">
+In the above example, fasta headers have group information plus other information. User wants to retain one sequence per group. Let us do that with seqkit.</div>
+<div style="text-align: justify;">
+======================================================================</div>
+<div style="text-align: justify;">
+$ seqkit --quiet --id-regexp '(^\w+_[0-9])' rmdup test.fa</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+&gt;group_1_samplenameA</div>
+<div style="text-align: justify;">
+CGCTTCAACGGAATGGATCTACGTTACAGCCTGCATAAAGAAAACGGAGTTGCCGAGGAC</div>
+<div style="text-align: justify;">
+GAAAGCGACTTTAGGTTCTGTCCGTTGTCTTTGGCGGAAA</div>
+<div style="text-align: justify;">
+&gt;group_2_samplenameB</div>
+<div style="text-align: justify;">
+AAATTCAACGGAATGGATCTACGTTACAGCCTGCATAAAGAAAACGGAGTTGCCGAGGAC</div>
+<div style="text-align: justify;">
+GAAAGCGACTTTAGGTTCTGTCCGTTGTCTTTGGCGGAAG</div>
+<div style="text-align: justify;">
+&gt;group_3_samplenameC</div>
+<div style="text-align: justify;">
+CGCTTCAACGGAATGGATCTACGTTACAGCCTGCATAAAGAAAACGGAGTTGCCGAGGAC</div>
+<div style="text-align: justify;">
+GAAAGCGACTTTAGGTTCTGTCCGTTGTCTTTGGCGGAAA</div>
+<div style="text-align: justify;">
+=======================================================================</div>
+<div style="text-align: justify;">
+Explanation:</div>
+<ol style="text-align: justify;">
+<li style="text-align: justify;">--quiet - do not print standard error/output on the screen</li>
+<li style="text-align: justify;">--id-regexp - regex to be used in matching headers. By default, rmdup matches on headers in seqkit</li>
+<li style="text-align: justify;">^\w+_[0-9]- Regex for starting with a word followed by _, followed by a single digit. This matches group_1, group_2, group_3 etc</li>
+</ol>

@@ -1,0 +1,76 @@
+---
+layout: post
+title: Gene expression and treemaps
+date: '2014-07-21T13:00:00.000+05:30'
+author: suresh
+tags:
+- treemap
+- gene expression
+modified_time: '2015-07-23T03:51:37.064+05:30'
+thumbnail: http://4.bp.blogspot.com/-py-ybPYdPbw/U8y_0uo8XrI/AAAAAAAAAHM/uhnrparRkSQ/s72-c/pw_gene.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-1987937366090048548
+blogger_orig_url: https://digibio.blogspot.com/2014/07/gene-expressoin-and-treemaps.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Treemapping can be used in visualization of gene expression data in fact any data with more than one type of value. For eg. A probe (gene) can have two values: fold change and p-value. Heat maps are different from treemaps. While heat maps show overall trends in fold change, treemaps can show two at a time.<br />
+<br />
+Treemap consists of rectangles and rectangle size and color can be controlled. For eg. rectangle size can be number of genes in pathway and color can be their fold change. Larger the rectangular size, more is it's significance.<br />
+<br />
+<br />
+Minimal format for gene expression treemap is:<br />
+<br />
+column 1: list of&nbsp; genes/entities whose p-values and fold changes are to displayed<br />
+column 2: log scaled significance values<br />
+Column 3: Fold change<br />
+<br />
+here is an example file that can be downloaded from : https://drive.google.com/file/d/0B0MpwluEDxNublFydFdqNjd5djg/edit?usp=sharing<br />
+<br />
+This file is obtained after analyzing the data from <a href="http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE8771">GSE8771</a> and columns in this file are:&nbsp; Probe, Genesymbol, foldchange, ttest, log_tttest, Biological process, pathway.<br />
+<br />
+Requirements:<br />
+1) treemap package is installed in R/bioconductor<br />
+2) File mentioned above is, unzipped and loaded in R/bioconductor.<br />
+<br />
+Code to load above file in R/bioconductor:<br />
+$ library(treemap)<br />
+$ tm=read.table("pw_en.txt", sep="\t", header=TRUE)<br />
+<br />
+Scenario 1: User wants to see statistically significant pathway and genes within the pathway<br />
+<br />
+code:<br />
+$&nbsp; treemap(tm, index=c("pathway","Genesymbol"),&nbsp; type="comp", vSize="log_tttest", vColor="foldchange", title="Pathway Enrichment")<br />
+<br />
+index = box should be drawn for which column(s)? <br />
+vSize =&nbsp; box size<br />
+vColor= box color<br />
+comp= relative scale <br />
+<br />
+In the example,&nbsp; R/Bioc will draw most significant pathways and size of each rectangle is dependent on it's statistical score and color of the box is dependent on fold change of each gene.<br />
+<br />
+Image generated would be :<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-py-ybPYdPbw/U8y_0uo8XrI/AAAAAAAAAHM/uhnrparRkSQ/s1600/pw_gene.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="331" src="http://4.bp.blogspot.com/-py-ybPYdPbw/U8y_0uo8XrI/AAAAAAAAAHM/uhnrparRkSQ/s640/pw_gene.png" width="640" /></a></div>
+(Note that each box represents statistically significant pathway (rectangles with dark black borders). Bigger the size, higher it's significance. Within each pathway (represented by rectangle with dark black border), genes are displayed by smaller rectangles (with lighter black border) and gene rectangle size is dependent on the statistically significant for each gene.&nbsp; <br />
+&nbsp; <br />
+Scenario 2: User wants to see statistically significant genes <br />
+<br />
+code:<br />
+$&nbsp; treemap(tm, index="Genesymbol",&nbsp; type="comp", vSize="log_tttest", vColor="foldchange", title="Gene Enrichment")<br />
+<br />
+Image generated would be :<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-5JgkNlI2kZ8/U8y_zhwCtBI/AAAAAAAAAG8/VQDaZH7dbf8/s1600/gene.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="396" src="http://2.bp.blogspot.com/-5JgkNlI2kZ8/U8y_zhwCtBI/AAAAAAAAAG8/VQDaZH7dbf8/s640/gene.png" width="640" /></a></div>
+Note that rectangle size is &nbsp; dependent on the statistical significance of probes within that gene.<br />
+<br />
+Scenario 3: User wants to see statistically significant pathways<br />
+code:<br />
+$&nbsp; treemap(tm, index="pathway",&nbsp; type="comp", vSize="log_tttest", vColor="foldchange", title="Pathway Enrichment")<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-aTe0nzMJjzg/U8y_0QjJpwI/AAAAAAAAAHI/KoXnhKVo8lY/s1600/pathway.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="336" src="http://4.bp.blogspot.com/-aTe0nzMJjzg/U8y_0QjJpwI/AAAAAAAAAHI/KoXnhKVo8lY/s640/pathway.png" width="640" /></a></div>
+<br />
+<br />
+There are several options in Treemap. For eg. instead of relative scale, use can choose asbsolute scale for fold change or change the algorithm used in drawing the maps. Link to treemap package: http://cran.r-project.org/web/packages/treemap/index.html<br />
+<br />
+<br />
+&nbsp; </div>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/collapse_two_columns">Aug 26, 2020 - Clean two column data using tidyr</a></h1>
+            <div class="post-content">
+            <h3 id="let-us-look-at-the-data-first-in-system">Let us look at the data first in system.</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> ../_data/collapse_two_columns_example.txt
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Name Group-1 Name    Group-2 Name    Group-3
+## A    2   A   1   A   4
+## B    4   B   2   B   7
+## C    7   C   4   I   6
+## D    6   D   7   D   4
+## E    4   F   6   M   9
+##      H   4
+</code></pre></div></div>
+
+<p>Now we have to clean up alternate columns. Collapse “Name” columns to a
+single column and fetch each group values under group specific columns.
+Each group column must be appropriately named after group. We can do
+this with tidyverse (with tidyr) libraries as follows. Before loading data, let us load the R libraries.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="now-let-us-load-the-data">Now let us load the data.</h3>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="o">=</span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"../_data/collapse_two_columns_example.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">"\t"</span><span class="p">,</span><span class="w"> </span><span class="n">strip.white</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="let-us-look-at-the-loaded-data">Let us look at the loaded data</h3>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   Name Group.1 Name.1 Group.2 Name.2 Group.3
+## 1    A       2      A       1      A       4
+## 2    B       4      B       2      B       7
+## 3    C       7      C       4      I       6
+## 4    D       6      D       7      D       4
+## 5    E       4      F       6      M       9
+## 6           NA      H       4             NA
+</code></pre></div></div>
+
+<h3 id="now-let-us-clean-the-data">Now let us clean the data.</h3>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">rename_at</span><span class="p">(</span><span class="n">vars</span><span class="p">(</span><span class="n">starts_with</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">)),</span><span class="w"> </span><span class="o">~</span><span class="n">paste</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="p">(</span><span class="n">ncol</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">/</span><span class="m">2</span><span class="p">)),</span><span class="n">sep</span><span class="o">=</span><span class="s2">"."</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">everything</span><span class="p">(),</span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">".value"</span><span class="p">,</span><span class="w"> </span><span class="s2">"set"</span><span class="p">),</span><span class="n">names_pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"(\\D+)(\\d)"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">drop_na</span><span class="p">()</span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pivot_wider</span><span class="p">(</span><span class="n">names_from</span><span class="o">=</span><span class="s2">"set"</span><span class="p">,</span><span class="w"> </span><span class="n">values_from</span><span class="o">=</span><span class="s2">"Group."</span><span class="p">,</span><span class="w"> </span><span class="n">names_prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Group."</span><span class="p">,</span><span class="w"> </span><span class="n">values_fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">arrange</span><span class="p">(</span><span class="n">Name.</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## # A tibble: 9 x 4
+##   Name. Group.1 Group.2 Group.3
+##   &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;
+## 1 A           2       1       4
+## 2 B           4       2       7
+## 3 C           7       4       0
+## 4 D           6       7       4
+## 5 E           4       0       0
+## 6 F           0       6       0
+## 7 H           0       4       0
+## 8 I           0       0       6
+## 9 M           0       0       9
+</code></pre></div></div>
+
+<p>Data cleaning would do following steps:</p>
+<ol>
+  <li>Renames the columns starting with “Name” to Name.1, Name.2, Name.3 to match with group names</li>
+  <li>Includes following steps
+    <ol>
+      <li>Breaks the column names into two patterns (non-digital (\D+) and digital (\d))</li>
+      <li>First part of the pattern (\D+) will hold original column values and second part of the pattern (\d) will be stored in column named “set”</li>
+      <li>Convert the data to longer format with input arguments</li>
+    </ol>
+  </li>
+  <li>Remove empty rows</li>
+  <li>Convert long data to wider format and replace empty values (NA) with 0.</li>
+  <li>Sort the data frame by Name. column</li>
+</ol>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/tidy-pivot-longer-matching-pairs-of" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/annotate-text-file-with-dbsnp-reference" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

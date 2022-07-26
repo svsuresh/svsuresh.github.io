@@ -1,0 +1,151 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div dir="ltr" style="text-align: justify;" trbidi="on">
+With NGS, sequence files (fasta format) have become large and parsing fasta file for sequences within, has become easier with faidx implemented in samtools. In this page, seqkit and kentutils are used most. They can be downloaded from <a href="http://bioinf.shenwei.me/seqkit/download/" target="_blank">here</a> and<a href="https://github.com/ENCODE-DCC/kentUtils" target="_blank"> here</a>.<br />
+<br />
+Following are the steps to extract a region of interest from huge fasta (with .fasta/.fa extension) file (in GNU-linux)<br />
+<br />
+1)&nbsp; Index fasta file with samtools<br />
+<br />
+Command line: <b>$ samtools&nbsp; faidx &lt;reference file&gt;</b> <br />
+Example: <b>$ samtools&nbsp; faidx ref.fa</b><br />
+<br />
+2) To view the indexed files, list the files in the directory. A new file with .fai extension should be available along with original file<br />
+<br />
+For eg. If supplied reference file (ref.fa in above example) has .fa as extension, user should see a new file with .fai extension (example file that is created new: ref.fa.fai)<br />
+<br />
+3) Extract the sequence of your interest with following command:<br />
+<br />
+Command line: $ <b>samtools faidx &lt;reference&gt; &lt;region of interest&gt;</b><br />
+Example code: <b>$ samtools faidx ref.fa chr17:7668401-7687549</b> (for extracting TP53 sequence from ref.fa. Example ref.fa is hg19)<br />
+<br />
+Make sure that fasta headers (chromosome/contigs)&nbsp; match while querying indexed fasta. If fasta file has chromosome name as chr17 (in the header), then use the same while extracting regions of interest. If fasta file has only chromosome number in header, change the query as per the chromosome header. The same would apply for <br />
+<br />
+Example code:<br />
+<br />
+1) <b>$ samtools faidx ref.fa chr17:7668401-7687549</b> (If chromosome headers start with &gt;chr17 heading)<br />
+2) <b>$ samtools faidx ref.fa 17:7668401-7687549</b> (If chromosome headers start with &gt;17 heading)</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52918388-1', 'auto');
+  ga('send', 'pageview');
+
+</script>4) Count the sequences in fasta file: Let us assume that there are several fasta sequences in file and you would like to count the number of sequences within the file</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Example fasta can be downloaded <a href="https://drive.google.com/open?id=0B0MpwluEDxNudkFxX1htVWxzVU0" target="_blank">here</a>. This fasta file has two sequences in it and is named as test2.fa</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+code: <b>$ seqkit seq test2.fa -n | wc -l</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+this would print the number of fasta sequences in the file</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+5) Print the sequence names within a fasta file</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+code: <b>$ seqkit seq test2.fa -n</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+This would print all the lines with &gt;. This would equal to the number of sequences in&nbsp; fasta file</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+6) Count the bases in fasta file</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+code: <b>$ faCount test2.fa</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+This would print number of A,T,G,C,N and CpG islands in a given sequence. For above example it would be:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+#seq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; len&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; G&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpg</div>
+<div style="text-align: justify;">
+GQ118297.1&nbsp;&nbsp;&nbsp; 496&nbsp;&nbsp;&nbsp; 183&nbsp;&nbsp;&nbsp; 48&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 89&nbsp;&nbsp;&nbsp; 176&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7</div>
+<div style="text-align: justify;">
+GQ118277.1&nbsp;&nbsp;&nbsp; 697&nbsp;&nbsp;&nbsp; 175&nbsp;&nbsp;&nbsp; 154&nbsp;&nbsp;&nbsp; 180&nbsp; 177&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp; 47</div>
+<div style="text-align: justify;">
+total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1193&nbsp;&nbsp; 358&nbsp;&nbsp;&nbsp; 202&nbsp;&nbsp;&nbsp; 269&nbsp; 353&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp; 54</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+faCount is part of UCSC kentutils</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+6) Average size of the sequence in a file with multiple fasta sequences</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+code: <b>$ seqkit stats test2.fa</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+This would print statistics of the fasta file. For example above (test2.fa), output would be:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+file&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; format&nbsp; type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; num_seqs&nbsp; sum_len&nbsp; min_len&nbsp; avg_len&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max_len</div>
+<div style="text-align: justify;">
+test2.fa&nbsp; FASTA&nbsp;&nbsp; DNA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,193&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 496&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 596.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 697</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Same can be done with faSize from kentutils.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Code:<b> $ faSize test2.fa</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+7) Search for a pattern in a fasta file</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+code: <b>$ seqkit locate -idp TATATGA test2.fa</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+In the above example, i am searching for a small motif (TATATGA) in test2.fa.Code includes ignore case, degenerate bases and pattern options. Ignore case ignores the case, degenerate bases look for degenerate bases at any given position and pattern tells the program that this is the pattern (TATATGA) i am looking for.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+8) Search for a patten in a fasta file and identify the gene in which the patten is located</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<code class=" language-bash">code:</code></div>
+<div style="text-align: justify;">
+<b>$ seqkit locate -i -p ccttctctgggccttgatttcccctcctgc chr12.fa --bed  <br />| bedtools intersect -a - -b ../reference/chr12/genes_chr12.gtf -wb</b></div>
+<div style="text-align: justify;">
+<pre class="pre language-bash"><code class=" language-bash">&nbsp;</code></pre>
+This code is looking for a pattern in human chromosome 12 (fa file) in first part<br />and in second part this code is intersecting gtf file with genes and exons obtained from UCSC and the pattern is (ccttctctgggccttgatttcccctcctgc). Output is:<br /><pre class="pre language-bash"><code class=" language-bash">
+</code></pre>
+chr12 186551 186581 ccttctctgggccttgatttcccctcctgc 0 + chr12 unknown exon 
+186542 186878 . + . gene_id "IQSEC3"; gene_name "IQSEC3"; p_id "P13619"; 
+transcript_id "NM_015232"; tss_id "TSS12565"; (in a single line)<br /><br />9) Extract only first 10 bases from fasta</div>
+<div style="text-align: justify;">
+<b>code: $ seqkit subseq -r 1:10 test2.fa</b><b><span itemscope="" itemtype="http://schema.org/Question"></span></b></div>
+<pre class="pre language-bash"><b><span itemscope="" itemtype="http://schema.org/Question"><b><span itemscope="" itemtype="http://schema.org/Question">
+</span></b></span></b></pre>
+</div>

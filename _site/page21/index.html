@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/split_fasta_by_header_regex">Aug 9, 2021 - Split fasta file into multiple files based on partial headers</a></h1>
+            <div class="post-content">
+            <p>There are times where one needs to split fasta file based on header information. However, let us say we need to split the fasta file based on regex, it needs either special tools like <code class="language-plaintext highlighter-rouge">seqkit</code> or some creating thinking in <code class="language-plaintext highlighter-rouge">awk</code>. Let us do this in awk and then in seqkit. Let us take an example of a fasta file with sequences in single line.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>test.fa 
+
+<span class="o">&gt;</span>seq1_test
+atgc
+<span class="o">&gt;</span>seq2_test
+acgat
+<span class="o">&gt;</span>seq3_test
+cgtc
+<span class="o">&gt;</span>seq1_test
+cgatgc
+
+</code></pre></div></div>
+
+<p>Requirements to split this fasta file into 3 fasta files based on first 3 letters of the headers (seq1,seq2, seq3). Let us do this in awk:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$awk</span> <span class="nt">-F</span> <span class="s1">'[&gt;_]'</span> <span class="s1">'/&gt;/{getline seq; print $0"\n"seq &gt; $2".fa"}'</span> test.fa
+
+</code></pre></div></div>
+
+<p>Now you should see three files in current folder wherever test.fa is located. One of the short comings of this program it doesn’t work on multiline sequences. Ofcourse, you can use another awk command to flatten sequence (from multiline to single line). Instead of that, we can use <code class="language-plaintext highlighter-rouge">seqkit</code>. Let us a take a multiline fasta file and use seqkit to split into multiple fastas:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$cat</span> test.fa 
+<span class="o">&gt;</span>seq1_test
+atgc
+<span class="o">&gt;</span>seq2_test
+acgat
+cgt
+<span class="o">&gt;</span>seq3_test
+cgtc
+<span class="o">&gt;</span>seq1_test
+cgatgc
+catc
+ct
+
+</code></pre></div></div>
+
+<p>Let us use seqkit to do the job:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$seqkit</span> <span class="nt">-w</span> 0 <span class="nb">split</span> <span class="nt">-i</span> <span class="nt">--id-regexp</span> <span class="s1">'(^[A-Z]{3})_*'</span> test.fa <span class="nt">-O</span> new_files
+
+</code></pre></div></div>
+
+<p>This would created 3 files in a folder named <code class="language-plaintext highlighter-rouge">new_files</code>. I prefer seqkit over awk for this kind of operations as it supports regex separately two components of fasta format (header, sequence)</p>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+              
+                <a class="btn btn-default" href="/add_filenames_to_all_the_columns_in_bulk" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+
+<div class="pagination">
+  
+      
+        <a class="btn btn-default" href="/page20" class="previous">Newer</a>
+      
+  
+</div>

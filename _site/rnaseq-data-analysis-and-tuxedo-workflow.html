@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/rnaseq-data-analysis-and-tuxedo-workflow">Sep 5, 2015 - RNAseq data analysis and Tuxedo workflow </a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+One of the popular RNAseq data analysis workflow is Tuxedo workflow. This includes tophat (alignment), cufflinks (differential expression calculation for each transcriptional feature defined in reference file) and cummerbund (R package for visualization of data).&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Tophat is a wrapper on "bowtie" aligner and supports both bowtie 1 and 2 versions. There are several options to fine tune the alignment and detailed options can be found <a href="https://ccb.jhu.edu/software/tophat/index.shtml" target="_blank">here</a>.&nbsp; Default options in Tophat are tailored for mammalian (mostly human) data&nbsp; analysis.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Next step post alignment is to feed&nbsp; tophat output (accepted_hits.bam) to cufflinks. Cufflinks is a suite of programs (when installed) that offers several independent steps. Cufflinks ( a program within cufflinks suite) does transript assembly (reference based). Cuffcompare allows the user to compare the assembled transcripts across samples with a known transcriptome (standard). Cuffcompare is an independent step and can be skipped if user decides to go forward with the results from cufflinks. Cuffmerge merges all the transcripts across all samples to build a master transcriptome (in addition to reference transcriptome provided by user) and this would be helpful in estimation of DE by cuffdiff. Cuffdiff involves quantification of expression levels (for gene, cds and exon), followed by comparison. Since quantification is computationally intensive, cuffquant is introduced to make quantification independent and for the ease of execution on cluster/cloud environments. One can skip cuffquant if there are no limitations on computational resources. Cuffnorm is recently introduced and so far literature is not available on its inner working. Hence at this point, it is better to avoid it. Cuffdiff program produces several output files and all the output files are well explained here (http://cole-trapnell-lab.github.io/cufflinks/cuffdiff/index.html). Since most of them are text files user can outright dive into results. However, a R program provided by same group allows the user to dissect and visualize results better. <br />
+<br />
+Note provided here a bash script for entire tuxedo suite workflow (Tophat----&gt; cufflinks-----&gt;cummerbund) embedding R script for visualization and extraction of significant genes/transcripts. Tuxedo workflow is summarized below:</div>
+<div style="text-align: justify;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-ArLC4wc23iE/VdDZG-kPRSI/AAAAAAAAAVc/CGg0trbJSow/s1600/RNAseq_p3%25281%2529.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="355" src="http://3.bp.blogspot.com/-ArLC4wc23iE/VdDZG-kPRSI/AAAAAAAAAVc/CGg0trbJSow/s640/RNAseq_p3%25281%2529.png" width="640" /></a></div>
+<div style="text-align: justify;">
+<br />
+There are certain steps that one can skip in tuxedo workflow. If one has defined transcriptome or into targeted sequencing such as panels, one need not go for cufflinks, cuffmerge steps. Please note that currently, panels are limited to WES or GWAS sequencing. Soon RNAseq panels may be used for clinical diagnosis. Cuffcompare can be skipped if user doesn't wish to compare sample transcriptomes. Cuffquant can be skipped, if user has no limitations on computational resources (and has enough time).</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Workflow in current note follows steps given below:</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-eMFhKnrhPWA/VekR2wzY8TI/AAAAAAAAAXI/OVzRellwKS4/s1600/tuxedoworkflow_RNAseq.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="320" src="http://1.bp.blogspot.com/-eMFhKnrhPWA/VekR2wzY8TI/AAAAAAAAAXI/OVzRellwKS4/s640/tuxedoworkflow_RNAseq.png" width="640" /></a></div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+<br />
+Original files&nbsp; including raw reads (two groups: MeOH and R3H paired end
+ reads, with 3 replicates), reference gtf and reference fasta can be 
+downloaded <a href="https://test.galaxyproject.org/u/galaxyproject/h/cam-rna-seq-day-1" target="_blank">here</a>.<br />
+<br />
+Download the raw files (12 fastqc files in total) and store them in a 
+folder titled "raw_reads". Download fasta and gtf file and store them in
+ a folder titled "reference". Run the following script. Please keep the r
+ script file, raw_files folder and reference folder, in a single folder 
+and run the script. Please note that I haven't used threads or core 
+options for each program. <br />
+Please note that this a demo pipeline and user can customize as per individual data requirements. Cummerbund (R) allows user to dissect the several ways. R script provided here is a modified R script provided by package. R script is divided into 4 sections, major: 1) Operations on all the features (genes, TSS, CDS and isoforms) 2) Images and plots for all the features 3) Operations for few selected genes (user selected and top significant) 4) operations on random single gene. At the end, save the user workspace.<br />
+<br />
+bash script for tuxedo workflow: (please note that I haven't used threads/cores option in any of the commands. Please use them as per hardware available)<br />
+<br />
+==============================<br />
+Tuxedo workflow - script begins here<br />
+==============================<br />
+##Condition for each sample<br />
+for i in $(ls ./raw_reads | grep ^[^d]| rev | cut -c 10- | rev | uniq)<br />
+do <br />
+<br />
+# Make direcotry for fastqc<br />
+#mkdir -p ${i%}_fastqc<br />
+<br />
+# Run fastqc<br />
+#fastqc -o ./${i%}_fastqc -f fastq /home/suresh/rnaseq/raw_reads/${i%}_R1.fastq /home/suresh/rnaseq/raw_reads/${i%}_R2.fastq<br />
+<br />
+# Make directory to store cutadapt results<br />
+#mkdir -p cutadapt<br />
+<br />
+#Run cutadapt<br />
+#cutadapt -a AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATC --quality-cutoff=20 --format=fastq -o ./cutadapt/${i%}_R1.cutadapt.fastq -p ./cutadapt/${i%}_R2.cutadapt.fastq /home/suresh/rnaseq/raw_reads/${i%}_R1.fastq /home/suresh/rnaseq/raw_reads/${i%}_R2.fastq<br />
+<br />
+# Run top hat and save the out with directory extension _tophatout<br />
+#tophat2 --no-update-check --no-coverage-search -o ./${i%}_tophat_out -G ./reference/genes_chr12.gtf -p 2 ./reference/chr12 ./cutadapt/${i%}_R1.cutadapt.fastq ./cutadapt/${i%}_R2.cutadapt.fastq --rg-id ${i} --rg-sample ${i%} --rg-library rna-seq --rg-platform Illumina<br />
+<br />
+# Index the bam<br />
+#samtools index ./${i%}_tophat_out/accepted_hits.bam<br />
+<br />
+# Collect the stats<br />
+#samtools flagstat ./${i%}_tophat_out/accepted_hits.bam &gt; ./${i%}_tophat_out/accepted_hits.flastats<br />
+<br />
+#Sort bam <br />
+#samtools sort&nbsp; -T /tmp/align.bam ./${i%}_tophat_out/accepted_hits.bam -o ./${i%}_tophat_out/accepted_hits.pos.sorted.bam&nbsp; <br />
+<br />
+# Cufflinks to aseemble transcripts and quantifies expressed features (genes, transcripts, TSS and CDS)<br />
+#cufflinks -g ./reference/genes_chr12.gtf ./${i%}_tophat_out/accepted_hits.pos.sorted.bam --no-update-check -b ./reference/chr12.fa -o ${i%}_cuff_out/ <br />
+<br />
+# Cuffcompare to generate comparable transcripts wrt reference transciptome<br />
+#mkdir -p MeOH_R3G_cuffcompare_out<br />
+<br />
+cuffcompare -o ./MeOH_R3G_cuffcompare_out/cuffcompare.out -r ./reference/genes_chr12.gtf -s ./reference/chr12.fa ${i%}_cuff_out transcripts.gtf<br />
+find | grep transcripts.gtf$ &gt; ./MeOH_R3G_cuffcompare_out/gtf.list<br />
+<br />
+# Cuffmerge to generate master transcriptome file for all the samples including matching reference transcriptome <br />
+mkdir -p .MeOH_R3G_cuffmerge_out/meoh_r3g<br />
+cuffmerge -o ./MeOH_R3G_cuffmerge_out/meoh_r3g -g ./MeOH_R3G_cuffcompare_out/cuffcompare.combined.gtf -s ./reference/chr12.fa ./MeOH_R3G_cuffcompare_out/gtf.list<br />
+<br />
+# Cuffquant to quantify the counts<br />
+#cuffquant -o ./MeOH_R3G_cuffquant_out/ -p 2 --no-update-check -u -b ./reference/chr12.fa ./MeOH_R3G_cuffmerge_out/meoh_r3g/merged.gtf <br />
+<br />
+# Cuffdiff to output differential expression <br />
+mkdir -p MeOH_R3G_cuffdiff_out<br />
+cuffdiff -L MeOH,R3G --multi-read-correct --no-update-check --FDR 0.1 -b ./reference/chr12.fa ./MeOH_R3G_cuffcompare_out/cuffcompare.combined.gtf -o ./MeOH_R3G_cuffdiff_out&nbsp; ./MeOH_REP1_tophat_out/accepted_hits.pos.sorted.bam,./MeOH_REP2_tophat_out/accepted_hits.pos.sorted.bam,./MeOH_REP3_tophat_out/accepted_hits.pos.sorted.bam ./R3G_REP1_tophat_out/accepted_hits.pos.sorted.bam,./R3G_REP2_tophat_out/accepted_hits.pos.sorted.bam,./R3G_REP3_tophat_out/accepted_hits.pos.sorted.bam<br />
+<br />
+done<br />
+<br />
+# Cummerbund script<br />
+Rscript cummerbund.R<br />
+<br />==================================================<br />
+tuxedo workflow script ends here<br />
+==================================================</div>
+<div style="text-align: justify;">
+<br />Please note that cuffquant command is muted as it is not mandatory step in work flow, in this example. R script, "cummerbund.R" ( a modified R script based on R script provided cummeRbund package)<br />
+<br />
+==================================================<br />
+cummerbund.R script starts here<br />
+==================================================<br />
+<br />rm(list=ls())<br />
+library(cummeRbund)<br />
+#-------------------------------<br />
+#read cufflinks files<br />
+#-------------------------------<br />
+setwd("./MeOH_R3G_cuffdiffout")<br />
+getwd()<br />
+cuff&lt;-readCufflinks(gtfFile="../MeOH_R3G_cuffcompare_out/cuffcompare.combined.gtf", genome="hg19", rebuild=T)<br />
+#------------------------------<br />
+#Information about data<br />
+#-------------------------------<br />
+runInfo(cuff)<br />
+replicates(cuff)<br />
+sample.names&lt;-samples(genes(cuff))<br />
+<br />
+######All genes/isoforms/TSS/CDS operations################<br />
+<br />
+#-----------------------------<br />
+#Calculate fpkm density distribution for genes for each group<br />
+#-----------------------------<br />
+g.dens&lt;-csDensity(genes(cuff))<br />
+#-----------------------------<br />
+#Calculate fpkm density distribution for genes in each replicate in each group<br />
+#-----------------------------<br />
+r.g.dens&lt;-csDensity(genes(cuff),replicates=T)<br />
+#-----------------------------<br />
+#Extract annotations for genes in cuff class<br />
+#-----------------------------<br />
+annot.g.c&lt;-annotation(genes(cuff))<br />
+head(annot.g.c)<br />
+#-----------------------------<br />
+#Extract FPKM values for genes in cuff class<br />
+#-----------------------------<br />
+fpkm.g&lt;-fpkm(genes(cuff))<br />
+head(gene.fpkm)<br />
+#-----------------------------<br />
+#Extract FPKM values for isoforms in cuff class<br />
+#-----------------------------<br />
+fpkm.iso&lt;-fpkm(isoforms(cuff))<br />
+head(fpkm.iso)<br />
+#-----------------------------<br />
+#Extract replicate FPKM values for genes in cuff class<br />
+#-----------------------------<br />
+r.gene.repFpkm&lt;-repFpkm(genes(cuff))<br />
+head(gene.repFpkm)<br />
+#-----------------------------<br />
+#Extract gene counts in cuff class<br />
+#-----------------------------<br />
+gene.counts&lt;-count(genes(cuff))<br />
+head(gene.counts)<br />
+#-----------------------------<br />
+# Extract differntially regulated genes in cuff class<br />
+#-----------------------------<br />
+gene.diff&lt;-diffData(genes(cuff))<br />
+head(gene.diff)<br />
+#--------------------------------------------------<br />
+# Extract features available for genes in cuff class db<br />
+#--------------------------------------------------<br />
+gene.featurenames&lt;-featureNames(genes(cuff))<br />
+head(gene.featurenames)<br />
+#--------------------------------------------------<br />
+# Extract gene fpkm and store it as a matrix for all groups<br />
+#--------------------------------------------------<br />
+gene.matrix&lt;-fpkmMatrix(genes(cuff))<br />
+head(gene.matrix)<br />
+#--------------------------------------------------<br />
+# Extract gene fpkm and store it as a matrix for all replicates in groups<br />
+#--------------------------------------------------<br />
+gene.rep.matrix&lt;-repFpkmMatrix(genes(cuff))<br />
+head(gene.rep.matrix)<br />
+#--------------------------------------------------<br />
+# Extract normalized counts for genes and store as a matrix for all groups<br />
+#--------------------------------------------------<br />
+gene.count.matrix&lt;-countMatrix(genes(cuff))<br />
+head(gene.count.matrix)<br />
+<br />
+###############Plots and images##########################<br />
+<br />
+#--------------------------------------------------<br />
+# Calculate heatmap distance for all the genes <br />
+#--------------------------------------------------<br />
+DistHeat&lt;-csDistHeat(genes(cuff))<br />
+print(DistHeat)<br />
+#--------------------------------------------------<br />
+# Calculate heatmap distance for all the genes for all replicates<br />
+#--------------------------------------------------<br />
+RepDistHeat&lt;-csDistHeat(genes(cuff),replicates=T)<br />
+print(RepDistHeat)<br />
+#--------------------------------------------------<br />
+# Plot component 1 and 2 in PCA plot for the genes<br />
+#--------------------------------------------------<br />
+genes.PCA&lt;-PCAplot(genes(cuff),"PC1","PC2")<br />
+print(genes.PCA)<br />
+#--------------------------------------------------<br />
+# Plot component 1 and 2 in PCA plot for the genes for all the replicates<br />
+#--------------------------------------------------<br />
+genes.PCA.rep&lt;-PCAplot(genes(cuff),"PC1","PC2",replicates=T)<br />
+print(genes.PCA.rep)<br />
+#--------------------------------------------------<br />
+# MDS Plot for the genes <br />
+#--------------------------------------------------<br />
+genes.MDS&lt;-MDSplot(genes(cuff),2)<br />
+print(genes.MDS)<br />
+#--------------------------------------------------<br />
+# MDS Plot for the genes for all replicates<br />
+#--------------------------------------------------<br />
+genes.MDS.rep&lt;-MDSplot(genes(cuff),replicates=T)<br />
+print(genes.MDS.rep)<br />
+#-------------------------------------<br />
+# Dispersion plot<br />
+#------------------------------------- <br />
+disp.plot&lt;-dispersionPlot(genes(cuff))<br />
+png("../cummerbund/dispersionplot.png")<br />
+disp.plot<br />
+dev.off()<br />
+#-------------------------------------<br />
+# Squared coefficient of variance plots for genes<br />
+#-------------------------------------<br />
+<br />
+genes.scv&lt;-fpkmSCVPlot(genes(cuff))<br />
+png("../cummerbund/genescv.png")<br />
+genes.scv<br />
+dev.off()<br />
+<br />
+#-------------------------------------<br />
+# Squared coefficient of variance plots for isoforms<br />
+#-------------------------------------<br />
+<br />
+isoforms.scv&lt;-fpkmSCVPlot(isoforms(cuff))<br />
+png("../cummerbund/isoformscv.png")<br />
+isoforms.scv<br />
+dev.off()<br />
+#-------------------------------------<br />
+# Plot FPKM densities for genes for each sample group<br />
+#-------------------------------------<br />
+png("../cummerbund/genedensity.png")<br />
+g.dens<br />
+dev.off()<br />
+#------------------------------------- <br />
+# Plot FPKM densities for genes in each replicate<br />
+#-------------------------------------<br />
+png("../cummerbund/genedensity_replicates.png")<br />
+r.g.dens<br />
+dev.off()<br />
+#-------------------------------------<br />
+#Box plots for data distribution per group<br />
+#------------------------------------<br />
+b&lt;-csBoxplot(genes(cuff))<br />
+png("../cummerbund/boxplot.png")<br />
+b<br />
+dev.off()<br />
+#-------------------------------------<br />
+#Box plots for data distribution in all replicates<br />
+#------------------------------------<br />
+brep&lt;-csBoxplot(genes(cuff),replicates=T)<br />
+png("../cummerbund/boxplot_rep.png")<br />
+brep<br />
+dev.off()<br />
+#------------------------------------<br />
+#All groups against all Scatter plot for genes <br />
+#------------------------------------<br />
+s&lt;-csScatterMatrix(genes(cuff))<br />
+print(s)<br />
+png("../cummerbund/gene_scatterplotplot.png")<br />
+s<br />
+dev.off()<br />
+#------------------------------------<br />
+# Two groups against each other Scatter plot for genes <br />
+#------------------------------------<br />
+s&lt;-csScatter(genes(cuff),"MeOH","R3G",smooth=T)<br />
+s<br />
+png("../cummerbund/gene_scatterplotplot1.png")<br />
+s<br />
+dev.off()<br />
+#------------------------------------<br />
+# Dendrogram plot for each group <br />
+#------------------------------------<br />
+dend&lt;-csDendro(genes(cuff))<br />
+plot(dend)<br />
+#------------------------------------<br />
+# Dendrogram plot for all the replicates <br />
+#------------------------------------<br />
+dend.rep&lt;-csDendro(genes(cuff),replicates=T)<br />
+plot(dend.rep)<br />
+#------------------------------------<br />
+# Fold change (M) Vs Foldchange (A) plots for two groups<br />
+#------------------------------------<br />
+m&lt;-MAplot(genes(cuff),"MeOH","R3G")<br />
+m<br />
+#------------------------------------<br />
+# Fold change (M) Vs counts (A) plots for two groups <br />
+#------------------------------------<br />
+mCount&lt;-MAplot(genes(cuff),"MeOH","R3G",useCount=T)<br />
+mCount<br />
+#------------------------------------<br />
+# Fold change (M) Vs Pvalue (volcano) plots for all groups against all<br />
+#------------------------------------<br />
+v&lt;-csVolcanoMatrix(genes(cuff))<br />
+v<br />
+#------------------------------------<br />
+# Fold change (M) Vs Pvalue (volcano) plots for two groups<br />
+#------------------------------------<br />
+v&lt;-csVolcano(genes(cuff),"MeOH","R3G")<br />
+v<br />
+##########Filtered genes/isoforms/TSS/CDS operations########<br />
+<br />
+#--------------------------------------------------<br />
+# Extract significantly expressed genes <br />
+#--------------------------------------------------<br />
+SigTable&lt;-getSigTable(cuff,alpha=0.01,level='genes')<br />
+head(SigTable,20)<br />
+<br />
+#--------------------------------------------------<br />
+# Plot significant genes with 5% FDR across all groups<br />
+#--------------------------------------------------<br />
+SigMat&lt;-sigMatrix(cuff,level='genes',alpha=0.05)<br />
+print(SigMat)<br />
+#--------------------------------------------------<br />
+# Extract significant gene IDs with 5% FDR across all groups<br />
+#--------------------------------------------------<br />
+SigGeneIds&lt;-getSig(cuff,alpha=0.05,level='genes')<br />
+head(SigGeneIds)<br />
+length(SigGeneIds)<br />
+#--------------------------------------------------<br />
+# Extract significant genes using IDs with 5% FDR across all groups<br />
+#--------------------------------------------------<br />
+SigGenes&lt;-getGenes(cuff,SigGeneIds)<br />
+SigGenes<br />
+#--------------------------------------------------<br />
+# Extract significant isoform IDs with 5% FDR between two groups<br />
+#--------------------------------------------------<br />
+MeOH_vs_R3G.sigIsoformIds&lt;-getSig(cuff,x='MeOH',y='R3G',alpha=0.05,level='isoforms')<br />
+head(MeOH_vs_R3G.sigIsoformIds)<br />
+length(MeOH_vs_R3G.sigIsoformIds)<br />
+<br />
+##########Selected genes/isoforms/TSS/CDS operations############<br />
+<br />
+#--------------------------------------------------<br />
+# Extract first 20 genes with 5% FDR between two groups<br />
+#--------------------------------------------------<br />
+head(SigGeneIds,20)<br />
+myGeneIds&lt;-head(SigGeneIds,20)<br />
+myGeneIds<br />
+myGenes&lt;-getGenes(cuff,myGeneIds)<br />
+myGenes<br />
+#--------------------------------------------------<br />
+# Extract genes between two conditions<br />
+#--------------------------------------------------<br />
+myGeneset.pluri&lt;-getGenes(cuff,myGeneIds,sampleIdList=c("MeOH","R3G"))<br />
+myGeneset.pluri<br />
+#--------------------------------------------------<br />
+# Extract gene FPKM values for first 20 genes with 5% FDR between two groups<br />
+#--------------------------------------------------<br />
+#FPKM values for genes in gene set<br />
+head(fpkm(myGenes))<br />
+#--------------------------------------------------<br />
+# Extract isoform FPKM values for first 20 genes with 5% FDR between two groups<br />
+#--------------------------------------------------<br />
+head(fpkm(isoforms(myGenes)))<br />
+#--------------------------------------------------<br />
+# Extract TSS FPKM values for first 20 genes with 5% FDR between two groups for all replicates<br />
+#--------------------------------------------------<br />
+head(repFpkm(TSS(myGenes)))<br />
+#--------------------------------------------------<br />
+# Heatmap for gene FPKMs for two groups<br />
+#--------------------------------------------------<br />
+h&lt;-csHeatmap(myGenes,cluster='both')+theme_bw()<br />
+h<br />
+#--------------------------------------------------<br />
+# Heatmap for gene FPKMs for all replicates within groups<br />
+#--------------------------------------------------<br />
+h.rep&lt;-csHeatmap(myGenes,cluster='none',replicates=T)+theme_bw()<br />
+h.rep<br />
+#--------------------------------------------------<br />
+# Bar plot for selected differentially expressed genes<br />
+#--------------------------------------------------<br />
+b&lt;-expressionBarplot(myGenes)<br />
+b<br />
+#--------------------------------------------------<br />
+# Scatter plot for selected differentially expressed genes<br />
+#--------------------------------------------------<br />
+s&lt;-csScatter(myGenes,"MeOH","R3G",smooth=T)<br />
+s<br />
+#--------------------------------------------------<br />
+# Volcano plot for selected differentially expressed genes<br />
+#--------------------------------------------------<br />
+v&lt;-csVolcano(myGenes,"MeOH","R3G")<br />
+v<br />
+#--------------------------------------------------<br />
+# Heatmap for isoforms from selected differentially expressed genes<br />
+#--------------------------------------------------<br />
+ih&lt;-csHeatmap(isoforms(myGenes),cluster='both',labRow=F)<br />
+ih<br />
+#--------------------------------------------------<br />
+# Heatmap for TSS from selected differentially expressed genes<br />
+#--------------------------------------------------<br />
+th&lt;-csHeatmap(TSS(myGenes),cluster='both',labRow=F)<br />
+th<br />
+#--------------------------------------------------<br />
+# Dendrogram plot for selected differentially expressed genes<br />
+#--------------------------------------------------<br />
+den&lt;-csDendro(myGenes)<br />
+plot(den)<br />
+#--------------------------------------------------<br />
+# Calcualte partitions using K-means clustering for selected genes <br />
+#--------------------------------------------------<br />
+ic&lt;-csCluster(myGenes,k=4)<br />
+head(ic$cluster)<br />
+#--------------------------------------------------<br />
+# Plot partitions using K-means clustering for selected genes <br />
+#--------------------------------------------------<br />
+icp&lt;-csClusterPlot(ic)<br />
+icp<br />
+#--------------------------------------------------<br />
+# Calcualte condition specificity for selected genes <br />
+#--------------------------------------------------<br />
+myGenes.spec&lt;-csSpecificity(myGenes)<br />
+head(myGenes.spec)<br />
+<br />
+#########Single gene/isoform/TSS/CDS operations#########################<br />
+<br />
+#--------------------------------------------------<br />
+# Extract information for a single gene<br />
+#--------------------------------------------------<br />
+myGeneId&lt;-"KLRD1"<br />
+myGene&lt;-getGene(cuff,myGeneId)<br />
+#--------------------------------------------------<br />
+# View available information for a stored single gene information<br />
+#--------------------------------------------------<br />
+View(features(myGene))<br />
+head(features(myGene))<br />
+#--------------------------------------------------<br />
+# View first few FPKM values for selected gene and isoforms within that gene<br />
+#--------------------------------------------------<br />
+head(fpkm(myGene))<br />
+head(fpkm(isoforms(myGene)))<br />
+#--------------------------------------------------<br />
+# Plot expression for the selected gene<br />
+#--------------------------------------------------<br />
+gl&lt;-expressionPlot(myGene)<br />
+gl<br />
+#--------------------------------------------------<br />
+# Plot expression for the selected gene in all replicates<br />
+#--------------------------------------------------<br />
+gl.rep&lt;-expressionPlot(myGene,replicates=TRUE)<br />
+gl.rep<br />
+#--------------------------------------------------<br />
+# Plot expression for isoforms within selected gene in all replicates<br />
+#--------------------------------------------------<br />
+gl.iso.rep&lt;-expressionPlot(isoforms(myGene),replicates=T)<br />
+gl.iso.rep<br />
+#--------------------------------------------------<br />
+# Plot expression for isoforms within selected gene in all replicates<br />
+#--------------------------------------------------<br />
+gl.cds.rep&lt;-expressionPlot(CDS(myGene),replicates=T)<br />
+gl.cds.rep<br />
+#--------------------------------------------------<br />
+# Expression barplot for selected gene <br />
+#--------------------------------------------------<br />
+gb&lt;-expressionBarplot(myGene)<br />
+gb<br />
+#--------------------------------------------------<br />
+# Expression barplot for selected gene in all replicates<br />
+#--------------------------------------------------<br />
+gb.rep&lt;-expressionBarplot(myGene,replicates=T)<br />
+gb.rep<br />
+#--------------------------------------------------<br />
+# Expression barplot for isoforms within selected gene in all replicates<br />
+#--------------------------------------------------<br />
+igb&lt;-expressionBarplot(isoforms(myGene),replicates=T)<br />
+igb<br />
+#--------------------------------------------------<br />
+# Piechart for isoforms in selected gene <br />
+#--------------------------------------------------<br />
+gp&lt;-csPie(myGene,level="isoforms")<br />
+gp<br />
+<br />
+#---------------------------------------<br />
+#Extract similarly expressed genes that are similar to user defined gene <br />
+#---------------------------------------<br />
+mySimilar&lt;-findSimilar(cuff,"ALKBH2",n=20)<br />
+mySimilar.expression&lt;-expressionPlot(mySimilar,logMode=T,showErrorbars=F)<br />
+print(mySimilar.expression)<br />
+#---------------------------------------<br />
+#Extract similarly expressed genes that are similar to user defined profile <br />
+#---------------------------------------<br />
+myProfile&lt;-c(500,0,400)<br />
+mySimilar2&lt;-findSimilar(cuff,myProfile,n=10)<br />
+mySimilar2.expression&lt;-expressionPlot(mySimilar2,logMode=T,showErrorbars=F)<br />
+print(mySimilar2.expression)<br />
+<br />
+#------------------<br />
+# Disconnect cuff database that is been in use (only at the end)<br />
+#------------------<br />
+end&lt;-dbDisconnect(cuff@DB)<br />
+dbConnect(cuff@DB)<br />
+<br />
+#--------------------------------<br />
+# Print loaded packages and their versions used in this analysis<br />
+#---------------------------------<br />
+sessionInfo()<br />
+save.image("cummerbund.Rdata")<br />
+==============================================================<br />
+cummerbund.R script ends here<br />
+==============================================================</div>
+<div style="text-align: justify;">
+Few of the plots are collated here:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-Qs3H9hSE5lI/VeszxF-FscI/AAAAAAAAAXw/w0kHtBXwjVw/s1600/drawing.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="451" src="http://1.bp.blogspot.com/-Qs3H9hSE5lI/VeszxF-FscI/AAAAAAAAAXw/w0kHtBXwjVw/s640/drawing.png" width="640" /></a></div>
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/convert-vcf-chrom-column-from-hgxx" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/rna-seq-data-analysis-tophat-htseq-and" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

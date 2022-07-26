@@ -1,0 +1,18 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: left;">
+<span style="font-family: &quot;arial&quot; , &quot;helvetica&quot; , sans-serif;">Let us say you have a gtf file downloaded from UCSC or any other source and you would like to split the gtf file by chromosome. Assuming that first column is represented by chromosome and name for each chromosome is chr1, chr2, chr3 and so on so forth. Let us do this in awk and parallel.&nbsp;</span></div>
+<div style="text-align: left;">
+<span style="font-family: &quot;arial&quot; , &quot;helvetica&quot; , sans-serif;"><br /></span></div>
+<div style="text-align: left;">
+<span style="font-family: &quot;arial&quot; , &quot;helvetica&quot; , sans-serif;">In awk:</span></div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+<span style="font-family: &quot;arial&quot; , &quot;helvetica&quot; , sans-serif;">$ awk '{print &gt;$1".bed"}' </span></div>
+<div style="text-align: left;">
+<span style="font-family: &quot;arial&quot; , &quot;helvetica&quot; , sans-serif;"><br /></span></div>
+In parallel:<br />
+$ (seq 22);echo -e "x\ny"| parallel "grep -w chr{} test.bed &gt; chr{}.bed"<br />
+<br />
+Awk output will have same name as chromosome in first column. Parallel output will have chromosome and number in file names. <br />
+<br /></div>

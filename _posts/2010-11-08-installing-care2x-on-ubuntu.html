@@ -1,0 +1,34 @@
+---
+layout: post
+title: Installing Care2x on Ubuntu
+date: '2010-11-08T19:39:00.002+05:30'
+author: ssv
+tags:
+- care2x installation in linux
+modified_time: '2014-07-17T15:38:15.253+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8327946888063495415
+blogger_orig_url: https://digibio.blogspot.com/2010/11/installing-care2x-on-ubuntu.html
+---
+
+Care2x is a open source hospital information system software. For further information look at the available information at http://www.care2x.org/.<br />
+<br />
+Here, I describe how to install and get it working on a ubuntu system (Maverick 10.10).<br />
+<br />
+Few assumptions:<br />
+<ol><li>User knows running http daemons (here, we use lighttpd)</li>
+<li>Knows how to start and stop daemons including database and httpd</li>
+</ol>Procedure:<br />
+<br />
+<ol><li> Download latest build from http://sourceforge.net/projects/care2002/files/ (as of Nov 8, 2010, available version is Care2x-HIS-2.6.27). Save it to a place convenient to you on your&nbsp; (linux) system and extract it to a folder (probably to simpler&nbsp; named folder like care2x). </li>
+<li>Launch synaptic or&nbsp; package manager of your choice. Install following packages: lighttpd, php5-mysql, php5-gd,php5-common,php5-adodb, mysql 5.1 (server and client, both).</li>
+<li>Once you install all the packages above, check if your lighttpd is working. Go to http://localhost or http://127.0.0.1. It should display welcome page (titled "Place holder page"). If you do not see welcome page, see if daemon is running. httpd installation makes your system a webserver.</li>
+<li>Check if your mysql installation. If it is working, create a root user password and then create a user as a root. Create a database by name "create2x" and make the new user as administrator for this database. Allocating a new user for this database is for security purposes.</li>
+<li> Also check if your php installation is working.</li>
+<li>Now go to the folder, where care2x installation folder is located. Move it to either /opt or /var/www/. Edit lighttpd configuration file.(/etc/lighttpd/lighttpd.conf) to point to index.html of care2x installation folder.</li>
+<li> stop and restart the lighttpd and check if your server is working proper.</li>
+<li>Once you are sure that both daemons are up and followed the procedure above, now you are ready for installation.</li>
+<li>Change the permissions to 777 on care2x folder. </li>
+<li>Now launch your browser (chrome and firefox, both work) and point to http://localhost/installer (assuming that care2x folder is made root folder in lightttpd.conf).&nbsp;</li>
+<li>Now installation proceeds as shown on care2x website.&nbsp;</li>
+</ol>I will soon post the screenshots.<br />
+<br />

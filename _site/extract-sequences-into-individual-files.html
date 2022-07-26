@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/extract-sequences-into-individual-files">Dec 4, 2017 - Extract sequences and sequence headers into individual files from  fasta file</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+some times, simple things are difficult for beginners esp when documentation addresses high level functions and difficult examples than simple ones and simple work flows. Let us look at one such function with biopython/python. Our tasks are:<br />
+1)&nbsp; To extract all the sequences from fasta file and write each sequence into a file with fasta header as file name (without "&gt;").<br />
+2) Extract only headers (without "&gt;") into a separate file. This would give us all the sequence names in the fasta file. Consider following test file:<br />
+<br />
+Example fasta file (test.fa):<br />
+&nbsp;&gt;seq1<br />
+ATGCGGCGA<br />
+&gt;seq2<br />
+GACTACTA<br />
+<br />
+1) Extact each sequence into a file:<br />
+<br />
+Now we want to extract seq1 and seq2 sequences and store them into two files with seq1 and seq2 as file names. Below code works well with python 3&nbsp; and above and biopython 1.5 and above.<br />
+===========================================================<br />
+<span itemscope="" itemtype="http://schema.org/Question"></span><br />
+<pre class="pre language-bash"><code class=" language-bash">&gt;&gt;&gt; from Bio <span class="token function">import</span> SeqIO
+<span class="token keyword">&gt;&gt;&gt; for</span> seq <span class="token keyword">in</span> SeqIO.parse<span class="token punctuation">(</span><span class="token string">"test.fa"</span>, <span class="token string">"fasta"</span><span class="token punctuation">)</span>:
+    SeqIO.write<span class="token punctuation">(</span>seq,seq.id+<span class="token string">".fa"</span>,<span class="token string">"fasta"</span><span class="token punctuation">)</span></code></pre>
+============================================================<br />
+seqIO.write will take three options: what to write (here seq- each sequence), file name to write (seq.id - fasta sequence ID in testa.fa) and the format&nbsp; (fasta) here.<br />
+<br />
+Output:<br />
+<code class=" language-bash">============================= </code><br />
+<pre class="pre language-bash"><code class=" language-bash">$ <span class="token function">ls</span> seq*.fa
+seq1.fa  seq2.fa
+----
+$ <span class="token function">cat</span> seq1.fa 
+<span class="token operator">&gt;</span>seq1
+ATGCGGCGA
+$ <span class="token function">cat</span> seq2.fa 
+<span class="token operator">&gt;</span>seq2
+GACTACTA</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">============================</code></pre>
+<br />
+2) Extract all sequence names in a fasta file (i.e all those lines starting with &gt; and while extracting discard character "&gt;"):<br />
+<br />
+use the above fasta file and output file contains seq1 and se2<br />
+=====================================================<br />
+&gt;&gt;&gt; from Bio import SeqIO<br />
+&gt;&gt;&gt; from datetime import datetime<br />
+&gt;&gt;&gt; dnafile = open("ids_"+datetime.now().strftime("%Y%m%d_%H%M%S"+".txt"), "a")<br />
+&gt;&gt;&gt; for record in SeqIO.parse("test.fa","fasta"):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dnafile.write(record.id+"\n")<br />
+&gt;&gt;&gt; dnafile.close()<br />
+====================================================<br />
+<br />
+In file name (dnafile) above we have incorporate time stamp from the system. This is a simple precaution for not overwriting ids.txt.<br />
+<br />
+output:<br />
+=====================================<br />
+$ cat ids_20171204_162253.txt (20171204_162253= time stamp)<br />
+<br />
+seq1<br />
+seq2<br />
+======================================</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/pca-plot-with-rnaseq-counts-using" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/nucleotide-base-frequency-per-read-and" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

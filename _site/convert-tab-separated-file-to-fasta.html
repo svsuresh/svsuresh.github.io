@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/convert-tab-separated-file-to-fasta">Jul 3, 2018 - Convert tab separated file to fasta</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+There are simple tricks to convert text from one format to another. For eg in biology, fasta format is simplest text format with sequence name (ID) in first line, followed by sequence in next line.&nbsp; sequence name (ID) is identified by a forward arrow (&gt;) at the beginning of header line. There are age old awk and sed tricks to convert tab separated file to fasta and also well written tools (eg seqkit) to convert tab separated file to fasta. I am adding, GNU-parallel to that long list. Remember to convert tab separated file to fasta, one should have only two columns. First column must contain sequence ID and second column must contain the sequence.</div>
+<div style="text-align: justify;">
+Let us take very simple example:</div>
+<div style="text-align: justify;">
+======================= </div>
+<div style="text-align: justify;">
+$ cat test.txt <br />
+gene1&nbsp;&nbsp; &nbsp;AGCCGCGAC<br />
+gene3&nbsp;&nbsp; &nbsp;GAGCATC<br />
+&nbsp;======================</div>
+<div style="text-align: justify;">
+Let us convert this to fasta:</div>
+with awk:<br />
+=============================<br />
+&nbsp;$ awk -v OFS="\n" '{print "&gt;"$1,$2}' test.txt<br />
+&gt;gene1<br />
+AGCCGCGAC<br />
+&gt;gene3<br />
+GAGCATC<br />
+================================<br />
+with sed:<br />
+=================================<br />
+$ sed -e 's/^/&gt;/;s/\t/\n/g' test.txt <br />
+&gt;gene1<br />
+AGCCGCGAC<br />
+&gt;gene3<br />
+GAGCATC<br />
+===================================<br />
+with Parallel:<br />
+==================================== <br />
+$ parallel&nbsp; --colsep '\t'&nbsp; echo -e '\&gt;{1}\\n{2}'&nbsp; :::: test.txt<br />
+&gt;gene1<br />
+AGCCGCGAC<br />
+&gt;gene3<br />
+GAGCATC<br />
+====================================</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/plotting-multiple-ggpairs-graphs-and" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/parallel-download-genomic-data-with-gnu" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,25 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+A request from a user is to extract name and cog id from a list of headers. Headers are like this:<br />
+==================================<br />
+$ cat ids.text&nbsp;<br />
+ID=ANJKHBIP_00005;eC_number=6.3.4.2;Name=pyrG_1;dbxref=COG:COG0504;gene=pyrG_1;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P0A7E5;locus_tag=ANJKHBIP_00005;product=CTP synthase<br />ID=ANJKHBIP_00037;eC_number=1.2.1.5;Name=puuC_1;dbxref=COG:COG1012;gene=puuC_1;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P23883;locus_tag=ANJKHBIP_00037;product=NADP/NAD-dependent aldehyde dehydrogenase PuuC<br />ID=ANJKHBIP_00038;eC_number=3.6.3.34;Name=fhuC_1;dbxref=COG:COG1120;gene=fhuC_1;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P07821;locus_tag=ANJKHBIP_00038;product=Iron(3+)-hydroxamate import ATP-binding protein FhuC<br />ID=ANJKHBIP_00043;Name=rpsJ_1;dbxref=COG:COG0051;gene=rpsJ_1;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q6N4T6;locus_tag=ANJKHBIP_00043;product=30S ribosomal protein S10<br />
+===================================<br />
+User wants to extract ID value from "ID=ANJKHBIP_00005" and "COG"id from dbxref=COG:COG0504 (excluding COG:). It would be easier if all of headers of equal length. But they are not. For eg. last line doen't have ec_number field.<br />
+Expected output is :<br />
+===================================<br />
+ANJKHBIP_00005&nbsp; COG0504<br />ANJKHBIP_00037&nbsp; COG1012<br />ANJKHBIP_00038&nbsp; COG1120<br />ANJKHBIP_00043&nbsp; COG0051<br />
+===================================<br />
+Let us do this in grep and then use sed remove unnessary text:<br />
+==================================<br />
+$ grep -Po -i '(?&lt;=ID=).*(?=;gene)' ids.text | sed 's/;.*:/\t/g'<br />
+=================================== <br />
+<div style="text-align: justify;">
+Here we are using lookaround (lookforward and lookbehind) functions in bash. For ID, we have used lookbehind and for COG, we used look ahead. In this code, we asked what is immediately after "ID=" and what is before ";gene".&nbsp; After that we removed text between ID and COG (using field delimiters).</div>
+<div style="text-align: justify;">
+Now let us do the same thing in sed using back referencing.</div>
+<div style="text-align: justify;">
+=====================================</div>
+<div style="text-align: justify;">
+$ sed 's/ID=\(\w\+\).*\(COG[0-9]\+\).*/\1\t\2/g' ids.text </div>
+=====================================<br />
+Here we created 2 patterns: one immediately after ID, second one with COG with numbers. Now we printed 1st and 2nd patterns separated by tab.<br /></div>

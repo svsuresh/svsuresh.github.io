@@ -1,0 +1,113 @@
+---
+layout: post
+title: VCF tricks
+date: '2016-05-17T00:14:00.003+05:30'
+author: suresh
+tags:
+- vcf
+- bcftools
+- sed
+modified_time: '2016-05-17T00:37:32.363+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5951781011999548767
+blogger_orig_url: https://digibio.blogspot.com/2016/05/vcf-tricks.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div>
+<div>
+<div>
+In variant calling, variants are represented in variant call format (VCF). Let us call this as sample.vcf for further discussion. Sample vcf may contain one or more samples and may be annotated against reference vcf (reference data such as dbSNP, COSMIC, HGMD, PharmGKB vcfs). Following are few one liners that make job easier.Much of the commands are taken from bcftools manual from<a href="https://samtools.github.io/bcftools/bcftools.html" target="_blank"> here</a>.<br />
+<br />
+<ul style="text-align: left;">
+<li>Annotate sample vcf with reference vcf and append reference information from info column and reference ID from reference vcf.</li>
+</ul>
+</div>
+$ bcftools annotate -c ID,INFO -a reference.vcf.gz sample.vcf.gz&gt; output.vcf<br />
+<div>
+<br />
+Note: 1) Reference and Sample files must be bgzipped (gzipped by bgzip) and indexed by tabix<br />
+2) bcftools is installed<br />
+3) Output is not zipped and contains reference matching IDs in ID column and corresponding INFO information from Reference VCF. &nbsp; <br />
+<br />
+<ul style="text-align: left;">
+<li>&nbsp;Do the same as above. But output is gzipped (not bgzipped)</li>
+</ul>
+$ bcftools annotate -O z -c ID,INFO -a reference.vcf.gz sample.vcf.gz &gt; output.vcf.gz</div>
+<div>
+<br />
+<ul style="text-align: left;">
+<li>Count variant entries in vcf and list by type (SNV, MNV etc)</li>
+</ul>
+</div>
+<ul style="text-align: left;">
+</ul>
+</div>
+$ bcftools plugin counts sample.vcf.gz<br />
+<br />
+<ul style="text-align: left;">
+<li>Extract clinically significant variants from annotated vcf (after annotating with dbSNP/Clinvar with CLINSIG information)</li>
+</ul>
+</div>
+$ bcftools view -i 'CLNSIG=="5"' annotated.vcf.gz<br />
+<div>
+<div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Same as above, but validated variants</li>
+</ul>
+$ bcftools view -i 'CLNSIG=="5" &amp; VLD==1' annotated.vcf.gz</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Print unannotated variants (i.e variants with ID as .)</li>
+</ul>
+$ bcftools view -i 'ID="."' annotated.vcf.gz&nbsp;</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Count the variants with no ID.</li>
+</ul>
+$ bcftools view -i 'ID="."' annotated.vcf.gz | bcftools plugin counts&nbsp;&nbsp;</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>&nbsp;Print annotated variants (i.e variants with IDs)</li>
+</ul>
+</div>
+<div style="text-align: left;">
+$ bcftools view -k annotated.vcf.gz (or)</div>
+<div style="text-align: left;">
+$  bcftools view -i 'ID!="."' annotated.vcf.gz</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Remove all IDs in ID column of the VCF</li>
+</ul>
+<div class="screen" style="text-align: left;">
+$ bcftools annotate -x ID sample.vcf.gz&nbsp;</div>
+<ul style="text-align: left;">
+<li>Add text "chr" to #CHROM column of vcf</li>
+</ul>
+</div>
+<div style="text-align: left;">
+$ bcftools annotate --rename-chrs &lt;text.file&gt;&nbsp; sample.vcf.gz</div>
+<div style="text-align: left;">
+</div>
+<div style="text-align: left;">
+Note: 1) text file should have two columns, first column should contain old name and second column should contain new name.&nbsp;&nbsp;</div>
+<div style="text-align: left;">
+2) Each chromosome in each row.</div>
+<div style="text-align: left;">
+3) Same can be achieved by sed also:</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+$ sed 's/^\([1-9,X,Y,MT]\)/chr&amp;/g' sample.vcf &gt; output.vcf</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Random sample VCF records. There may be times you need random variants from your VCF file. For this you need to know how many you need as % (for eg 1% - 0.01 of your sample variants)</li>
+</ul>
+$ vcfrandomsample -r 0.01&nbsp; input.vcf.gz &gt; random.vcf&nbsp;</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+Note: This would print 10 random variants in vc format if your input file has 1000 variants.</div>
+</div>
+</div>
+</div>

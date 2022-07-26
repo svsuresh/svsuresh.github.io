@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/fill_na_values">May 24, 2021 - Replace empty values in text files with awk</a></h1>
+            <div class="post-content">
+            <p>One of the strengths of AWK is column operation which makes column based manipulation of text files are easy. One such example as follows below. Example text is as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>test.txt 
+	1:924024
+	1:924310
+SAMD11 	1:930353
+SAMD11 	1:930939
+NOC2L  	1:944858
+NOC2L  	1:946247
+KLHL17 	1:960891
+KLHL17 	1:961945
+
+</code></pre></div></div>
+
+<p>First two lines have no values in first column and each column is separated by tab.  User request is to fill it up with incremental numbers, followed by a text <code class="language-plaintext highlighter-rouge">:na</code>. It is easy with awk as follows:</p>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">F</span> <span class="s2">"\t"</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\t"</span> <span class="err">'</span><span class="p">{</span><span class="k">if</span> <span class="p">(</span><span class="nv">$1</span><span class="o">==</span><span class="s2">""</span><span class="p">)</span> <span class="nv">$1</span><span class="o">=</span><span class="kc">NR</span><span class="s2">":na"</span><span class="p">}</span><span class="mi">1</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">txt</span> 
+
+<span class="mi">1</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924024</span>
+<span class="mi">2</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924310</span>
+<span class="nx">SAMD11</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">930353</span>
+<span class="nx">SAMD11</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">930939</span>
+<span class="nx">NOC2L</span>  	<span class="mi">1</span><span class="p">:</span><span class="mi">944858</span>
+<span class="nx">NOC2L</span>  	<span class="mi">1</span><span class="p">:</span><span class="mi">946247</span>
+<span class="nx">KLHL17</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">960891</span>
+<span class="nx">KLHL17</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">961945</span>
+
+</code></pre></div></div>
+
+<p>using ternary operator in awk:</p>
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">F</span> <span class="s2">"\t"</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\t"</span> <span class="err">'</span><span class="p">{</span> <span class="p">(</span><span class="nv">$1</span><span class="o">==</span><span class="s2">""</span><span class="p">)?</span> <span class="p">(</span><span class="nv">$1</span><span class="o">=</span><span class="kc">NR</span><span class="s2">":na"</span><span class="p">):</span><span class="nv">$1</span><span class="p">}</span><span class="mi">1</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">txt</span> 
+
+<span class="mi">1</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924024</span>
+<span class="mi">2</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924310</span>
+<span class="nx">SAMD11</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">930353</span>
+<span class="nx">SAMD11</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">930939</span>
+<span class="nx">NOC2L</span>  	<span class="mi">1</span><span class="p">:</span><span class="mi">944858</span>
+<span class="nx">NOC2L</span>  	<span class="mi">1</span><span class="p">:</span><span class="mi">946247</span>
+<span class="nx">KLHL17</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">960891</span>
+<span class="nx">KLHL17</span> 	<span class="mi">1</span><span class="p">:</span><span class="mi">961945</span>
+
+</code></pre></div></div>
+
+<p>But what if user wants to number each and every line, but empty one being filled with <code class="language-plaintext highlighter-rouge">na</code></p>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">F</span> <span class="s2">"\t"</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\t"</span> <span class="err">'</span><span class="p">{</span> <span class="p">(</span><span class="nv">$1</span><span class="o">==</span><span class="s2">" "</span><span class="p">)?</span> <span class="p">(</span><span class="nv">$1</span><span class="o">=</span><span class="kc">NR</span><span class="s2">":na"</span><span class="p">):(</span><span class="nv">$1</span><span class="o">=</span><span class="kc">NR</span><span class="s2">":"</span><span class="nv">$1</span><span class="p">)}</span><span class="mi">1</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">txt</span>
+
+<span class="mi">1</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924024</span>
+<span class="mi">2</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924310</span>
+<span class="mi">3</span><span class="p">:</span><span class="nx">SAMD11</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">930353</span>
+<span class="mi">4</span><span class="p">:</span><span class="nx">SAMD11</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">930939</span>
+<span class="mi">5</span><span class="p">:</span><span class="nx">NOC2L</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">944858</span>
+<span class="mi">6</span><span class="p">:</span><span class="nx">NOC2L</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">946247</span>
+<span class="mi">7</span><span class="p">:</span><span class="nx">KLHL17</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">960891</span>
+<span class="mi">8</span><span class="p">:</span><span class="nx">KLHL17</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">961945</span>
+
+
+</code></pre></div></div>
+
+<p>Now this is easy. Right? But user wants a different way. All duplicated entries must have same numbering, while empty ones should have individual entries. It’s tricky. Without writing large code, I could not collapse rows, based on a column in awk. So I used datamash.  I wish datamash had expand option for any given column just the way they have group based collapse.</p>
+
+<p>here is the code any way. A little bit messy, but works.</p>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">F</span> <span class="s2">"\t"</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\t"</span> <span class="err">'</span><span class="nv">$1</span><span class="o">==</span><span class="s2">" "</span> <span class="p">{</span><span class="nv">$1</span><span class="o">=</span><span class="s2">"na_"</span><span class="kc">NR</span><span class="p">}</span><span class="mi">1</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">txt</span> <span class="err">\</span>
+	<span class="o">|</span> <span class="nx">datamash</span> <span class="o">-</span><span class="nx">g1</span>  <span class="nx">collapse</span> <span class="mi">2</span> <span class="err">\</span>
+	<span class="o">|</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">F</span> <span class="s2">"\t"</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="err">'\</span><span class="nx">t</span><span class="err">'</span> <span class="err">'</span><span class="p">{</span><span class="nb">split</span><span class="p">(</span><span class="nv">$2</span><span class="p">,</span><span class="nx">a</span><span class="p">,</span><span class="s2">","</span><span class="p">);</span><span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">in</span> <span class="nx">a</span><span class="p">)</span> <span class="k">print</span> <span class="kc">NR</span><span class="p">,</span><span class="nv">$1</span><span class="p">,</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]}</span><span class="err">'</span> <span class="err">\</span>
+	<span class="o">|</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\t"</span> <span class="err">'</span><span class="p">{</span><span class="nb">gsub</span><span class="p">(</span><span class="sr">/_.*/</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="nv">$2</span><span class="p">)}{</span><span class="k">print</span> <span class="nv">$1</span><span class="s2">":"</span><span class="nv">$2</span><span class="p">,</span><span class="nv">$3</span><span class="p">}</span><span class="err">'</span> 
+
+<span class="mi">1</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924024</span>
+<span class="mi">2</span><span class="p">:</span><span class="nx">na</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">924310</span>
+<span class="mi">3</span><span class="p">:</span><span class="nx">SAMD11</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">930353</span>
+<span class="mi">3</span><span class="p">:</span><span class="nx">SAMD11</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">930939</span>
+<span class="mi">4</span><span class="p">:</span><span class="nx">NOC2L</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">944858</span>
+<span class="mi">4</span><span class="p">:</span><span class="nx">NOC2L</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">946247</span>
+<span class="mi">5</span><span class="p">:</span><span class="nx">KLHL17</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">960891</span>
+<span class="mi">5</span><span class="p">:</span><span class="nx">KLHL17</span>	<span class="mi">1</span><span class="p">:</span><span class="mi">961945</span>
+
+</code></pre></div></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/split_snp_records_to_fa" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/percentage_bars" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

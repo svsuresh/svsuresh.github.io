@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/vcf-tricks">May 17, 2016 - VCF tricks</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div>
+<div>
+<div>
+In variant calling, variants are represented in variant call format (VCF). Let us call this as sample.vcf for further discussion. Sample vcf may contain one or more samples and may be annotated against reference vcf (reference data such as dbSNP, COSMIC, HGMD, PharmGKB vcfs). Following are few one liners that make job easier.Much of the commands are taken from bcftools manual from<a href="https://samtools.github.io/bcftools/bcftools.html" target="_blank"> here</a>.<br />
+<br />
+<ul style="text-align: left;">
+<li>Annotate sample vcf with reference vcf and append reference information from info column and reference ID from reference vcf.</li>
+</ul>
+</div>
+$ bcftools annotate -c ID,INFO -a reference.vcf.gz sample.vcf.gz&gt; output.vcf<br />
+<div>
+<br />
+Note: 1) Reference and Sample files must be bgzipped (gzipped by bgzip) and indexed by tabix<br />
+2) bcftools is installed<br />
+3) Output is not zipped and contains reference matching IDs in ID column and corresponding INFO information from Reference VCF. &nbsp; <br />
+<br />
+<ul style="text-align: left;">
+<li>&nbsp;Do the same as above. But output is gzipped (not bgzipped)</li>
+</ul>
+$ bcftools annotate -O z -c ID,INFO -a reference.vcf.gz sample.vcf.gz &gt; output.vcf.gz</div>
+<div>
+<br />
+<ul style="text-align: left;">
+<li>Count variant entries in vcf and list by type (SNV, MNV etc)</li>
+</ul>
+</div>
+<ul style="text-align: left;">
+</ul>
+</div>
+$ bcftools plugin counts sample.vcf.gz<br />
+<br />
+<ul style="text-align: left;">
+<li>Extract clinically significant variants from annotated vcf (after annotating with dbSNP/Clinvar with CLINSIG information)</li>
+</ul>
+</div>
+$ bcftools view -i 'CLNSIG=="5"' annotated.vcf.gz<br />
+<div>
+<div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Same as above, but validated variants</li>
+</ul>
+$ bcftools view -i 'CLNSIG=="5" &amp; VLD==1' annotated.vcf.gz</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Print unannotated variants (i.e variants with ID as .)</li>
+</ul>
+$ bcftools view -i 'ID="."' annotated.vcf.gz&nbsp;</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Count the variants with no ID.</li>
+</ul>
+$ bcftools view -i 'ID="."' annotated.vcf.gz | bcftools plugin counts&nbsp;&nbsp;</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>&nbsp;Print annotated variants (i.e variants with IDs)</li>
+</ul>
+</div>
+<div style="text-align: left;">
+$ bcftools view -k annotated.vcf.gz (or)</div>
+<div style="text-align: left;">
+$  bcftools view -i 'ID!="."' annotated.vcf.gz</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Remove all IDs in ID column of the VCF</li>
+</ul>
+<div class="screen" style="text-align: left;">
+$ bcftools annotate -x ID sample.vcf.gz&nbsp;</div>
+<ul style="text-align: left;">
+<li>Add text "chr" to #CHROM column of vcf</li>
+</ul>
+</div>
+<div style="text-align: left;">
+$ bcftools annotate --rename-chrs &lt;text.file&gt;&nbsp; sample.vcf.gz</div>
+<div style="text-align: left;">
+</div>
+<div style="text-align: left;">
+Note: 1) text file should have two columns, first column should contain old name and second column should contain new name.&nbsp;&nbsp;</div>
+<div style="text-align: left;">
+2) Each chromosome in each row.</div>
+<div style="text-align: left;">
+3) Same can be achieved by sed also:</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+$ sed 's/^\([1-9,X,Y,MT]\)/chr&amp;/g' sample.vcf &gt; output.vcf</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Random sample VCF records. There may be times you need random variants from your VCF file. For this you need to know how many you need as % (for eg 1% - 0.01 of your sample variants)</li>
+</ul>
+$ vcfrandomsample -r 0.01&nbsp; input.vcf.gz &gt; random.vcf&nbsp;</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+Note: This would print 10 random variants in vc format if your input file has 1000 variants.</div>
+</div>
+</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/plotting-variants-per-chromosome-using" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/plot-interactome-data-in-r" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

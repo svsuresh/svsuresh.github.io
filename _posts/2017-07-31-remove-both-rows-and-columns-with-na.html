@@ -1,0 +1,44 @@
+---
+layout: post
+title: Remove both rows and columns with NA values in R
+date: '2017-07-31T12:20:00.001+05:30'
+author: suresh
+tags:
+- columns
+- NA
+- matrix
+- R
+- rows
+modified_time: '2017-07-31T12:20:15.893+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-6404013112915226567
+blogger_orig_url: https://digibio.blogspot.com/2017/07/remove-both-rows-and-columns-with-na.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<span itemscope="" itemtype="http://schema.org/Question"></span><br />
+<pre class="pre language-bash"><code class=" language-bash">Let us assume that there is a matrix in R and you would like to remove both the 
+columns and rows with NA values in it. Following is the code </code></pre>
+<pre class="pre language-bash"><code class=" language-bash">&nbsp;</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">1) Create a matrix with 4 columns and the values are from 1 to 16 <b>&nbsp;</b></code></pre>
+<pre class="pre language-bash"><code class=" language-bash"><b>x <span class="token operator">=</span> matrix<span class="token punctuation">(</span>seq<span class="token punctuation">(</span>16<span class="token punctuation">)</span>, ncol <span class="token operator">=</span> 4<span class="token punctuation">)</span></b> 
+&nbsp;</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">2) Now change the value in 2nd row, 3rd column as NA. <b>
+x<span class="token punctuation">[</span>2,3<span class="token punctuation">]</span><span class="token operator">=</span> NA </b>
+&nbsp;</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">3) Now print the matrix <b>&nbsp;</b>
+<b><span class="token operator">&gt;</span> x
+     <span class="token punctuation">[</span>,1<span class="token punctuation">]</span> <span class="token punctuation">[</span>,2<span class="token punctuation">]</span> <span class="token punctuation">[</span>,3<span class="token punctuation">]</span> <span class="token punctuation">[</span>,4<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>1,<span class="token punctuation">]</span>    1    5    9   13
+<span class="token punctuation">[</span>2,<span class="token punctuation">]</span>    2    6   NA   14
+<span class="token punctuation">[</span>3,<span class="token punctuation">]</span>    3    7   11   15
+<span class="token punctuation">[</span>4,<span class="token punctuation">]</span>    4    8   12   16
+</b></code>
+4)To remove rows and columns with NA:<code class=" language-bash"></code><code class=" language-bash"><span class="token operator"><b>
+&gt;</b></span><b> x<span class="token punctuation">[</span>complete.cases<span class="token punctuation">(</span>x<span class="token punctuation">)</span>,complete.cases<span class="token punctuation">(</span>t<span class="token punctuation">(</span>x<span class="token punctuation">))</span><span class="token punctuation">]</span>
+</b></code><code class=" language-bash"></code></pre>
+<pre class="pre language-bash"><b><code class=" language-bash">     <span class="token punctuation">[</span>,1<span class="token punctuation">]</span> <span class="token punctuation">[</span>,2<span class="token punctuation">]</span> <span class="token punctuation">[</span>,3<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>1,<span class="token punctuation">]</span>    1    5   13
+<span class="token punctuation">[</span>2,<span class="token punctuation">]</span>    3    7   15
+<span class="token punctuation">[</span>3,<span class="token punctuation">]</span>    4    8   16
+</code></b></pre>
+</div>

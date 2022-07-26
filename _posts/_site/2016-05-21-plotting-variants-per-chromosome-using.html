@@ -1,0 +1,48 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<a href="https://4.bp.blogspot.com/-GCTYVtCedSc/V0CT9gVE7CI/AAAAAAAAAeg/J-i-ASzDeNcsjTmYasd4PGAPE1BqOdWwQCLcB/s1600/all_variants_r.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"></a>There are several methods&nbsp; of representing data esp biological data to end users. Some of them are complex and some, simple. I am not a fan of complex data representations as the underlying data needs comprehension of complex data or incorrect representation of simple data. However, once in a while, such complex figures may be necessary to understand the data. Following one and this image represents the variants per chromosome (SNV, MNV and DIVs). I would like user to go through this <a href="http://digibio.blogspot.com/2015/07/parsing-vcf-2-clinvar-using-dplyr-and.html" target="_blank">topic</a> in the blog to parse VCF into tab file and subsequent data manipulations. I have used clinvar VCF for data and used bcftools to convert VCF to tab file. For graphics, I have used ggplot2.<br />
+<br />
+Object of this tutorial to is represent variants present in <a href="https://drive.google.com/file/d/0B0MpwluEDxNuSnF3M0FVUDZtWTQ/view?usp=sharing" target="_blank">clinvar VCF</a>. Please note that the latest clinvar VCF can be downloaded from <a href="ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz" target="_blank">here</a> for GRCh 38. Variants are categorized under SNV, MNV (Structural variants in general) and DIV (indels) categories and are represented by VC (variant category) VCF.&nbsp; Please follow the instructions on this <a href="http://digibio.blogspot.com/2015/07/parsing-vcf-2-clinvar-using-dplyr-and.html" target="_blank">blog note</a>, to load vcf data into R.<br />
+<br />
+I present two images here: 1) Variants presents in all the chromosomes<br />
+2) Variants present per chromosome<br />
+<br />
+First let us list all the variants in clinvar (data frame) using:<br />
+<br />
+1) Summarize all the variants across all chromosomes:<br />
+<br />
+$ clinvar&nbsp; %&gt;% group_by(VC) %&gt;% summarise(Variants=n())<br />
+<br />
+(Note: use dplyr package for this).<br />
+<br />
+Result would be:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-GCTYVtCedSc/V0CT9gVE7CI/AAAAAAAAAeg/0t16dFVNj_8dHv77ZoMBZguHUcjMmd_kQCKgB/s1600/all_variants_r.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="206" src="https://3.bp.blogspot.com/-GCTYVtCedSc/V0CT9gVE7CI/AAAAAAAAAeg/0t16dFVNj_8dHv77ZoMBZguHUcjMmd_kQCKgB/s640/all_variants_r.png" width="640" /></a></div>
+<br />
+Please note that MNVs are much small in number in compared to both DIV (indels) and SNVs.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-08v6QbZ9RpQ/V0CS0V_qZoI/AAAAAAAAAeU/VcKN6eltUY0f1YGLdi8Y8k82ioYnBbOmwCLcB/s1600/all_variants.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="412" src="https://4.bp.blogspot.com/-08v6QbZ9RpQ/V0CS0V_qZoI/AAAAAAAAAeU/VcKN6eltUY0f1YGLdi8Y8k82ioYnBbOmwCLcB/s640/all_variants.png" width="640" /></a></div>
+To visualize the same in R using ggplot2, run commands given below: <br />
+<br />
+$ qplot(CHROM, data=clinvar, fill=VC) + <br />&nbsp; theme(<br />&nbsp;&nbsp;&nbsp; panel.background=element_rect(colour = "black", fill=NA), <br />&nbsp;&nbsp;&nbsp; strip.background=element_blank(), <br />&nbsp;&nbsp;&nbsp; panel.grid.major = element_blank()) + <br />&nbsp; facet_wrap(~VC,scales = "free")<br /><br />
+Now, let us draw all the chromosomes individually and corresponding variants as shown below:<br />
+1) Let us draw all variants (SNVs, MNVs and DIVs). Please note that you won't be seeing MNVs as they are very very less in number compared to DIVs and SNVs per chromosome.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-rLYL_hFl-8w/V0CV6UwYI6I/AAAAAAAAAes/TQ5vyihZiP0Ccj1cInyQjR-JJeK7BBI6gCLcB/s1600/variants_per_chromosome.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="412" src="https://3.bp.blogspot.com/-rLYL_hFl-8w/V0CV6UwYI6I/AAAAAAAAAes/TQ5vyihZiP0Ccj1cInyQjR-JJeK7BBI6gCLcB/s640/variants_per_chromosome.png" width="640" /></a></div>
+<br />
+Code for getting above image is:<br />
+<br />
+$ ggplot(clinvar, aes(CHROM, fill=VC))+<br />&nbsp; geom_bar(position = "dodge")+ <br />&nbsp; facet_wrap(~CHROM,ncol=5,nrow = 5, scales = "free")+<br />&nbsp; theme(<br />&nbsp;&nbsp;&nbsp; strip.background=element_blank(), <br />&nbsp;&nbsp;&nbsp; panel.background = element_rect(colour = "black", fill=NA), <br />&nbsp;&nbsp;&nbsp; axis.text.x =element_blank(), <br />&nbsp;&nbsp;&nbsp; axis.ticks.x =element_blank(),<br />&nbsp;&nbsp;&nbsp; panel.grid.major = element_blank())+ <br />&nbsp; labs(title = "Variants in Clinvar",&nbsp; x="Chromosome", y="Number of variants per chromosome")<br />
+<br />
+Listing all the variants per chromosome is:<br />
+$ clinvar&nbsp; %&gt;% group_by(CHROM,VC) %&gt;% summarise(Variants=n())<br />
+<br />
+Example output is:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-u2lph6-U-04/V0CXFXLDeRI/AAAAAAAAAe8/VPqW7XXXVMcR4gxboBvvdBOeqdJn8GZKACLcB/s1600/variantsperchromosome.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="422" src="https://4.bp.blogspot.com/-u2lph6-U-04/V0CXFXLDeRI/AAAAAAAAAe8/VPqW7XXXVMcR4gxboBvvdBOeqdJn8GZKACLcB/s640/variantsperchromosome.png" width="640" /></a></div>
+<br />
+<br />
+<br /></div>

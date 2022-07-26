@@ -1,0 +1,109 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+HGVS (Human Genome Variation Society) aims to standardize representation of variants across global research communities. HGVS has set certain notations for representing genomic (DNA), coding (RNA and cDNA) and protein variations. Protein variation syntax outlines the effect of variation on protein primary structure. There are several tools that can translate genomic variants to protein variants via calculation.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+There are two common ways to represent amino acids. By single letter and By three letters.&nbsp; A 3 letter representation is as follows : p.ser2ala, followed by protein accession number (some times with version). Some people prefer single letter representation like p.S2A. However, as tools are varied, these letters can be upper case, lower case, mixed case, all sorts of cases.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+I wrote a python script that converts three letter code to single letter code and single letter code to three letter code.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Example input for 3 letter code:</div>
+<div style="text-align: justify;">
+=====================<br />
+NP1457:p.ser2ala</div>
+<div style="text-align: justify;">
+p.ala3tyr</div>
+<div style="text-align: justify;">
+NP123.1:p.Tyr3pHe </div>
+=====================<br />
+<br />
+Output for example 3 letter code:<br />
+======================<br />
+NP1457:p.ser2ala&nbsp;&nbsp;&nbsp; NP1457:p.S2A<br />
+p.ala3tyr&nbsp;&nbsp;&nbsp; p.A3Y<br />
+NP123.1:p.Tyr3pHe&nbsp;&nbsp;&nbsp; NP123.1:p.Y3F<br />
+======================<br />
+<br />
+Example input for single letter code:<br />
+======================<br />
+p.a2G<br />
+NP.2123:p.C2p<br />
+p.D3e<br />
+======================<br />
+<br />
+Output for example single letter code input: <br />
+======================== <br />
+p.a2G&nbsp;&nbsp;&nbsp;&nbsp; p.Ala2Gly<br />
+NP.2123:p.C2p&nbsp;&nbsp;&nbsp;&nbsp; NP.2123:p.Cys2Pro<br />
+p.D3e&nbsp;&nbsp;&nbsp;&nbsp; p.Asp3Glu<br />
+=======================<br />
+<br />
+here is the code:<br />
+=========================== <br />
+## Import libraries<br />
+import os<br />
+import re<br />
+<br />
+## Ask user about the length of the codon and path of the file.<br />
+number= input('Codon length in your file. 1 or 3?: ')<br />
+user_input=input('Please input file path. File should have one column with pSyntax: ')<br />
+<br />
+## Write a function to convert one letter to 3 letter and vice versa<br />
+def psyntax_convert(number,user_input):<br />
+&nbsp;&nbsp;&nbsp; ''' converts HGVS pSyntax into one and three letter representations'''<br />
+&nbsp;&nbsp;&nbsp; if os.path.exists(user_input):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print (user_input+ " file exists. Output file name is output.txt")<br />
+&nbsp;&nbsp;&nbsp; else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print (user_input+" file doesn't exist..aborting")<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sys.exit(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; with open (user_input, "r") as f:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; user_input=f.read()<br />
+&nbsp;&nbsp;&nbsp; re_input=re.findall(r"(.*:*p\.)(\w+)(\d+)(\w+)",user_input,re.IGNORECASE)<br />
+&nbsp;&nbsp;&nbsp; if len(re_input[0][1])==3:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print("3 letter HGVS syntax will be converted to 1 letter syntax")<br />
+&nbsp;&nbsp;&nbsp; elif len(re_input[0][1])==1:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print("1 letter HGVS syntax will be converted to 3 letter syntax")<br />
+&nbsp;&nbsp;&nbsp; re_input_list=[list(i) for i in re_input]<br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; if int(number)==1:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in re_input_list:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i[1]=single_syntax_dict.get(i[1].capitalize())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i[3]=single_syntax_dict.get(i[3].capitalize())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; if int(number)==3:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in re_input_list:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i[1]=three_syntax_dict.get(i[1].capitalize())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i[3]=three_syntax_dict.get(i[3].capitalize())&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; with open ("output.txt","w") as f:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i, j in zip(re_input, re_input_list):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print("".join(i), "".join(j),sep='\t', file=f)<br />
+<br />
+## This is the dictionary for 3 letter to 1 letter<br />
+three_syntax_dict= {'Ala': 'A', 'Arg': 'R', 'Asn': 'N', 'Asp': 'D', 'Cys': 'C', <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Gln': 'Q', 'Glu': 'E', 'Gly': 'G', 'His': 'H', 'Ile': 'I', <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Leu': 'L', 'Lys': 'K', 'Met': 'M', 'Phe': 'F', 'Pro': 'P', <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Pyl': 'O', 'Ser': 'S', 'Sec': 'U', 'Thr': 'T', 'Trp': 'W',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Tyr': 'Y', 'Val': 'V', 'Asx': 'B', 'Glx': 'Z', 'Xaa': 'X', <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Xle': 'J', 'Ter': '*'}<br />
+## Invert above dictionary for 1 letter to 3 letter code<br />
+single_syntax_dict={v:k for k,v in three_syntax_dict.items()}<br />
+<br />
+## Function for executing the conversion function and print the final command<br />
+def main():<br />
+&nbsp;&nbsp;&nbsp; '''Executes conversion function and prints success message'''<br />
+&nbsp;&nbsp;&nbsp; psyntax_convert(number,user_input)<br />
+&nbsp;&nbsp;&nbsp; if os.path.exists("output.txt"):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print ("conversion done. Output.txt is present in "+os.getcwd())<br />
+##&nbsp; Execute the main function<br />
+main()<br />
+===============================<br />
+<br />
+You can download&nbsp; jupyter notebook on my <a href="https://github.com/svsuresh">github</a> page from <a href="https://github.com/svsuresh/python_scripts">python_scripts</a> repo.<br />
+<br />
+Note: Copy/paste from the web may mess up the indentation. Take care of indentation before you execute the code. </div>

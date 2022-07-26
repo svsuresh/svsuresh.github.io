@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/generate-random-multiple-dna-sequences">Jul 3, 2015 - Simulate nucleotide and amino acid sequences with R- Part 2</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<span style="font-size: small;">In earlier note, we have created random DNA sequence and protein sequence in R. Today, we will create random sequences of DNA and protein. Store multiple random sequences, in a single fasta file, both for proteins and nucleotides. Please note that this code may be preliminary/dirty/clumsy. But works. </span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;"><b>Logic</b>:</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">1) Write a function to </span><br />
+<span style="font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp; a) Take input from user for the length of the Nucleotide/Aminoacid polymer&nbsp;&nbsp; (DNA/Peptide respectively)</span><br />
+<span style="font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp; b) Create user desired length DNA/AA polymer by random sampling</span><br />
+<span style="font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp; c) Repeat step b for user desired number of sequences</span><br />
+<span style="font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp; d) Store them as DNAsring set</span><br />
+<span style="font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp; e) Name them</span><br />
+<span style="font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp; f) Print output on the screen</span><br />
+<span style="font-size: small;">2) User can save the out put to a file.</span><br />
+<span style="font-size: small;">3) User can save the output to hard disk as a single fasta with multiple sequences.</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;"><b>Creating random DNA sequences</b></span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">1) Create a function to that takes length of sequence (for eg 10 mer) and number of sequences with that length (10 sequences, 10 mers).</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">code:</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">DNAseq=function(x,y){</span><br />
+<span style="font-size: small;">&nbsp; DNAsample=sample(DNA_BASES,x,replace = TRUE)</span><br />
+<span style="font-size: small;">&nbsp; DNAsample=paste(DNAsample,collapse = "")</span><br />
+<span style="font-size: small;">&nbsp; DNAsamples=DNAStringSet(replicate(y,DNAsample))</span><br />
+<span style="font-size: small;">&nbsp; names(DNAsamples)=paste("DNA",letters [1:y],"fasta", sep=".")</span><br />
+<span style="font-size: small;">&nbsp; print(DNAsamples)</span><br />
+<span style="font-size: small;">}</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">2)&nbsp; Create a 10 random sequence with 10 bases</span><br />
+<span style="font-size: small;">code:&nbsp; DNAseq(10,10) ( first 10 creates 10 mer, second 10 creates 10 sequences of 10 nt length)</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">Please note that these sequences may vary on your computer as these are randomly generated sequences.</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">3) User can save the output to a file by running following command:</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">code: ds.seq=DNAseq(10,10)</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">4) User can see the sequences in file </span><br />
+<span style="font-size: small;"><br /></span>
+<div class="separator" style="clear: both; text-align: center;">
+<span style="font-size: small;"><span style="color: black;"><a href="http://3.bp.blogspot.com/-hLjAglWElD0/VZWGAtnIzVI/AAAAAAAAARI/0nkck1M3eJY/s1600/3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="328" src="http://3.bp.blogspot.com/-hLjAglWElD0/VZWGAtnIzVI/AAAAAAAAARI/0nkck1M3eJY/s640/3.png" width="640" /></a></span></span></div>
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">6) Write to the disk as a single file with 10 randomly generated 10 base nucleotide sequences.</span><br />
+<span style="font-size: small;">code: writeXStringSet(ds.seq, "ds.seq.fa", format="fasta")</span><br />
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><span style="font-size: small;"><span style="color: black;"><a href="http://1.bp.blogspot.com/-GD3uJ3QPDAg/VZWGBs4soNI/AAAAAAAAARE/czm6e2t1B-8/s1600/4.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="400" src="http://1.bp.blogspot.com/-GD3uJ3QPDAg/VZWGBs4soNI/AAAAAAAAARE/czm6e2t1B-8/s400/4.png" width="111" /></a></span></span></td></tr>
+<tr><td class="tr-caption" style="text-align: center;"><span style="font-size: small;">On local disk</span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td><td class="tr-caption" style="text-align: center;"><span style="font-size: small;"><br /></span></td></tr>
+</tbody></table>
+<div style="text-align: left;">
+<span style="font-size: small;"><b>Code for creating 10 random nucleotide sequences with 10 bases each:</b></span></div>
+<div style="text-align: left;">
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;"># function to take input for length of the DNA sequence and DNA sequences to be created</span><br />
+<span style="font-size: small;">DNAseq=function(x,y){</span><br />
+<span style="font-size: small;">&nbsp; DNAsample=sample(DNA_BASES,x,replace = TRUE)</span><br />
+<span style="font-size: small;">&nbsp; DNAsample=paste(DNAsample,collapse = "")</span><br />
+<span style="font-size: small;">&nbsp; DNAsamples=DNAStringSet(replicate(y,DNAsample))</span><br />
+<span style="font-size: small;">&nbsp; names(DNAsamples)=paste("DNA",letters [1:y],"fasta", sep=".")</span><br />
+<span style="font-size: small;">&nbsp; print(DNAsamples)</span><br />
+<span style="font-size: small;">}</span><br />
+<span style="font-size: small;"># rest of the code</span></div>
+<div style="text-align: left;">
+<span style="font-size: small;">ds.seq=DNAseq(10,10)</span><br />
+<span style="font-size: small;">ds.seq</span><br />
+<span style="font-size: small;">writeXStringSet(ds.seq, "ds.seq.fa", format="fasta")</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">&nbsp;<b>Creating random AA sequences</b></span></div>
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">1) Create a function for User input with length of the peptide (AA within each peptide) and number of peptides to be created </span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">AAseq=function(x,y){</span><br />
+<span style="font-size: small;">&nbsp; AAsample=sample(AA_STANDARD,x,replace = TRUE)</span><br />
+<span style="font-size: small;">&nbsp; AAsample=paste(AAsample,collapse = "")</span><br />
+<span style="font-size: small;">&nbsp; AAsamples=AAStringSet(replicate(y,AAsample))</span><br />
+<span style="font-size: small;">&nbsp; names(AAsamples)=paste("AA",letters [1:y],"fasta", sep=".")</span><br />
+<span style="font-size: small;">&nbsp; print(AAsamples)</span><br />
+<span style="font-size: small;">}</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">2) Create 10 random AA sequences with 10 AA each</span><br />
+<span style="font-size: small;">code: AAseq(10,10)</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">3) store the out put sequences as an object as.seq</span><br />
+<span style="font-size: small;">&nbsp;code: as.seq=AAseq(10,10)&nbsp; </span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">4) View the sequences and&nbsp; sequences are named starting with AA.followed by letters and ends with fasta extension.</span><br />
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;">5) Write to the disk as a single file with 10 randomly generated 10 base nucleotide sequences.</span><br />
+<span style="font-size: small;">code: writeXStringSet(as.seq, "as.seq.fa", format="fasta")</span><br />
+<span style="font-size: small;"><br /></span>
+<div style="text-align: left;">
+<span style="font-size: small;"><b>Code for creating 10 random peptide sequences with 10 AA each:</b></span></div>
+<span style="font-size: small;"><br /></span>
+<span style="font-size: small;"># random aa sequences</span><br />
+<span style="font-size: small;"># function</span><br />
+<span style="font-size: small;">AAseq=function(x,y){</span><br />
+<span style="font-size: small;">&nbsp; AAsample=sample(AA_STANDARD,x,replace = TRUE)</span><br />
+<span style="font-size: small;">&nbsp; AAsample=paste(AAsample,collapse = "")</span><br />
+<span style="font-size: small;">&nbsp; AAsamples=AAStringSet(replicate(y,AAsample))</span><br />
+<span style="font-size: small;">&nbsp; names(AAsamples)=paste("AA",letters [1:y],"fasta", sep=".")</span><br />
+<span style="font-size: small;">&nbsp; print(AAsamples)</span><br />
+<span style="font-size: small;">}</span><br />
+<span style="font-size: small;"># rest code as.seq=AAseq(10,10)</span><br />
+<span style="font-size: small;">writeXStringSet(as.seq, "as.seq.fa", format="fasta")&nbsp;&nbsp; </span><br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/parsing-vcf-2-clinvar-using-dplyr-and" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/generate-random-nucleotide-and-amino" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

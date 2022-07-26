@@ -1,0 +1,56 @@
+---
+layout: post
+title: Replace wobble base with purine (R) and pyrimidine (Y) symbol in python
+date: '2018-07-20T19:19:00.002+05:30'
+author: suresh
+tags:
+- replace
+- wobble
+- python3
+modified_time: '2018-08-08T16:51:32.223+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-7873302886133829833
+blogger_orig_url: https://digibio.blogspot.com/2018/07/replce-wobble-base-with-purine-r-and.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Most biologists know that a codon represents an amino acid and is composed of 3 contiguous bases. Of the three bases, third base shows limited variability. Because of this an amino acid can be encoded by more than one codon. One of the requests I got was to convert every third base to corresponding purine (R) and pyrimidine (Y) symbol. As per IUPAC nucleotide code, bases A and G are purines and bases C and T are pyrimidines. Let us do this in python without any external library. I am using python 3 for this task. First let us take a simple fasta with arbitrary number of sequences&nbsp; and convert that into a sequence file with R and Y at every third base.</div>
+<br />
+input:<br />
+========================================<br />
+$ cat sequence.fa <br />
+&gt; gene1 <br />
+ACATATTGGAGGCCGAAACAATGAGGCGTGATCAACTCAGTATATCAC<br />
+&gt; gene2 <br />
+CTAACCTCTCCCAGTGTGGAACCTCTATCTCATGAGAAAGCTGGGATGAG<br />
+&gt; gene3 <br />
+ATTTCCTCCTGCTGCCCGGGAGGTAACACCCTGGACCCCTGGAGTCTGCA<br />
+========================================<br />
+<br />
+output:<br />
+========================================<br />
+$ cat output.fa <br />
+&gt;gene1<br />
+ACRTAYTGRAGRCCRAARCARTGRGGYGTRATYAAYTCRGTRTAYCAY<br />
+&gt;gene2<br />
+CTRACYTCYCCYAGYGTRGARCCYCTRTCYCAYGARAARGCYGGRATRAG<br />
+&gt;gene3<br />
+ATYTCYTCYTGYTGYCCRGGRGGYAAYACYCTRGAYCCYTGRAGYCTRCA<br />
+============================================<br />
+<br />
+code (note that input and output files are hard coded. change it as per requirement):<br />
+======================================<br />
+&gt; d = {}<br />
+&gt; with open("sequence.fa", 'r') as f:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in f:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; d[i.strip("\n&gt; ")] = next(f).rstrip()<br />
+<br />
+&gt; ntdict = {"A": "R", "T": "Y", "G": "R", "C": "Y"}<br />
+<br />
+&gt; with open("output.fa", "w") as f:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for key, value in d.items():<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; temp_key = "".join(ntdict.get(w.upper(), w) if not i % 3 else w for i, w in enumerate(list(d[key]), 1))<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print("{0}{1}\n{2}".format("&gt;", key, temp_key.upper()), file=f)<br />
+============================================<br />
+Ps: Take care of indents.<br />
+<br /></div>

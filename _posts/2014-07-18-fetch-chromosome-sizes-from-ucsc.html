@@ -1,0 +1,54 @@
+---
+layout: post
+title: 'Fetch chromosome sizes from UCSC in linux '
+date: '2014-07-18T14:52:00.000+05:30'
+author: suresh
+tags:
+- size
+- UCSC
+- chromosome
+- fetchchromsizes
+modified_time: '2015-07-14T22:43:17.564+05:30'
+thumbnail: http://4.bp.blogspot.com/-ZpMi6pt52MQ/VXFFTzaq0lI/AAAAAAAAAOY/AZQuyuP1BdQ/s72-c/chromsizes.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8474015417685970686
+blogger_orig_url: https://digibio.blogspot.com/2014/07/fetch-chromosome-sizes-from-ucsc.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+In ubuntu, chromsizes ca be fetched multiple ways:<br />
+<br />
+Method 1: <br />
+<br />
+In GATK pipeline, user has to provide chromosome sizes. For this,&nbsp; "fetchChromSizes" utility from UCSC helps.&nbsp; User can download it from here: http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/ <br />
+<br />
+To fetch chromosome sizes for build hg38, user should run following command:<br />
+<br />
+$ sh fetchChromSizes &lt;UCSC genome build&gt; &lt;output_file&gt;<br />
+<br />
+Example: $ sh fetchChromSizes hg38 &gt; hg38.sizes (for hg38).<br />
+<br />
+Same information can be found by visiting the URL:<br />
+<br />
+http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&amp;chromInfoPage=.<br />
+<br />
+For any other build, change db=hg38 with appropriate genome build (For eg. dm3 will give Drosophila genome size and url would be: http://genome.ucsc.edu/cgi-bin/hgTracks?<b>db=dm3</b>&amp;chromInfoPage=).<br />
+<br />
+2) Method 2:<br />
+<br />
+UCSC, by default provides chromsizes from direct URL<br />
+<br />
+For eg. for hg19, link would be http://genome.ucsc.edu/goldenpath/helpc and for hg 39, link would be&nbsp; http://genome.ucsc.edu/goldenpath/help/hg38.chrom.sizes.<br />
+<br />
+toget it direct in linux, run the following command:<br />
+<br />
+wget -np -nd -r http://genome.ucsc.edu/goldenpath/help/hg38.chrom.sizes<br />
+<br />
+-np, -nd tells the command that do not create any additional directories, download the file to the current director and -r instructs the command to fetch the file recursively.<br />
+<br />
+Interesting number of entries in each build, kept on increasing. Look at the following picture: (compares between hg18.chrom.sizes,hg19.chrom.sizes and hg38.chrom.sizes).<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-ZpMi6pt52MQ/VXFFTzaq0lI/AAAAAAAAAOY/AZQuyuP1BdQ/s1600/chromsizes.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="150" src="http://4.bp.blogspot.com/-ZpMi6pt52MQ/VXFFTzaq0lI/AAAAAAAAAOY/AZQuyuP1BdQ/s640/chromsizes.png" width="640" /></a></div>
+<br />
+<br />
+</div>

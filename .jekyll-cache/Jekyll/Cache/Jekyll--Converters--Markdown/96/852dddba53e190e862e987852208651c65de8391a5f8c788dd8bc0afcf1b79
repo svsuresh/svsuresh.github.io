@@ -1,0 +1,96 @@
+I"E<p>One of the common observation in fasta file is that some times headers (sequence Identifiers) are identical and are present multiple times. One of the requests was to append numbers starting from one to number of times that the header is identical.</p>
+
+<p>Here is an example of such file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>gene.fa 
+
+<span class="o">&gt;</span>geneA
+atcc
+<span class="o">&gt;</span>geneB
+aaat
+<span class="o">&gt;</span>geneB
+aaat
+<span class="o">&gt;</span>geneB
+aaat
+<span class="o">&gt;</span>geneC
+atgg
+<span class="o">&gt;</span>geneC
+atgg
+<span class="o">&gt;</span>geneD
+atcg
+</code></pre></div></div>
+
+<p>AWK has awesome oneliner for this and it is copy/pasted from <a href="https://www.unix.com/shell-programming-and-scripting/190813-using-awk-append-incremental-numbers-end-duplicate-file-names.html">here</a>. I modified a little bit to apply only to fasta headers. Following is the awesome awk way:</p>
+
+<pre><code class="language-code">$ awk '/&gt;/ {$1=$1"#"++a[$1]}1' gene.fa
+
+&gt;geneA#1
+atcc
+&gt;geneB#1
+aaat
+&gt;geneB#2
+aaat
+&gt;geneB#3
+aaat
+&gt;geneC#1
+atgg
+&gt;geneC#2
+atgg
+&gt;geneD#1
+atcg
+
+</code></pre>
+
+<p>That being said, user wanted a python solution. Here is the python solution:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#! /usr/bin/env python3
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">Bio</span> <span class="kn">import</span> <span class="n">SeqIO</span>
+<span class="kn">from</span> <span class="nn">Bio.SeqRecord</span> <span class="kn">import</span> <span class="n">SeqRecord</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="nb">input</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">output</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">rpid</span><span class="o">=</span><span class="s">""</span>
+<span class="n">num</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">new_seq</span><span class="o">=</span><span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">SeqIO</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="s">"fasta"</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">record</span><span class="p">.</span><span class="nb">id</span> <span class="o">==</span> <span class="n">rpid</span><span class="p">:</span>
+        <span class="n">new_num</span><span class="o">+=</span><span class="n">num</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_num</span><span class="o">=</span><span class="n">num</span>
+    <span class="n">newrecord_id</span><span class="o">=</span><span class="s">'{0}#{1}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">record</span><span class="p">.</span><span class="nb">id</span><span class="p">,</span><span class="n">new_num</span><span class="p">)</span>
+    <span class="n">new_seq</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">SeqRecord</span><span class="p">(</span><span class="n">record</span><span class="p">.</span><span class="n">seq</span><span class="p">,</span><span class="n">newrecord_id</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">""</span><span class="p">))</span>
+    <span class="n">rpid</span><span class="o">=</span><span class="n">record</span><span class="p">.</span><span class="nb">id</span>
+<span class="n">SeqIO</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_seq</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s">"fasta"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Save this file as python script (for eg. append_duplicate_numbers.py), convert it to execute file (chmod +x append_duplicate_numbers.py) and run it following way:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./append_duplicate_numbers.py gene.fa out.fa
+</code></pre></div></div>
+
+<p>gene.fa is input and out.fa is output. Let us look at the output:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>out.fa 
+
+<span class="o">&gt;</span>geneA#1
+atcc
+<span class="o">&gt;</span>geneB#1
+aaat
+<span class="o">&gt;</span>geneB#2
+aaat
+<span class="o">&gt;</span>geneB#3
+aaat
+<span class="o">&gt;</span>geneC#1
+atgg
+<span class="o">&gt;</span>geneC#2
+atgg
+<span class="o">&gt;</span>geneD#1
+atcggtc
+
+</code></pre></div></div>
+
+<p>My python skills are not as good as R skills. So please bear with me.</p>
+:ET

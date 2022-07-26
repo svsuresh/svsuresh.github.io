@@ -1,0 +1,36 @@
+<p>Here is one request where user wanted to replace all commas, but not to replace if comma is present within quotes. Example and solution are as follows:</p>
+
+<p>input:</p>
+<pre><code class="language-code">
+Name,Age,"City, Country",Profession
+Mitch,27,"Melbourne,Australia",Student
+John,31,"Boston,USA",Chef
+
+</code></pre>
+<p>Expected output:</p>
+
+<pre><code class="language-code">
+Name      Age      "City,Country"      Profession
+Mitch       27        "Melbourne,Australia"      Student
+John        31       "Boston,USA",      Chef
+
+</code></pre>
+
+<p>Solution:</p>
+
+<pre><code class="language-code">$ sed -r 's/,/\t/g;s/("\w+)\t/\1,/g' test.txt 
+
+Name    Age "City, Country" Profession
+Mitch   27  "Melbourne,Australia"   Student
+John    31  "Boston,USA"    Chef
+
+</code></pre>
+
+<p>here is the explanation of the code</p>
+
+<pre><code class="language-code">sed -r -use extended regular expression.
+s/,/\t/g - Replace all commas with tab (first sed command)
+; - starts next sed command
+s/("\w+)\t/\1,/g - This has two parts: store a pattern, replace pattern followed by tab with pattern it self and comma. Here the pattern is ", one or more word characters. This way of recalling a pattern is called back-referencing.
+1 is order of capture pattern. If there are two patterns, they would be called after order of appearance.
+</code></pre>

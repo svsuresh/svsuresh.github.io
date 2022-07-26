@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/gather-and-spread-dataframe">Apr 28, 2018 - Collapse rows using gather and spread functions</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+Sometimes, R makes life difficult. Following here is a data frame where rows are duplicate and there are several NAs.<br />
+&gt; test<br />
+indiv.ID X86912632 X86920881 X86922082 X86927699<br />
+1 Alxis_3702 CTGA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+2 Alxis_3702 TCTG &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+3 Alxis_3702 &lt;NA&gt; G &lt;NA&gt; &lt;NA&gt;<br />
+4 Alxis_3702 &lt;NA&gt; &lt;NA&gt; C &lt;NA&gt;<br />
+5 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+6 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+7 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+8 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+9 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+10 Alxis_3702 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;<br />
+<br />
+Life would be easier if there is a function that removes all rows with NAs and append values or some other function to each column (sum, average, min, max etc). Then convert to wide format where duplicate column names are appended some string. But such a function doesn't exist. some thing like a collapse dataframe function. <br />
+<br />
+Ok. we have a round about way. Let us say, we have imported the data as data frame by name test. Following is the code:<br />
+========================<br />
+test %&gt;% gather(k, v, -indiv.ID) %&gt;% na.omit() %&gt;% mutate(k=make.unique(k)) %&gt;% spread(k,v)<br />
+========================<br />
+What does the code mean (every step before %&gt;%):<br />
+<ol style="text-align: left;">
+<li>Use data frame test</li>
+<li>Convert the data to long format (for this you would need tidyr library)</li>
+<li>Remove rows with NA </li>
+<li>Convert any duplicate names to unique names and replace the column values ( you would need dplyr library)</li>
+<li>Convert the data to wide format </li>
+</ol>
+Output would look like this:<br />
+indiv.ID X86912632 X86912632.1 X86920881 X86922082<br />
+1 Alxis_3702 CTGA TCTG G C<br />
+<br />
+<br />
+Tip: How do you convert text "&lt;NA&gt;" in text file to NA values in data frame? While importing define na argument as below:<br />
+========= <br />
+test=read.csv("test2.txt", header = T, sep = "\t", stringsAsFactors = F, na="&lt;NA&gt;") <br />
+=========</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/time-series-experiments-and-ggplot" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/split-columns-in-r-data-frame" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

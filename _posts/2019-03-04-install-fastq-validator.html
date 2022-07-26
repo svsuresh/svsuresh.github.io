@@ -1,0 +1,29 @@
+---
+layout: post
+title: install fastq validator
+date: '2019-03-04T14:19:00.001+05:30'
+author: suresh
+tags:
+- ubuntu
+- fastqvalidator
+modified_time: '2019-03-04T14:19:13.671+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-1378765084319120016
+blogger_orig_url: https://digibio.blogspot.com/2019/03/install-fastq-validator.html
+---
+
+<div style="text-align: justify;">
+<span style="font-family: inherit;"><span style="font-size: small;">Fastqvalidator tool validates the fastq files and prints out errors. For eg. one of my files, for some reason, had more quality values than the bases in a read due to which downstream processes were failing. Installation requirements are taken from&nbsp; https://github.com/statgen/fastQValidator and https://github.com/statgen/libStatGen.&nbsp;</span></span></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<span style="font-family: inherit;"><span style="font-size: small;">Assuming that user has sudo/ root privileges, please follow the procedure as given below:</span></span></div>
+<ol style="text-align: justify;">
+<li><span style="font-family: inherit;"><span style="font-size: small;">Install statgen dependencies as outlined in https://github.com/statgen/libStatGen<br /><br />sudo apt-get install g++ libssl-dev zlib1g-dev <br /></span></span></li>
+<li><span style="font-family: inherit;"><span style="font-size: small;">Then download libStatgen source file as zip (from clone or download option on github page)</span></span></li>
+<li><span style="font-family: inherit;"><span style="font-size: small;">Unzip the source and type 'sudo make'</span></span></li>
+<li><span style="font-family: inherit;"><span style="font-size: small;">This would compile the necessary files</span></span></li>
+<li><span style="font-family: inherit;"><span style="font-size: small;">Download fastqvalidator source file from github (https://github.com/statgen/fastQValidator) as zip file (from clone or download option on github)</span></span></li>
+<li><span style="font-family: inherit;"><span style="font-size: small;">Unzip the source</span></span></li>
+<li><span style="font-family: inherit;"><span style="font-size: small;">Replace the libstatgen folder with folder from step 4 i.e replace libstatgen provided by fastqvalidator with compiled libstatgen folder from step 4</span></span></li>
+<li><span style="font-family: inherit;"><span style="font-size: small;">Within, fastqvalidator folder, type "sudo make". This would compile and creates a folder named "fastQValidator". Within fastQValidator folder, bin would be present where fastqvalidator binary is kept. Add this path to your system/user path. </span></span></li>
+</ol>

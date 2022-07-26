@@ -1,0 +1,202 @@
+---
+layout: post
+title: ggplot and alternate shading with geom_rect
+date: '2018-05-07T14:30:00.002+05:30'
+author: suresh
+tags:
+- alternate shading
+- ggplot2
+- geom_rect
+modified_time: '2018-05-07T16:33:45.797+05:30'
+thumbnail: https://3.bp.blogspot.com/-HLZEWS-YUPU/WvAr4oWWKDI/AAAAAAAABAk/Ybas4FOug0A4-zLj67fibB9kNFY6Ac7wgCLcBGAs/s72-c/Rplot.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8554728059727006902
+blogger_orig_url: https://digibio.blogspot.com/2018/05/ggplot-and-alternate-shading-with.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Despite the quality of output, ggplot is a pain in the neck (for beginners) and the error messages are as useful as investor tips on cable. One of the requests i got recently was to plot data into alternate colours for chromosomes. It is very easy to color as per chromosome (factor/Type). In addition, geom_rect is literally pain in the neck to draw. In this note, we will simulate a dataframe for 10 chromosomes, with start and stop for each heterozygocity value. The frame will have 1-10 chromosomes (factor), start and stop coordinates (integers/numbers) and heterozygocity values (floats). Let us get the elephant out first, elephant here is dataframe simulation:</div>
+<div style="text-align: justify;">
+<br /></div>
+===============<br />
+df1 = data.frame(<br />
+&nbsp; chromosome = as.factor(rep(<br />
+&nbsp; &nbsp; 1:10, 100, each = 10, replace = T<br />
+&nbsp; )),<br />
+&nbsp; start = round(1:10000),<br />
+&nbsp; stop =&nbsp; round(20:10019),<br />
+&nbsp; hetero = sample(c(<br />
+&nbsp; &nbsp; runif(9000, 0.05, 0.2), runif(1000, 0.2, 0.6)<br />
+&nbsp; ))<br />
+)<br />
+<br />
+df1$col = ifelse(as.numeric(df1$chromosome) %% 2 == 0, 0, 1)<br />
+================<br />
+<div style="text-align: justify;">
+Data structure and few lines from the data are given at the end. First, draw a scatter plot ( I removed all axis labels, legends and axes):</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-HLZEWS-YUPU/WvAr4oWWKDI/AAAAAAAABAk/Ybas4FOug0A4-zLj67fibB9kNFY6Ac7wgCLcBGAs/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="595" data-original-width="563" height="640" src="https://3.bp.blogspot.com/-HLZEWS-YUPU/WvAr4oWWKDI/AAAAAAAABAk/Ybas4FOug0A4-zLj67fibB9kNFY6Ac7wgCLcBGAs/s640/Rplot.png" width="604" /></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div style="text-align: justify;">
+code:</div>
+<div style="text-align: justify;">
+==========================</div>
+<div style="text-align: justify;">
+ggplot(df1, aes((start + stop) / 2, hetero)) +</div>
+<div style="text-align: justify;">
+&nbsp; theme_void() +</div>
+<div style="text-align: justify;">
+&nbsp; theme(</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.text.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.ticks.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; legend.position = "none"</div>
+<div style="text-align: justify;">
+&nbsp; ) +</div>
+<div style="text-align: justify;">
+&nbsp; geom_point(aes(colour = factor(col))) +</div>
+<div style="text-align: justify;">
+&nbsp; scale_colour_manual(values = c("steelblue", "lightblue"))</div>
+<div style="text-align: justify;">
+==============================</div>
+<div style="text-align: justify;">
+Now we have plotted heterozygosity values against average value of start and stop of chromosome. Odd and even chromosomes are colored steelblue and lightblue. These values (for odd and even chromsomes) come from col column in simulated data frame. We have assigned 1 and 0 to even and odd chromosomes. Let us now break the graph into per chromosome values by faceting.</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-QWiWjDg8OlA/WvAsff17HeI/AAAAAAAABAs/hTY-55ITkgs5pY0zzBG7auvz0dYh51WBACLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="595" data-original-width="563" height="640" src="https://4.bp.blogspot.com/-QWiWjDg8OlA/WvAsff17HeI/AAAAAAAABAs/hTY-55ITkgs5pY0zzBG7auvz0dYh51WBACLcBGAs/s640/Rplot02.png" width="604" /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="text-align: justify;">code:</span></div>
+<div style="text-align: justify;">
+==================================</div>
+<div style="text-align: justify;">
+ggplot(df1, aes((start + stop) / 2, hetero)) +</div>
+<div style="text-align: justify;">
+&nbsp; facet_grid(. ~ chromosome) +</div>
+<div style="text-align: justify;">
+&nbsp; theme_void() +</div>
+<div style="text-align: justify;">
+&nbsp; theme(</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.text.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.ticks.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; legend.position = "none"</div>
+<div style="text-align: justify;">
+&nbsp; ) +</div>
+<div style="text-align: justify;">
+&nbsp; geom_point(aes(colour = factor(col))) +</div>
+<div style="text-align: justify;">
+&nbsp; scale_colour_manual(values = c("steelblue", "lightblue"))</div>
+<div style="text-align: justify;">
+======================================</div>
+<div style="text-align: justify;">
+Now we have segregated the data per chromosome, now let us highlight the heterozygocity data by filtering heterozygous value above 0.4, with red color.</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-M6yeZAWiZZY/WvAtp5I21HI/AAAAAAAABA4/HPcW97S_vZoOZWx_VtC9jIOH-SlVL0L8wCLcBGAs/s1600/Rplot03.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="800" data-original-width="757" height="640" src="https://3.bp.blogspot.com/-M6yeZAWiZZY/WvAtp5I21HI/AAAAAAAABA4/HPcW97S_vZoOZWx_VtC9jIOH-SlVL0L8wCLcBGAs/s640/Rplot03.png" width="604" /></a></div>
+<div style="text-align: justify;">
+code:</div>
+<div style="text-align: justify;">
+====================</div>
+<div style="text-align: justify;">
+ggplot(df1, aes((start + stop) / 2, hetero)) +</div>
+<div style="text-align: justify;">
+&nbsp; facet_grid(. ~ chromosome) +</div>
+<div style="text-align: justify;">
+&nbsp; theme_void() +</div>
+<div style="text-align: justify;">
+&nbsp; theme(</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.text.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.ticks.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; legend.position = "none"</div>
+<div style="text-align: justify;">
+&nbsp; ) +</div>
+<div style="text-align: justify;">
+&nbsp; geom_point(aes(colour = factor(col))) +</div>
+<div style="text-align: justify;">
+&nbsp; scale_colour_manual(values = c("steelblue", "lightblue")) +</div>
+<div style="text-align: justify;">
+&nbsp; geom_point(data = df1[df1$hetero &gt; 0.4,], aes((start + stop) / 2, hetero), colour ="red")</div>
+<div style="text-align: justify;">
+===================================</div>
+<div style="text-align: justify;">
+Now we have highlighted the filtered values with red color. We already highlighted data by chromosome and gave alternate color patterns to all the data points. Now let us give alternate colors to each chromsome background</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-VTBfXzy7puE/WvAxX_1U15I/AAAAAAAABBU/lyHaqsUv1QcHIGBGcblQtjDCqTFdYU9YwCLcBGAs/s1600/Rplot04.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1268" data-original-width="1200" height="640" src="https://4.bp.blogspot.com/-VTBfXzy7puE/WvAxX_1U15I/AAAAAAAABBU/lyHaqsUv1QcHIGBGcblQtjDCqTFdYU9YwCLcBGAs/s640/Rplot04.png" width="604" /></a></div>
+<div style="text-align: justify;">
+.Now as you see, each chromosome has alternate color as background and each data point has alternate color.&nbsp;</div>
+<div style="text-align: justify;">
+code:</div>
+<div style="text-align: justify;">
+==========================</div>
+<div style="text-align: justify;">
+ggplot(df1, aes((start + stop) / 2, hetero)) +</div>
+<div style="text-align: justify;">
+&nbsp; facet_grid(. ~ chromosome)&nbsp; +</div>
+<div style="text-align: justify;">
+&nbsp; theme_void() +</div>
+<div style="text-align: justify;">
+&nbsp; theme(</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.text.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; axis.ticks.x = element_blank(),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; legend.position = "none"</div>
+<div style="text-align: justify;">
+&nbsp; ) +</div>
+<div style="text-align: justify;">
+&nbsp; geom_rect(aes(</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; xmin = min((start + stop) / 2),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; xmax = max((start + stop) / 2),</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; ymin = -Inf,</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; ymax = +Inf,</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; fill = factor(col)</div>
+<div style="text-align: justify;">
+&nbsp; ),</div>
+<div style="text-align: justify;">
+&nbsp; alpha = 0.2) +</div>
+<div style="text-align: justify;">
+&nbsp; scale_fill_manual(values = c("grey90", "white")) +</div>
+<div style="text-align: justify;">
+&nbsp;&nbsp;</div>
+<div style="text-align: justify;">
+&nbsp; geom_point(aes(colour = factor(col))) +</div>
+<div style="text-align: justify;">
+&nbsp; scale_colour_manual(values = c("steelblue", "lightblue")) +</div>
+<div style="text-align: justify;">
+&nbsp; geom_point(data = df1[df1$hetero &gt; 0.4, ], aes((start + stop) / 2, hetero), colour ="red")</div>
+<div style="text-align: justify;">
+============================</div>
+<div style="text-align: justify;">
+Note that geom_rect comes first, scatter plot comes next. This is because of R is lazy and executes code in order. Hence first it draws background, then it plots the points. Otherwise, it would draw the points first and then will overdraw the background on data points.&nbsp;</div>
+<br />
+Now let us look at the input dataframe (code to simulate the data frame is given after ggplot code):<br />
+&gt; head(df1)<br />
+&nbsp; chromosome start stop&nbsp; &nbsp; &nbsp;hetero col<br />
+1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1&nbsp; &nbsp; &nbsp;1&nbsp; &nbsp;20 0.11914874&nbsp; &nbsp;1<br />
+2&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1&nbsp; &nbsp; &nbsp;2&nbsp; &nbsp;21 0.17624770&nbsp; &nbsp;1<br />
+3&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1&nbsp; &nbsp; &nbsp;3&nbsp; &nbsp;22 0.06668591&nbsp; &nbsp;1<br />
+4&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1&nbsp; &nbsp; &nbsp;4&nbsp; &nbsp;23 0.15027210&nbsp; &nbsp;1<br />
+5&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1&nbsp; &nbsp; &nbsp;5&nbsp; &nbsp;24 0.08287389&nbsp; &nbsp;1<br />
+6&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1&nbsp; &nbsp; &nbsp;6&nbsp; &nbsp;25 0.05106764&nbsp; &nbsp;1<br />
+<br />
+Let us look at the structure of dataframe df1:<br />
+<br />
+&gt; str(df1)<br />
+'data.frame':<span style="white-space: pre;"> </span>10000 obs. of&nbsp; 5 variables:<br />
+&nbsp;$ chromosome: Factor w/ 10 levels "1","2","3","4",..: 1 1 1 1 1 1 1 1 1 1 ...<br />
+&nbsp;$ start&nbsp; &nbsp; &nbsp;: num&nbsp; 1 2 3 4 5 6 7 8 9 10 ...<br />
+&nbsp;$ stop&nbsp; &nbsp; &nbsp; : num&nbsp; 20 21 22 23 24 25 26 27 28 29 ...<br />
+&nbsp;$ hetero&nbsp; &nbsp; : num&nbsp; 0.1191 0.1762 0.0667 0.1503 0.0829 ...<br />
+&nbsp;$ col&nbsp; &nbsp; &nbsp; &nbsp;: num&nbsp; 1 1 1 1 1 1 1 1 1 1 ...</div>

@@ -1,0 +1,68 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+<a href="http://software.broadinstitute.org/software/igv/home" target="_blank">IGV</a> (Integrative Genomics Viewer) is a <i>de facto</i> viewing tool for most of the genomics and transcriptomics data analysts. Broad team allows the user to control IGV via ports and it is well documented <a href="http://software.broadinstitute.org/software/igv/PortCommands" target="_blank">here</a>. By default IGV listens to port  60151. Unless the ports are closed on your machine (I use ubuntu/debian most), IGV will be listening to port  60151 on your local machine too. For controlling IGV from browser, do following stuff:</div>
+<ol style="text-align: justify;">
+<li>Launch IGV and wait till you see the GUI</li>
+<li>Open browser of your choice, in address bar, type/paste "http://localhost:60151/goto?locus=egfr" and press enter</li>
+<li>Now go back to IGV. In IGV, "egfr" gene would be displayed.</li>
+<li>Now let us say, you would like to use coordinates instead of gene name. Try this: type "http://localhost:60151/goto?locus=chr1:199999-20000000" and enter</li>
+<li>Now, IGV would display the region between these coordinates.</li>
+</ol>
+<div style="text-align: justify;">
+Now this is well documented in IGV manual. Let us use this trick to&nbsp; control IGV from command line:</div>
+<ol style="text-align: justify;">
+<li>Launch IGV and wait till you see the GUI</li>
+<li>Now launch a terminal (gnome-terminal or qtconsole or any terminal of your choice) with bash shell. Type in&nbsp; "xdg-open http://localhost:60151/goto?locus=egfr" and press enter</li>
+<li>This would launch a browser or open a tab if the browser is already open. Ignore the browser. </li>
+<li>Now go back to IGV. In IGV, "egfr" gene would be displayed.</li>
+<li>Now
+ let us say, you would like to use coordinates instead of gene name. Try
+ this: type " xdg-open http://localhost:60151/goto?locus=chr1:199999-20000000" and
+ enter</li>
+<li>Now, IGV would display the region between these coordinates.</li>
+</ol>
+<div style="text-align: justify;">
+Well, now you say that this is not the way. This is simply a hack because xdg-open command launches default browser if you supply URL. There is another way to control IGV from CLI.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+There is a program by name "nc" default installed in most of the *buntu and debian systems. This program can open, listen and close ports and here, we are talking about tcp ports for IGV.&nbsp; Now let us use this program to control IGV.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Let us say we want to navigate to "TP53" gene, then type in (in bash shell of your choice terminal): </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ echo "goto TP53" | nc localhost 60151</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Once the command is passed, you would see "OK" in your terminal. Now go back to IGV window and you would see TP53 being displayed.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Let us say you would like to use coordinates instead of gene name, then try this:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ echo "goto chr11:65,839,697-75,839,697" | nc localhost 60151</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Depending on your machine speed and net speed, the coordinates would load. Sometimes, it looks as if it's frozen, but it's not. IGV is loading the coordinates and once the coordinates are loaded, you would see the IGV displaying new coordinates.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Now having said all these things, one fundamental question: how do i know which ports are open on my machine (after launching IGV)?</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+a:&nbsp; type "$ netstat -lnpt"</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+You should see "0.0.0.0:60151" in "Local address" column from output and "java" as program name in "PID/Program name" column. </div>
+<div style="text-align: justify;">
+</div>
+</div>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/rna-seq-data-analysis-tophat-htseq-and">Aug 31, 2015 - RNA seq data analysis - Tophat, HTseq and DESeq 2 analysis</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+As mentioned in earlier notes here,&nbsp; there are scientists who use Tophat-HTseq-DESeq2 pipeline instead of Tophat-Cufflinks-Cummerbund pipeline. I realized that there are&nbsp; a variety of predefined bpipe work flows and are made available for end user <a href="https://bitbucket.org/drambaldi/bpipe_config" target="_blank">here</a> (Program and dependencies installations are around ~400mb in Ubuntu 14.4).<br />
+<br />
+I am posting shell script (bash) coupled with R script for analysis. In this note, you will find pipeline for RNAseq data analysis using Tophat, HTseq and DESeq2 analysis. Please keep following notes in mind:</div>
+<div style="text-align: justify;">
+<br />
+1) This notes (and this blog) is meant for biologists, not for programmers or statisticians.</div>
+<div style="text-align: justify;">
+2) This notes is an example, not an optimized pipeline</div>
+<div style="text-align: justify;">
+3) This notes uses data available for public consumption. Hence data derived and demo pipeline used in this note are for public consumption without any prejudice.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Let us jump into the work flow. Work flow is outlined below:</div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<img border="0" height="293" src="http://1.bp.blogspot.com/-lyxyPLSzg2A/VeKBg1HCs2I/AAAAAAAAAWc/T7IfbSSLOhQ/s400/RNAseq_p4.png" width="400" />&nbsp;</div>
+<div class="separator" style="clear: both; text-align: left;">
+This notes contain a bash script including an R script within it. Please make sure that reference files are in a folder called "reference" and raw reads are in a folder, titled "raw_reads". Execute the shell script in a directory which has reference and raw_reads with in it. Please note that cutadapt QC output is same as that raw reads. </div>
+<br />
+Original files&nbsp; including raw reads (two groups: MeOH and R3H paired end reads, with 3 replicates), reference gtf and reference fasta can be downloaded <a href="https://test.galaxyproject.org/u/galaxyproject/h/cam-rna-seq-day-1" target="_blank">here</a>.<br />
+<br />
+Download the raw files (12 fastqc files in total) and store them in a folder titled "raw_reads". Download fasta and gtf file and store them in a folder titled "reference". Run the following script. Please keep the r script file, raw_files folder and reference folder, in a single folder and run the script. Please note that I haven't used threads or core options for each program.<br />
+=================<br />
+bash script starts here<br />
+=================<br />
+#For loop to declare each sample<br />
+for i in $(ls ./raw_reads | grep ^[^d]| rev | cut -c 10- | rev | uniq)<br />
+do<br />
+# Make direcotry for fastqc<br />
+mkdir -p ${i%}fastqc<br />
+# Run fastqc<br />
+fastqc -o ./${i%}fastqc -f fastq ./raw_reads/${i%}_R1.fastq ./raw_reads/${i%}_R2.fastq<br />
+# Make directory to store cutadapt results<br />
+mkdir -p cutadapt<br />
+#Run cutadapt<br />
+cutadapt -a AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATC --quality-cutoff=20 --format=fastq -o ./cutadapt/${i%}_R1.cutadapt.fastq -p ./cutadapt/${i%}_R2.cutadapt.fastq ./raw_reads/${i%}_R1.fastq ./raw_reads/${i%}_R2.fastq<br />
+# Run top hat and save the out with directory extension _tophatout<br />
+tophat2 --no-coverage-search -o ./${i%}_tophatout -G ./reference/genes_chr12.gtf -p 2 ./reference/chr12 ./cutadapt/${i%}_R1.cutadapt.fastq ./cutadapt/${i%}_R2.cutadapt.fastq --rg-id ${i} --rg-sample ${i%} --rg-library rna-seq --rg-platform Illumina<br />
+# Index the bam<br />
+samtools index ./${i%}_tophatout/accepted_hits.bam<br />
+# Collect the stats<br />
+samtools flagstat ./${i%}_tophatout/accepted_hits.bam &gt; ./${i%}_tophatout/accepted_hits.flastats<br />
+# Print only paired reads <br />
+samtools view -bf 1 ./${i%}_tophatout/accepted_hits.bam -o ./${i%}_tophatout/accepted_hits.pe.bam <br />
+# Run htseq count<br />
+htseq-count -f bam --stranded=no --mode=intersection-nonempty -r name ./${i%}_tophatout/accepted_hits.pe.bam /home/suresh/rnaseq/reference/genes_chr12.gtf &gt; ./${i%}_tophatout/htseq.${i%}.txt<br />
+# Count features<br />
+#featureCounts -B -p -t exon -g gene_id -a ./reference/genes_chr12.gtf -o ./${i%}_tophatout/counts.txt ./${i%}_tophatout/accepted_hits.pe.bam<br />
+# make directory for storing htseq results<br />
+mkdir -p htseqresults<br />
+# Move all htseq results at one place<br />
+cp `ls ./${i%}_tophatout/htseq.${i%}.txt` htseqresults<br />
+done<br />
+# Run R script<br />
+Rscript ./htseq.r<br />
+=================<br />
+bash scripts ends here<br />
+================= <br />
+This script would run fastqc (for quality check), Tophat (for alignment), samtools (for indexing, statistics of alignment, sorting aligned files), HTSeq (for counting reads), featureCounts (counting reads exon wise),&nbsp; R (DESeq2, dplyr packages for differential expression and summarizing plots).<br />
+<br />
+Script includes command line for a program called "feature counts" which is reported to be faster than HTseq and not as fussy as htseq. Outputs from these two programs do not match with each other.<br />
+<br />
+====================== <br />
+R script-htseq.r -- R scritpt starts here<br />
+======================<br />
+# Load libraries<br />
+library(dplyr)<br />
+library(tools)<br />
+library(DESeq2)<br />
+library("RColorBrewer")<br />
+library("gplots")<br />
+# List files in htseq results directory with extension .txt<br />
+files=list.files(path="./htseqresults/",pattern="\\.txt$",full.names=T)<br />
+files<br />
+# Import htseq results in to R as list <br />
+dl=lapply(files, read.delim2, header=FALSE)<br />
+# give names to each data frame within the list<br />
+names(dl)=tools::file_path_sans_ext(basename(files))<br />
+# Generate a data frame by mering all the data frame within the list<br />
+dl.df=do.call(cbind, dl)<br />
+# Remove unwanted columns and prepare a final data frame<br />
+final.count=cbind(dl.df[,1],select(dl.df,contains("V2")))<br />
+# Provide column (sample) names for each column<br />
+colnames(final.count)=c("GeneSymbol",basename(files))<br />
+#View(final.count)<br />
+# Save the table to hard disk<br />
+write.table(final.count, "./htseqresults/htseq.r.results.tsv", sep="\t", row.names=FALSE)<br />
+# Extract file names&nbsp; without the extension<br />
+basename(files)<br />
+fnames=file_path_sans_ext(basename(files))<br />
+flnames=sub("htseq.","\\1", fnames)<br />
+flnames<br />
+# Extract conditions<br />
+cond=do.call(rbind,strsplit(flnames, '_'))[,1]<br />
+cond<br />
+# Prepare sample details as data frame<br />
+stable &lt;- data.frame(sampleName = flnames, fileName = basename(files),condition =cond)<br />
+stable<br />
+# Prepare a DEXseq object<br />
+htdex=DESeqDataSetFromHTSeqCount(sampleTable = stable,directory = "./htseqresults/", design= ~ condition)<br />
+# Calculate differential expression<br />
+dhtdex=DESeq(htdex)<br />
+# Extract and store the results<br />
+res.dhtdex=results(dhtdex)<br />
+# MA plot<br />
+png("ma.png")<br />
+plotMA(res.dhtdex, ylim=c(-2,2))<br />
+dev.off()<br />
+# Comparison between two samples for a given gene (i.e gene that shows highest fold change difference)<br />
+png("plotcounts.png")<br />
+plotCounts(dhtdex, gene=which.max(res.dhtdex$log2FoldChange), intgroup="condition")<br />
+dev.off()<br />
+# Log transform the data<br />
+rld.dhtdex=rlog(dhtdex)<br />
+# PCA analysis<br />
+png("pca.png")<br />
+plotPCA(rld.dhtdex)<br />
+dev.off()<br />
+# Prepare data for histogram<br />
+select &lt;- order(rowMeans(counts(dhtdex,normalized=TRUE)),decreasing=TRUE)[1:30]<br />
+# Select the color from preexisting colors within R<br />
+hmcol &lt;- colorRampPalette(brewer.pal(3, "BrBG"))(100)<br />
+# Draw heatmap for selected 30 genes<br />
+png("counts.png")<br />
+heatmap.2(counts(dhtdex,normalized=TRUE)[select,], col = hmcol,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Rowv = FALSE, Colv = FALSE, scale="none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dendrogram="none", trace="none", margin=c(10,6))<br />
+dev.off()<br />
+png("rld.png")<br />
+heatmap.2(assay(rld.dhtdex)[select,], col = hmcol,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Rowv = FALSE, Colv = FALSE, scale="none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dendrogram="none", trace="none", margin=c(10, 6))<br />
+dev.off()<br />
+# Calculate the distance betwen the samples/groups<br />
+distsRL &lt;- dist(t(assay(rld.dhtdex)))<br />
+# Store the distance as matrix<br />
+mat &lt;- as.matrix(distsRL)<br />
+# supply row names and column names for this matrix<br />
+rownames(mat) &lt;- colnames(mat)&lt;-row.names(colData(dhtdex))<br />
+# Calculate clustering distances<br />
+hc &lt;- hclust(distsRL)<br />
+# Plot the distances and dendrogram together<br />
+png("distances.png")<br />
+heatmap.2(mat, Rowv=as.dendrogram(hc),symm=TRUE, trace="none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; col = rev(hmcol), margin=c(13, 13))<br />
+dev.off()<br />
+# Plot Dispersion estimates<br />
+png("disp.png")<br />
+plotDispEsts(dhtdex)<br />
+dev.off()<br />
+# Save the image for further processing<br />
+save.image("./htseqresults/htseq.results.Rdata")<br />
+<br />
+=====================================================<br />
+R script ends here <br />
+======================================================<br />
+<br />
+script would generate a tsv file (HTSeq summary), Images (summarizing sample properties, DE) and final .rdata for re running the analysis. User can modify the code htseq.r independent of bash script.<br />
+<br />
+Images produced look like:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-3PXF5OzssLw/VeSL_HV4XJI/AAAAAAAAAWs/BuZB6SwAaYk/s1600/drawing.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="356" src="http://1.bp.blogspot.com/-3PXF5OzssLw/VeSL_HV4XJI/AAAAAAAAAWs/BuZB6SwAaYk/s640/drawing.png" width="640" /></a></div>
+Starting directory structure is:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-68-8o2WcZXM/VeSNWE46y8I/AAAAAAAAAW4/ZyK0bddk_io/s1600/tree.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="91" src="http://4.bp.blogspot.com/-68-8o2WcZXM/VeSNWE46y8I/AAAAAAAAAW4/ZyK0bddk_io/s400/tree.png" width="400" /></a></div>
+htseq.r in image is r script and rnaseq.sh is bash script.<br />
+<br />
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/rnaseq-data-analysis-and-tuxedo-workflow" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/import-multiple-files-in-to-r-as-data" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

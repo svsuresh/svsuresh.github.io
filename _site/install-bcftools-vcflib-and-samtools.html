@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/install-bcftools-vcflib-and-samtools">May 19, 2015 - Install BCFtools, VCFlib and Samtools </a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div>
+Most of the bioinformaticians are familiar with BCFtools, VCFlib and samtools. Now that they moved to github, some of them are not available as binaries. For eg. Samtools is available as binary in linux repositories, BCFtools and VCF lib are not. Following is the note to compile and install, all the three tools in one go. This is because bcftools depend on vcflib in compiling.&nbsp; Following note is tested on Ubuntu trusty, 64bit.<br />
+<br />
+1) Install git.<br />
+<br />
+sudo apt-get install git -y<br />
+<br />
+This should work on most of the times, in ubuntu.<br />
+<br />
+2) Once you install the git, run following commands:<br />
+<br />
+<ul style="text-align: left;">
+<li>git clone --branch=develop git://github.com/samtools/htslib.git
+            </li>
+<li>git clone --branch=develop git://github.com/samtools/bcftools.git
+            </li>
+<li>git clone --branch=develop git://github.com/samtools/samtools.git&nbsp;</li>
+</ul>
+These commands should create 3 folders : samtools, bcftools, htslib.<br />
+<br />
+3) To install&nbsp; bcftools<br />
+<ol style="text-align: left;">
+<li>Navigate to bcftools folder <br />command: cd bcftools<br /> </li>
+<li>Compile bcftools by running following command<br />command: sudo make<br /></li>
+<li>This would create a executable file named "bcftool" </li>
+<li>Move the executable to /usr/bin folder&nbsp; or to the folder which is in user's path of executables.<br />&nbsp;</li>
+</ol>
+</div>
+<div>
+4) To install&nbsp; vcftools</div>
+<ol style="text-align: left;">
+<li>Navigate to vcftools folder <br />command: cd vcftools<br /> </li>
+<li>Compile vcftools by running following command<br />command: sudo make<br /></li>
+<li>This would create multiple executable files within "vcftools" folder, named bin </li>
+<li>Move the executable to /usr/bin folder&nbsp; or to the folder which is in user's path of executables.</li>
+</ol>
+<br />
+<div>
+5) To install samtools</div>
+<ol style="text-align: left;">
+<li>Navigate to samtools folder <br />command: cd samtools<br /> </li>
+<li>Compile samtools by running following command<br />command: sudo make<br /></li>
+<li>This would create an executable file named samtools </li>
+<li>Move the executable to /usr/bin folder&nbsp; or to the folder which is in user's path of executables.</li>
+</ol>
+<br />
+How to upgrade and compile:<br />
+<br />
+1)&nbsp; Navigate to the folder (for eg. samtools folder mentioned above)<br />
+2)&nbsp; Run following command to pull the most recent/updated versions of the software<br />
+<br />command: git pull<br />
+This would update the folder with latest code. However, if you already have the latest version, a message would appear that code is up to date.<br />
+<br />
+3) Once the folder is updated, run make command again to compile the executable. Replace the earlier binaries with new binaries.<br />
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/plotting-two-y-axes-in-r" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/convert-bam-files-to-cram-files" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,36 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Earlier posts in this blog outlined random sequence generation in R and Python/Biopython. In this note, random sequence generation for proteins is outlined. 
+Objective of the study is to simulate protein (aminoacid) sequence after taking 
+following inputs from user:<br />
+1) Length of the desired sequence<br />
+2) Desired number of sequences<br />
+<br />
+script
+ will take above input and stores the sequences in the same folder where
+ code is executed with date and time stamp. Stored format is fasta.<br />
+<br />
+============================================<br />
+from Bio.Alphabet import IUPAC<br />
+import random<br />
+from datetime import datetime<br />
+<br />
+n=int(input("type the length of the sequence: "))<br />
+j=int(input("type the number of sequences: "))<br />
+<br />
+sequnce=IUPAC.IUPACProtein.letters.upper()<br />
+<br />
+# print(sequnce)<br />
+# print(list(sequnce))<br />
+# print (random.choice(sequnce))<br />
+# print (random.sample(sequnce,2))<br />
+# print (''.join(random.sample(sequnce,4)))<br />
+<br />
+pfile = open("aasequence_"+datetime.now().strftime("%Y%m%d_%H%M%S")+".fa", "a")<br />
+for j in range(j):<br />
+&nbsp;&nbsp;&nbsp; my_seq=''.join(random.choice(sequnce) for i in range(n))<br />
+&nbsp;&nbsp;&nbsp; id="seq "+str(j+1)<br />
+&nbsp;&nbsp;&nbsp; my_seq = "&gt;"+id+"\n"+my_seq <br />
+&nbsp;&nbsp;&nbsp; pfile.write(my_seq+"\n")<br />
+pfile.close()<br />
+============================================<br />
+Please note that python is particular about indentation and make sure that indentation is correct. </div>

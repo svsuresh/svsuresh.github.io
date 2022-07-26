@@ -1,0 +1,149 @@
+---
+layout: post
+title: Plot numbers in R
+date: '2018-08-06T00:28:00.002+05:30'
+author: suresh
+tags:
+- ggplot2
+- heatmap
+- complexheatmap
+- matrix
+- pheatmap
+- annotation
+- cran-R
+modified_time: '2018-08-06T02:00:57.990+05:30'
+thumbnail: https://4.bp.blogspot.com/-SgK2zHE0vco/W2dB81BVasI/AAAAAAAABL0/-ZkujAVYJHUIItRak6gDBylny5csvZwIQCLcBGAs/s72-c/Rplot03.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-6092851877374588148
+blogger_orig_url: https://digibio.blogspot.com/2018/08/plot-number-matrix-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Some times, you need to plot expression numbers, not the trends, across samples. Now let us simulate a data frame and then plot it in R. Let me first show the output to be clear about output.<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-SgK2zHE0vco/W2dB81BVasI/AAAAAAAABL0/-ZkujAVYJHUIItRak6gDBylny5csvZwIQCLcBGAs/s1600/Rplot03.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="757" data-original-width="870" height="556" src="https://4.bp.blogspot.com/-SgK2zHE0vco/W2dB81BVasI/AAAAAAAABL0/-ZkujAVYJHUIItRak6gDBylny5csvZwIQCLcBGAs/s640/Rplot03.png" width="640" /></a></div>
+</div>
+<div style="text-align: justify;">
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+This plot shows the numbers for each sample and summarizes the trends as box and joy plots. This image needs to cleanup further. However, this is good enough for some one to start with. However, this image needs a little bit of coding in R. Let us do it in a simple way as appears below:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-tDW1i7wwuDc/W2dBGNcKdkI/AAAAAAAABLs/yZnLeUpefkg-TTntq74hZTOEGBpV1z7awCLcBGAs/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="757" data-original-width="870" height="556" src="https://1.bp.blogspot.com/-tDW1i7wwuDc/W2dBGNcKdkI/AAAAAAAABLs/yZnLeUpefkg-TTntq74hZTOEGBpV1z7awCLcBGAs/s640/Rplot01.png" width="640" /></a></div>
+This image is produced using pheatmap package in R. First let us create a data frame. This is very simple data frame with 17 x 17 matrix with arbitrary names and values.<br />
+===========================<br />
+$ library(pheatmap)<br />
+$ library(RColorBrewer)<br />
+$ samples=c(paste0("X",c(4:7,10,14),"d"), paste0 ("X",c(0,1,3,6,9,12,24,36,48,60,72),"h"))<br />
+$ df3=data.frame(replicate (17,rnorm(17,5,1)), row.names = samples)<br />
+$ colnames(df3)=samples<br />
+$ pheatmap(<br />
+&nbsp;&nbsp;&nbsp; df3,<br />
+&nbsp;&nbsp;&nbsp; display_numbers = T,<br />
+&nbsp;&nbsp;&nbsp; cellwidth = 30,<br />
+&nbsp;&nbsp;&nbsp; cellheight = 30,<br />
+&nbsp;&nbsp;&nbsp; cluster_row = F,<br />
+&nbsp;&nbsp;&nbsp; cluster_col = F,<br />
+&nbsp;&nbsp;&nbsp; show_rownames = T,<br />
+&nbsp;&nbsp;&nbsp; show_colnames = T,<br />
+&nbsp;&nbsp;&nbsp; fontsize = 24,<br />
+&nbsp;&nbsp;&nbsp; number_color = "black",<br />
+&nbsp;&nbsp;&nbsp; color = colorRampPalette(brewer.pal(11, "PiYG"))(289),<br />
+&nbsp;&nbsp;&nbsp; number_format="%.f",<br />
+&nbsp;&nbsp;&nbsp; legend = F<br />
+)<br />
+====================================<br />
+Output is as shown in 2nd image. Now let us generate complex image as shown in first image. For this we would be using complexheatmap package in R.<br />
+=====================================<br />
+# Create the data frame as above. Do not load pheatmap library.<br />
+&gt; suppressPackageStartupMessages(library(ComplexHeatmap))<br />
+&gt; suppressPackageStartupMessages(library(circlize))<br />
+## Create row annotations <br />
+&gt; df3rowann &lt;-<br />
+&nbsp;&nbsp;&nbsp; HeatmapAnnotation(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; violin = anno_density(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data.matrix(df3),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; type = "line",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gp = gpar(fill = rep(col_col$time, c(6, 11))),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; which = "row"<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; boxplot = anno_boxplot(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data.matrix(df3),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; border = TRUE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gp = gpar(fill = rep(col_col$time, c(6, 11))),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pch = ".",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis = TRUE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis_side = "bottom",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis_gp = gpar(fontsize = 12),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; which = "row"<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; which = "row",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; width = unit(8, "cm")<br />
+&nbsp;&nbsp;&nbsp; )<br />
+## Create column annotations. <br />
+df3topCol &lt;-<br />
+&nbsp;&nbsp;&nbsp; HeatmapAnnotation(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; violin = anno_density(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data.matrix(df3),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; type = "violin",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gp = gpar(fill = rep(col_col$time,c(6,11)))),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; boxplot = anno_boxplot(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data.matrix(df3),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; border = TRUE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gp = gpar(fill = rep(col_col$time,c(6,11))),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pch = ".",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis = TRUE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis_side = "left",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis_gp = gpar(fontsize = 12),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; which = "col",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; df = colann, col = col_col,<br />
+&nbsp;&nbsp;&nbsp; )<br />
+## Main plot<br />
+df3rowann + Heatmap(<br />
+&nbsp;&nbsp;&nbsp; df3,<br />
+&nbsp;&nbsp;&nbsp; cell_fun = function(j,i,x, y, width, height, fill) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; grid.text(sprintf("%.f", df3[i,j]), x, y, gp = gpar(fontsize = 14))<br />
+&nbsp;&nbsp;&nbsp; },<br />
+&nbsp;&nbsp;&nbsp; cluster_rows = FALSE,<br />
+&nbsp;&nbsp;&nbsp; cluster_columns = FALSE,<br />
+&nbsp;&nbsp;&nbsp; top_annotation_height = unit(8, "cm"),<br />
+&nbsp;&nbsp;&nbsp; top_annotation = df3topCol,<br />
+)<br />
+======================================<br />
+Image is as in first image. The issue with complexheatmap compared to pheatmap is that it is not easy to display numbers in heatmap without some complex code. On the other hand, pheatmap doesn't have column and row annotation capabilites as complexheatmap.<br />
+Now the question is can we do it in ggplot. Remember simulation of data involves random number generation. Hence ggplot image numbers and above numbers may not match, but code runs fine.<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-ogFOPjJBIaM/W2dNPWnK6PI/AAAAAAAABMI/T4RRw-lWndA1rue7131wClMS7soizu9jwCLcBGAs/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="755" data-original-width="869" height="556" src="https://4.bp.blogspot.com/-ogFOPjJBIaM/W2dNPWnK6PI/AAAAAAAABMI/T4RRw-lWndA1rue7131wClMS7soizu9jwCLcBGAs/s640/Rplot01.png" width="640" /></a></div>
+Code:<br />
+==========================<br />
+$samples=c(paste0("X",c(4:7,10,14),"d"),paste0("X",c(0,1,3,6,9,12,24,36,48,60,72),"h"))<br />
+$ df3=data.frame(replicate (17,rnorm(17,5,1)), samples = samples)<br />
+$ colnames(df3)[-ncol(df3)]=samples<br />
+$ df3$samples=factor(df3$samples, levels=df3$samples)<br />
+$ row.names(df3)=samples<br />
+$ library(ggplot2)<br />
+$ library(tidyr)<br />
+$ library(RColorBrewer)<br />
+$ df4=gather(df3, k,v, -samples)<br />
+$ df4$k=factor(df4$k, levels=unique(df4$k))<br />
+$ ggplot(df4, aes (k, samples, label=round(v,0), fill=v)) +<br />
+&nbsp;&nbsp; geom_tile()+<br />
+&nbsp;&nbsp; geom_text(size=7)+<br />
+&nbsp;&nbsp; scale_fill_gradientn (colours = colorRampPalette (brewer.pal (11, "PiYG")) (289),&nbsp; guide="none")+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp; theme(axis.text.x =element_text(size=15),<br />
+&nbsp;&nbsp;&nbsp; axis.text.y=element_text(size=18)) <br />
+==============================================<br />
+<br />
+Let us say we don't want any coloring, we just want to display the numbers and numbers are as per their size and colored from low to high with light color to strong color. Let us do this in ggplot2.<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-ZGeqWfNXzJI/W2dOygA3f-I/AAAAAAAABMU/afe5PvZkGLwUMxUJcBDfUMeMhNYixLedgCLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="755" data-original-width="869" height="556" src="https://2.bp.blogspot.com/-ZGeqWfNXzJI/W2dOygA3f-I/AAAAAAAABMU/afe5PvZkGLwUMxUJcBDfUMeMhNYixLedgCLcBGAs/s640/Rplot02.png" width="640" /></a></div>
+===============================<br />
+# Generation of data frame is same as above in ggplot2 code. Proceed till df4. <br />
+$ ggplot(df4, aes( k, samples, label = round(v,0), colour = v, size = v)) +<br />
+&nbsp;&nbsp;&nbsp; geom_text()+<br />
+&nbsp;&nbsp;&nbsp; scale_colour_distiller(palette = "Dark2", guide = "none")+<br />
+&nbsp;&nbsp;&nbsp; scale_size_identity()+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()<br />
+====================================</div>
+</div>

@@ -1,0 +1,22 @@
+<p>There are several ways to break a multifasta into small files. One of the requests I attempted is as follows:</p>
+
+<pre><code class="language-code">$ cat test.fa                                                                                                                                                                           
+&gt;LI5896452.1 Liverpool 2 kg/dp/Kng
+ATGCTAG
+&gt;1582.LC madi kg 5/58/8
+GATGAT
+</code></pre>
+<p>Requirement is to create individual files for each sequence and each file name should be the text till first space in the  headers (for eg. if the header is &gt;LI5896452.1 Liverpool 2 kg/dp/Kng, file name should be LI5896452.1.fa). Here is the solution in awk.</p>
+
+<pre><code class="language-code">$ awk -v OFS="\n" '/^&gt;/ {getline seq; print $0,seq &gt; substr($1,2)".fa"}' test.fa  
+</code></pre>
+
+<p>Now user should see two files and the output would be:</p>
+<pre><code class="language-code">$ cat 1582.LC.fa                                                                                                                                                                        
+&gt;1582.LC madi kg 5/58/8
+GATGAT
+
+$ cat LI5896452.1.fa                                                                                                                                                                    
+&gt;LI5896452.1 Liverpool 2 kg/dp/Kng
+ATGCTAG
+</code></pre>

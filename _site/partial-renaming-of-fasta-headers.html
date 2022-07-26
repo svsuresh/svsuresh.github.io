@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/partial-renaming-of-fasta-headers">Jul 27, 2020 - Partial renaming of fasta headers</a></h1>
+            <div class="post-content">
+            Some times, we may need to replace headers of fasta files in part. <a href="https://github.com/shenwei356/seqkit">Seqkit</a> allows user to replace either sequence or headers in fasta file. Current blog note, deals with replacing headers in part i.e partial editing of headers.<br />
+Example input:<br />
+================================================== <br />
+&gt;123456789.1<br />
+AGCT<br />
+&gt;123456789.2<br />
+AGCT<br />
+&gt;222221122.1<br />
+AGCT<br />
+==================================================<br />
+User wants to replace every thing before dot(.) and append every thing after dot including dot post replacement.Value key pair and expected output is as below:<br />
+================================================== <br />
+123456789&nbsp;&nbsp; abcde<br />
+222221122&nbsp;&nbsp; ghijk<br />
+================================================== <br />
+Expected output:<br />
+================================================== <br />
+&gt;abcde.1<br />
+AGCT<br />
+&gt;abcde.2<br />
+AGCT<br />
+&gt;ghijk.1<br />
+AGCT<br />
+=================================================== <br />
+code:<br />
+===================================================<br />
+$ seqkit replace --quiet -p '([0-9]+)(\.[0-9])' -r '{kv}${2}'&nbsp; -k ids.txt test.fa <br />
+&gt;abcde.1<br />
+AGCT<br />
+&gt;abcde.2<br />
+AGCT<br />
+&gt;ghijk.1<br />
+AGCT<br />
+=========================================================<br />
+Explanation:<br />
+<ol>
+<li>seqkit, by default, replaces headers</li>
+<li>--quiet is not to print errors, logs etc onto screen</li>
+<li>-p is option for pattern</li>
+<li>([0-9]+)(\.[0-9]) - Two pattern captures (within normal brackets). First pattern ([0-9]+) catches multiple numbers (first part of headers- before dot) and second pattern catches (\.[0-9]) one dot and one number between 0 and 9</li>
+<li>By default, KV (key-value) pair replaces first pattern</li>
+<li>In addition, we added second pattern to append to replaced value (${2} denotes second pattern).</li>
+</ol>
+<br />
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/retain-sequences-based-on-partial-match" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/control-grouped-barcharts-in-ggplot" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

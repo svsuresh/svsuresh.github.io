@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/multi_anova">Aug 12, 2020 - Run multiple Anova tests in parallel</a></h1>
+            <div class="post-content">
+            <p>Let us load the libraries</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'dplyr'
+
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">broom</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">knitr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tibble</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">kableExtra</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'kableExtra'
+
+## The following object is masked from 'package:dplyr':
+## 
+##     group_rows
+</code></pre></div></div>
+
+<p>Let us use inbuilt iris data for our work.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iris</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pivot_longer</span><span class="p">(</span><span class="o">-</span><span class="n">Species</span><span class="p">,</span><span class="w"> </span><span class="n">names_to</span><span class="o">=</span><span class="s2">"measurement"</span><span class="p">,</span><span class="w"> </span><span class="n">values_to</span><span class="o">=</span><span class="s2">"value"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">nest</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="n">Species</span><span class="p">,</span><span class="n">value</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">mutate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">map</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">TukeyHSD</span><span class="p">(</span><span class="n">aov</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">.</span><span class="p">))),</span><span class="w">
+           </span><span class="n">tidy</span><span class="o">=</span><span class="n">map</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">tidy</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">unnest</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"tidy"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">select</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="m">10</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">add_column</span><span class="p">(</span><span class="n">Measurement</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span><span class="n">.before</span><span class="o">=</span><span class="s2">"contrast"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">mutate</span><span class="p">(</span><span class="n">adj.p.value</span><span class="o">=-</span><span class="n">log10</span><span class="p">(</span><span class="n">adj.p.value</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">kable</span><span class="p">(</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="s2">"html"</span><span class="p">,</span><span class="w"> </span><span class="n">booktabs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w"> </span><span class="n">escape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w"> </span><span class="n">caption</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Flower measurement statistics"</span><span class="p">,</span><span class="w">
+          </span><span class="n">col.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span><span class="s2">"Comparison"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Ajdusted P value, (-log10p)"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">kable_styling</span><span class="p">(</span><span class="s2">"striped"</span><span class="p">,</span><span class="n">full_width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">column_spec</span><span class="p">(</span><span class="m">2</span><span class="o">:</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"5cm"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pack_rows</span><span class="p">(</span><span class="s2">"Sepal Length"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pack_rows</span><span class="p">(</span><span class="s2">"Sepal Width"</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">6</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pack_rows</span><span class="p">(</span><span class="s2">"Petal Length"</span><span class="p">,</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="m">9</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pack_rows</span><span class="p">(</span><span class="s2">"Petal Width"</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="m">12</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+
+<caption>
+
+Flower measurement statistics
+
+</caption>
+
+<thead>
+
+<tr>
+
+<th style="text-align:left;">
+
+</th>
+
+<th style="text-align:left;">
+
+Comparison
+
+</th>
+
+<th style="text-align:right;">
+
+Ajdusted P value, (-log10p)
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr grouplength="3">
+
+<td colspan="3" style="border-bottom: 1px solid;">
+
+<strong>Sepal Length</strong>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+versicolor-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+13.470290
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+14.523226
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-versicolor
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+8.081573
+
+</td>
+
+</tr>
+
+<tr grouplength="3">
+
+<td colspan="3" style="border-bottom: 1px solid;">
+
+<strong>Sepal Width</strong>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+versicolor-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+13.508986
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+8.866226
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-versicolor
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+2.056495
+
+</td>
+
+</tr>
+
+<tr grouplength="3">
+
+<td colspan="3" style="border-bottom: 1px solid;">
+
+<strong>Petal Length</strong>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+versicolor-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+14.523226
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+14.523226
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-versicolor
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+14.523226
+
+</td>
+
+</tr>
+
+<tr grouplength="3">
+
+<td colspan="3" style="border-bottom: 1px solid;">
+
+<strong>Petal Width</strong>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+versicolor-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+14.523226
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-setosa
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+14.523226
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+
+</td>
+
+<td style="text-align:left;width: 5cm; ">
+
+virginica-versicolor
+
+</td>
+
+<td style="text-align:right;width: 5cm; ">
+
+14.523226
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<p>How are we sure that our results are correct. Let us run anova and
+TukeyHSD on one variable (Sepal Width)</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sl_anova</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">aov</span><span class="p">(</span><span class="n">Sepal.Width</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">iris</span><span class="p">)</span><span class="w">
+</span><span class="o">-</span><span class="n">log10</span><span class="p">(</span><span class="n">TukeyHSD</span><span class="p">(</span><span class="n">sl_anova</span><span class="p">)</span><span class="o">$</span><span class="n">Species</span><span class="p">[,</span><span class="m">4</span><span class="p">])</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##    versicolor-setosa     virginica-setosa virginica-versicolor 
+##            13.508986             8.866226             2.056495
+</code></pre></div></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/text_to_rsid" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/run-anova-in-parallel-in-r-under" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

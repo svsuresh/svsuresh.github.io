@@ -1,0 +1,27 @@
+I"<<p>Some times a biologist needs to chuck few bases out from middle of the sequences and stich remaining parts. Here are the input files:  a fasta file and a text file with sequence names and coordinates of regions to be chucked out from each sequence. Both fasta file and text file have sequence names to match.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$ </span><span class="nb">cat </span>test.fa 
+<span class="o">&gt;</span>seq1
+atgcgcgctgc
+<span class="o">&gt;</span>seq2
+cgttgcgtatgcgcg
+
+<span class="nv">$ </span><span class="nb">cat </span>test.txt 
+seq1	3	5
+seq2	4	6
+
+</code></pre></div></div>
+
+<p>In test.txt, 2nd and 3rd columns are start and end coordinates of regions to be left out from each matching sequence from sequences mentioned in column1. Let us do it. Code and output as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$ </span>parallel <span class="nt">--col-sep</span> <span class="s2">"</span><span class="se">\t</span><span class="s2">"</span> <span class="s2">"seqkit -w 0 grep -p {1} test.fa | awk '/&gt;/;</span><span class="se">\!</span><span class="s2">/&gt;/ {print substr(</span><span class="se">\$</span><span class="s2">0,1,{2}-1)substr(</span><span class="se">\$</span><span class="s2">0,{3},length(</span><span class="se">\$</span><span class="s2">0)-{3}+1)}'"</span>  :::: test.txt 
+
+<span class="o">&gt;</span>seq1
+atgcgctgc
+<span class="o">&gt;</span>seq2
+cgtcgtatgcgcg
+
+</code></pre></div></div>
+:ET

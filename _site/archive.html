@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3 hidden-xs">
+      <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+    </div>
+    <div class="col-md-9">
+      <div class="well">
+
+    
+        <h1>2021</h1>
+        <ul>
+    
+    <li><a href="/split_fasta_by_header_regex">Aug 9 - Split fasta file into multiple files based on partial headers</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/add_filenames_to_all_the_columns_in_bulk">Aug 7 - Append file name at the end of each column for all CSV files</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/add_duplicate_count_to_headers">Aug 6 - Add count to duplicated IDs in fasta file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/remove_bases">Aug 1 - Remove bases in between the sequences</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/retain_unique_values">Jul 19 - Retain only unique values in the data</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/replace_fasta_headers_regex">Jul 19 - Replace fasta headers using regex</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/know_file_type">Jun 24 - Determine file type without extension or with extension</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/gc_calculation_python">May 28 - Calculate GC content from multiline fasta with gaps in sequences</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/split_snp_records_to_fa">May 25 - Split each sequence with two alleles into two sequences and convert the text to fasta</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/fill_na_values">May 24 - Replace empty values in text files with awk</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/percentage_bars">May 23 - Bar plot with unbalanced data</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/trim_sequences">May 22 - Trim fasta sequences based on a sequence in fasta file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/parse_NCBI_reference">May 22 - Parse NCBI human reference file to a standard reference file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/filter_sequences_by_header_stats">May 22 - Filter sequences by stats from fasta headers</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/merge_multiple_unbalanced_df">May 20 - Merge multiple data frames in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/increase_row_font_size_pheatmap">May 19 - Change row font size and other properties in pheatmap</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/identify_contiguous_blocks">May 18 - Identify sequences with contiguous nucleotide blocks of chosen size in multiple sequence alignment</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert_sequences">May 16 - Extract nucleotide and amino acid sequences from genbank and ali</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert_tab_to_fasta">May 9 - Convert tab (tsv) file to fasta</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert_fasta_to_tab">May 9 - Convert fasta files to tab separated file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/remove_double_extension_python">May 4 - Remove double extension in python</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/split_data_frame">May 1 - Split a data frame based on column names</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/groupby_and_select_large_sequence">May 1 - Select longest sequence in a fasta with identical headers</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/transform_fasta_from_blast_results">Apr 21 - Make fasta from Blast results</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/locate_base_position">Apr 12 - Locate if a base is present at the start of sequences in a list</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract_lines_from_multi_sequence_multiline_fasta">Apr 10 - Extract sequences(lines) from multiline, multisequence fasta</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract_three_prime_utr_genes">Apr 4 - Extract genes and corresponsing transcripts with more than one 3' UTRs from a gtf</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/duplicate_dataframe">Apr 4 - Duplicate a data frame</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/format_VEP_output">Mar 28 - Format VEP text output with Miller</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/sed_magic">Mar 24 - Replace separator, without replacing separator in quotes</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/fastq_trimming">Mar 24 - Extract reads between primers including one side primer only</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/break_multifasta_with_awk">Mar 23 - Break multifasta into multiple files with awk</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/awk_fasta_manipulation">Jan 17 - Manipulate fasta file with AWK</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/dplyr_column_ops">Jan 16 - Column operations using dplyr and tidyr</a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2020</h1>
+            <ul>
+        
+    
+    <li><a href="/pheatmap_change_rowcolors">Dec 23 - Change row font color in pheatmap conditionally</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/ggplot">Dec 21 - A small tutorial on ggplot2</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/Serial-and-parallel-writing-of-fasta-files-in-R">Dec 19 - Serial and Parallel writing of Individual fasta files in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/Fasta_headers_and_back_referencing">Dec 17 - Manipulate fasta headers using back referencing</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/install_vep_focal">Nov 1 - How to install VEP on focal</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/print_overlaps_python">Oct 29 - Generate substrings in python</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/break_string">Oct 28 - Generate overlapping strings</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/average_replicates">Oct 21 - Average biological replicates</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/format_fasta_headers">Oct 16 - Remove header information after space in fasta</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/format_fasta">Oct 12 - Format fasta headers</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/python_pie_05102020">Oct 5 - Percentage pie chart with python 3</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/ggplot_pie">Oct 3 - Percentage pie chart in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rename-files-from-file">Sep 3 - Batch rename files from a file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/one-liners-in-bioinformatics">Sep 3 - One liners in bioinformatics (ever updating)</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/remove-named-columns-from-several-files">Sep 3 - Remove named columns from several files</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/reorganize-and-rename-fasta">Sep 3 - Reorganize and rename fasta</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/tidy-pivot-longer-matching-pairs-of">Aug 26 - Clean data with altenating match pair columns</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/collapse_two_columns">Aug 26 - Clean two column data using tidyr</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/annotate-text-file-with-dbsnp-reference">Aug 15 - Annotate text file with dbSNP reference</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/tabix-error-and-bcftools-failure">Aug 15 - Tabix error and bcftools failure in handling unsorted vcf</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/text_to_rsid">Aug 15 - Annotate text file with dbSNP VCF</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/multi_anova">Aug 12 - Run multiple Anova tests in parallel</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/run-anova-in-parallel-in-r-under">Aug 9 - Run anova tests in parallel in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/uncount-multiple-replacement-and">Aug 1 - Uncount,  multiple replacement and grouping using dplyr</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/uncount-function-in-r">Aug 1 - Uncount function in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/retain-sequences-based-on-partial-match">Jul 27 - Retain sequences based on partial match of headers</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/partial-renaming-of-fasta-headers">Jul 27 - Partial renaming of fasta headers</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/control-grouped-barcharts-in-ggplot">Jul 12 - Control grouped barcharts in ggplot</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert-sff-files-to-fastq-file">Jul 11 - Convert sff files to fastq file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/simple-row-wise-ttest-function-and">Jul 8 - Simple row wise ttest function and extract the p value</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/row-wise-filtering-for-alphanumeric">Jun 1 - Row wise filtering for alphanumeric strings in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/conditional-filtering-of-columns-with">May 24 - Conditional filtering of columns with AWK</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/add-vertical-lines-with-plotly">May 12 - Add vertical lines with plotly</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/compare-all-or-few-columns-against">Apr 30 - Compare all or few columns against a single column or value in a data frame</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/merge-fastq-files-from-multiple">Feb 19 - Merge fastq files from multiple directories  with snakemake </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/glimma-error-second-argument-should">Jan 27 - glimma error: Second argument should contain the first.</a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2019</h1>
+            <ul>
+        
+    
+    <li><a href="/install-fastq-validator">Mar 4 - install fastq validator</a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2018</h1>
+            <ul>
+        
+    
+    <li><a href="/de-duplicate-data-frame">Nov 11 - De duplicate data frame</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-sequence-and-tags-from-sam-file">Sep 2 - Sam to fastq conversion and tag extraction</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/multiline-pattern-search-using-r-grep">Sep 1 - Multiline pattern search using R, grep, pcregrep and awk </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/parse-pdf-data-in-r">Aug 9 - Parse PDF tabular data in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plot-number-matrix-in-r">Aug 6 - Plot numbers in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/zero-length-assertions-in-bash-and">Aug 4 - Zero length assertions in bash and python 3</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/lookaround-in-r-for-non-word-and-word">Jul 20 - Zero length assertion example in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/replce-wobble-base-with-purine-r-and">Jul 20 - Replace wobble base with purine (R) and pyrimidine (Y) symbol in python</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-genes-samples-from-cluster-of">Jul 16 - Gene clustering and extract clusters, genes and samples of interest</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/add-sample-number-to-venn-diagram">Jul 16 - Add sample number to venn diagram</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-columns-using-r-and-shell-from">Jul 13 - Extract columns using R and shell from xls files</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/add-increment-numbers-only-sequence">Jul 6 - Add increment numbers to fasta  headers using nl</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/lookaround-example-in-bash">Jul 6 - Lookaround  example in bash</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/sort-columns-individually-per-variable">Jul 6 - Sort columns individually per variable </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plotting-multiple-ggpairs-graphs-and">Jul 4 - Plotting ggpairs list, saving and faceting</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert-tab-separated-file-to-fasta">Jul 3 - Convert tab separated file to fasta</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/parallel-download-genomic-data-with-gnu">Jul 3 - Parallel download genomic data with GNU-Parallel</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/getting-rs-ids-given-coordinates-in-r">Jun 28 - Getting rs IDs given coordinates in R and shell</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/group-by-and-column-wise-statistics-in">Jun 26 - Group by and column wise statistics in Shell, R and Python 3</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/lollipot-plot-for-two-conditions-in-r">Jun 25 - Gene expression plotting using Lollipop plots for two conditions in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert-pmids-to-pmcids-using-shell-and">Jun 17 - Convert PMIDs to PMCIDs using shell and python</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/split-fasta-sequence-files-by">Jun 12 - Split fasta sequence files by an unique base</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/replace-column-names-in-r">Jun 12 - Replace column names in R from another data frame</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/replace-gene-symbols-with-gene-ids-in">Jun 12 - Replace gene symbols with gene IDs in data frame </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plotting-per-group-level-mean">Jun 9 - Faceting gene expression per variable  and connecting by means using ggplot</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plot-gene-expresson-data-with-multiple">Jun 8 - Step by step faceting box plots using ggplot2</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-kegg-pathways-and-ids-using">Jun 6 - Extract KEGG pathways and IDs using gene symbols</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/average-triplicate-columns-in-r">Jun 2 - Average triplicate columns in R </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plot-gene-expression-time-series-in">May 30 - Facet gene expression time series in ggplot2</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert-three-letter-psynax-to-single">May 25 - Convert 3 letter HGVS pSynax to 1 letter pSyntax</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/salmon-reference-formatting">May 20 - Salmon reference formatting</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rna-seq-data-analysis-using-salmon">May 19 - Salmon-DESEQ2 and Salmon-Wasabi-Sleuth pipe line with Snakemake</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/sql-join-3-data-frames-with-dots-in">May 19 - Pandas multijoin dataframes with dots in column names</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/back-referencing-and-string">May 15 - back referencing and string manipulation with GNU-Parallel</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/concatenate-two-columns-in-r">May 14 - concatenate two columns in R </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/volcano-plot-with-ggplot2-and-basic">May 12 - Volcano plot with ggplot2 and basic plotting</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/manipulate-fasta-headers-and-gtf">May 9 - Manipulate fasta headers and GTF sequence IDs with awk</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/ggplot-and-alternate-shading-with">May 7 - ggplot and alternate shading with geom_rect</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/inner-and-outer-join-or-symmetric">May 6 - inner and outer join or symmetric difference with pandas</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/time-series-experiments-and-ggplot">Apr 28 - Plotting time series experiments with ggplot2 (bar and line plots)</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/gather-and-spread-dataframe">Apr 28 - Collapse rows using gather and spread functions</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/split-columns-in-r-data-frame">Apr 23 - Split columns in R data frame</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-matching-peptidesshort">Apr 21 - Extract matching peptides/short sequences with mismatches</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/coverage-calculation">Apr 20 - coverage calculation </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/random-fasta-sequence-generation">Apr 11 - Random fasta sequence generation</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/replace-fasta-headers-with-file-name">Mar 13 - Replace fasta headers with file name</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/control-igv-from-shell-and-local-browser">Feb 27 - Controlling IGV locally from shell and browser</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rnaseq-workflow-using-snakemake">Jan 30 - RNAseq workflow using snakemake</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/hisat2-conda-bioconda-and-windows-10">Jan 20 - hisat2, conda, bioconda and windows 10</a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2017</h1>
+            <ul>
+        
+    
+    <li><a href="/identify-multi-exonic-genes-from-gtf">Dec 15 - Identify multi exonic genes from gtf </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/split-gtf-file-by-chromosome">Dec 15 - Split a gtf file by chromosome</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/highlight-points-in-box-plot">Dec 15 - Highlight points in a box plot</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/pca-plot-with-rnaseq-counts-using">Dec 13 - PCA plot with read counts using ggplot2</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-sequences-into-individual-files">Dec 4 - Extract sequences and sequence headers into individual files from  fasta file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/nucleotide-base-frequency-per-read-and">Dec 1 - Nucleotide (base) frequency per read and per position using bioconductor</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/heat-map-with-rnaseq-featurecounts">Nov 29 - Heat map with RNAseq Featurecounts output</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rna-seq-analysis-hisat2-featurecounts">Nov 24 - RNA seq analysis - FeatureCounts and DESeq2 workflow</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/clinical-signifiance-and-variant-effect">Nov 23 - Extract clinical signifiance and variant effect of dbSNP variants using biomart </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/parse-kegg-output-with-miller">Nov 20 - Parse KEGG output with miller</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/join-dataframes-by-range-in-r">Nov 9 - Join dataframes by range in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-kegg-pathways-and-pathway">Nov 7 - Extract KEGG pathways using KEGG IDs using bash and R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/uninstall-perl-modules-when-make">Oct 17 - Uninstall perl modules when make uninstall fails</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/replace-gene-ids-in-ucsc-gtf">Oct 5 - Replace gene IDs in UCSC gtf</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rnaseq-ballgown-analysis">Oct 2 - RNAseq Ballgown analysis</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rnaseq-data-analysis-tuxedo-new-protocol">Oct 1 - RNAseq data analysis- Tuxedo new protocol</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/fastq-screen-and-ngs-data-analysis">Sep 19 - FastQ screen and NGS data analysis</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/create-directories-with-gnu-parallel-in">Sep 19 - GNU parallel and NGS data organization</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/handling-samflags-in-r">Sep 17 - Handling samflags in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/manipulate-fasta-header">Sep 14 - Manipulate fasta header with sed, awk and R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/replace-fasta-headers-from-file">Sep 13 - Replace fasta headers from a file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/split-and-melt-columns-in-r">Sep 13 - Split and melt columns in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/find-common-genes-between-two-gene-lists">Aug 6 - Find common genes between two gene lists</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/remove-both-rows-and-columns-with-na">Jul 31 - Remove both rows and columns with NA values in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/filter-fasta-sequences-by-length">Jul 31 - Filter fasta sequences  by length</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/fastq-manipulation">Jun 21 - Fastq manipulation</a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2016</h1>
+            <ul>
+        
+    
+    <li><a href="/write-list-to-xlsx-in-r">Nov 3 - Write list to xlsx in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-sequences-from-fasta-file">Oct 4 - Extract sequences from fasta file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/box-plots-and-connect-by-median">Sep 25 - Connecting box plots by median in 3 different plotting methods in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/simulate-protein-sequences">Jun 8 - Generate random amino acid sequences using python/biopython</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/generate-random-dna-elements-using">Jun 8 - Generate random DNA elements using python/biopython</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plotting-variants-per-chromosome-using">May 21 - Plotting variants per chromosome using ggplot2</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/vcf-tricks">May 17 - VCF tricks</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plot-interactome-data-in-r">Apr 18 - Plot interactome data in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/qpcr-ddct-and-tab-separated-values">Apr 18 - qPCR, ddCt and tab separated values</a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2015</h1>
+            <ul>
+        
+    
+    <li><a href="/rna-seq-and-gatk-best-practices">Oct 11 - RNA seq variant calling best practice pipeline</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/transcriptomics-microarray-data-analysis">Sep 11 - Transcriptomics - Microarray data analysis</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/download-and-use-microarray-files-from">Sep 10 - Download and use microarray files from GEO in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/convert-vcf-chrom-column-from-hgxx">Sep 7 - Convert VCF #CHROM column from hgxx format to b3x format</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rnaseq-data-analysis-and-tuxedo-workflow">Sep 5 - RNAseq data analysis and Tuxedo workflow </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/rna-seq-data-analysis-tophat-htseq-and">Aug 31 - RNA seq data analysis - Tophat, HTseq and DESeq 2 analysis</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/import-multiple-files-in-to-r-as-data">Aug 20 - Combine multiple data frames into a single dataframe in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/transcriptomics-rna-seq-and-3ivt-and">Aug 17 - Transcriptomics: RNA seq and 3'IVT and exon arrays</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/variant-calling-in-rna-seq-and-bpipe">Jul 22 - Variant calling in RNA seq and Bpipe</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/extract-sequences-from-fasta">Jul 21 - Extract sequences from fasta</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/natural-sort-chromosome-levels-in-r">Jul 14 - Natural sort chromosome levels in R- method 2</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/fetch-and-natural-sort-cytoband-info">Jul 14 - Fetch and natural sort cytoband info from UCSC</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/parsing-vcf-2-clinvar-using-dplyr-and">Jul 13 - Parsing Clinvar VCF using dplyr and vcflib</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/generate-random-multiple-dna-sequences">Jul 3 - Simulate nucleotide and amino acid sequences with R- Part 2</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/generate-random-nucleotide-and-amino">Jul 2 - Simulate nucleotide and amino acid sequences with R- Part 1</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/use-mouse4302db-object-in-bioconductor">Jun 6 - Use mouse4302.db object in Bioconductor</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/exporting-ideogram-information-from">Jun 6 - Exporting Ideogram information from UCSC table browser</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/natural-sort-chromosome-number-in-r">Jun 5 - natural sort chromosome number in R - method 1</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plot-and-high-light-genes-of-interest">May 30 - plot and highlight genes of interest in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/plotting-two-y-axes-in-r">May 26 - Plotting two Y-axes in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/install-bcftools-vcflib-and-samtools">May 19 - Install BCFtools, VCFlib and Samtools </a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2014</h1>
+            <ul>
+        
+    
+    <li><a href="/convert-bam-files-to-cram-files">Jul 25 - Convert bam files to cram files </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/gene-expression-and-circos-plot">Jul 23 - Gene expression and Circos plot</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/gene-expressoin-and-treemaps">Jul 21 - Gene expression and treemaps</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/fetch-chromosome-sizes-from-ucsc">Jul 18 - Fetch chromosome sizes from UCSC in linux </a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/sort-and-merge-fasta-files-by">Jul 18 - sort and merge fasta files by chromosome number</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/calculate-coverage-from-bam-files-using">Jul 17 - Calculate coverage from bam files using IGV tools</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/using-biomart-in-r">Jul 17 - using Biomart in R</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/parse-vcf">Jul 15 - Parse VCF 1</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/parse-fasta-file">Jul 14 - Parse fasta file</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/blog-post">Jul 13 -  Blog reloaded</a></li>
+
+    
+        
+        
+        
+            </ul>
+            <h1>2010</h1>
+            <ul>
+        
+    
+    <li><a href="/flashing-buffalo-router">Dec 30 - flashing buffalo WHR-HP-G54 router</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/drupal-on-maverick">Nov 26 - Drupal on maverick</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/zabbix-on-maverick-ubuntu-soon">Nov 25 - zabbix with lighttpd on maverick (ubuntu)</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/flash-cookies-in-windows-and-linux">Nov 10 - Delete persistent flash cookies in windows and linux</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/how-to-upgrade-from-iso-in-ubuntu">Nov 9 - How to upgrade from iso in ubuntu</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/installing-care2x-on-ubuntu">Nov 8 - Installing Care2x on Ubuntu</a></li>
+
+    
+        
+        
+        
+    
+    <li><a href="/share-thunderbird-mail-accounts-between">Nov 8 - Share thunderbird mail accounts between windows and Linux</a></li>
+
+</ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

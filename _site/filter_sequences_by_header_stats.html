@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/filter_sequences_by_header_stats">May 22, 2021 - Filter sequences by stats from fasta headers</a></h1>
+            <div class="post-content">
+            <p>One of the requests I have come across is to filter sequences based on stats in headers. Example is as follows:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;NODE_143195_length_10_cov_16000.000000
+TTGTGTTGGTTGTTGTGTTGCCTGTCTTGGTGGCGGTTGTGTTGGCTGCTTTCGTGTCAGTCTCTTCACCGATGTTATGTTGCTCTGTTGTGGCTCCGGC
+&gt;NODE_143196_length_100_cov_15891.000000
+CTTGTGTTGGTTGTTGTGTTGCCTGTCTTGGTGGCGGTTGTGTTGGCTGCTTTCGTGTCAGTCTCTTCACCGATGTTATGTTGCTCTGTTGTGGCTCCGG
+&gt;NODE_143197_length_100_cov_15.000000
+GCTTGTGTTGGTTGTTGTGTTGCCTGTCTTGGTGGCGGTTGTGTTGGCTGCTTTCGTGTCAGTCTCTTCACCGATGTTATGTTGCTCTGTTGTGGCTCCG
+</code></pre></div></div>
+<p>Now user wants to filter sequences with more than length 10 and coverage more than 15. Here is the python code</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">from</span> <span class="nn">Bio</span> <span class="kn">import</span> <span class="n">SeqIO</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="nb">input</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">output</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">out</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">SeqIO</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span><span class="s">"fasta"</span><span class="p">):</span>
+     <span class="n">isplit</span><span class="o">=</span><span class="n">i</span><span class="p">.</span><span class="nb">id</span><span class="p">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">"_"</span><span class="p">)</span>
+     <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">isplit</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">20</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">isplit</span><span class="p">[</span><span class="mi">5</span><span class="p">]))</span><span class="o">&gt;</span><span class="mi">100</span><span class="p">)</span> <span class="p">:</span>
+         <span class="n">out</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="n">SeqIO</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="s">"fasta"</span><span class="p">)</span>
+
+</code></pre></div></div>
+<p>output from the file</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>./parse_fasta_header.py file.fa out.fa
+
+<span class="nv">$ </span><span class="nb">cat </span>out.fa 
+<span class="o">&gt;</span>NODE_143196_length_100_cov_15891.000000
+CTTGTGTTGGTTGTTGTGTTGCCTGTCTTGGTGGCGGTTGTGTTGGCTGCTTTCGTGTCA
+GTCTCTTCACCGATGTTATGTTGCTCTGTTGTGGCTCCGG
+</code></pre></div></div>
+
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/parse_NCBI_reference" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/merge_multiple_unbalanced_df" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

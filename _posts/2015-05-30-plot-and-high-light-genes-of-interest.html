@@ -1,0 +1,211 @@
+---
+layout: post
+title: plot and highlight genes of interest in R
+date: '2015-05-30T04:54:00.003+05:30'
+author: suresh
+tags:
+- DGE
+- Labeling
+- bioconductor
+modified_time: '2015-07-14T22:43:47.754+05:30'
+thumbnail: http://2.bp.blogspot.com/-thMzpBCkcUw/VWjoG7SJ7pI/AAAAAAAAAMA/8U4_RyhEmI8/s72-c/vcf_example1.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-3541441981340837348
+blogger_orig_url: https://digibio.blogspot.com/2015/05/plot-and-high-light-genes-of-interest.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+When biologists plot genes/SNPs of interest in a high density plot, highlighing genes/SNPs of interest is one of the main problems. Given below here is the easiest (probably crude) way to highlight genes/SNPs of interest. Please remember that this can be extended to any plot of user's choice. Logic is<br />
+<ol style="text-align: left;">
+<li>plot all the genes/SNPs in the genes of interest (main data)</li>
+<li>subset genes/snps that are of interest either by creating a list of genes (list in R/Bioc) or from the main data it self. (subset data)</li>
+<li>If it is user supplied list, then one needs to get the index and rest of the fields necessary to hightlight, from the main data. If it is later case, user can highlight as such without matching with main data. Example given below is the later case. </li>
+<li>highlight the subset data with custom commands. </li>
+</ol>
+Given below the is the example in R:<br />
+<br />
+Requirements:<br />
+<ol style="text-align: left;">
+<li>Example VCF file for parsing. Please follow the instructions below:</li>
+<ol>
+<li>Download the latest clinvar vcf file from NCBI ftp site. Current working link is :&nbsp; ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz (file is around 5.1 MB)</li>
+<li>After downloading unzip the file.<br />command: gunzip clinvar.vcf. gz. This would create a vcf file of size 47 MB.</li>
+</ol>
+<li>Convert the VCF file to tab separated file using vcflib program (https://github.com/ekg/vcflib) by runing the following command.<br />vcf2tsv clinvar.vcf &gt; clinvar. tab. This would create a tab separated file of size 35 MB. (please note that vcf2tsv doesn't work on all vcfs. For eg. ENSEMBL-VEP output VCF can't be parsed in full with this command.)</li>
+</ol>
+Instructions to plot genes of interest and highlight genes of interest:<br />
+<br />
+Case study: User would like to know clinically significant variants per gene using clinvar vcf and highlight genes with highest variants.<br />
+<br />
+Methods: 1) User creates a table with genes and clinical variants per gene in R<br />
+2) Highlight the genes with more than 1000/ 500 variants in two different examples.<br />
+<br />
+Working example:<br />
+<br />
+1) Navigate to the directory where the files are located (clinvar.vcf and clinvar.tab).<br />
+2) Print the lines in clinvar.tab.<br />
+command: wc -l clinvar.tab. Note down the number<br />
+3) Launch R/ Rstudio from the same directory. If R is launched from the else where, set the working directory to the directory where the files are located (using command setwd in R). <br />
+4) Import clinvar.tab file into R.<br />
+command: tab_clinvar=read.delim2("clinvar.tab")<br />
+5) Count the numer of imported entries<br />
+command: dim(tab_clinvar).<br />
+This should two values ( some thing like 121079 , 65). The first number gives the total number of entries and should match with that of clinvar.tab mentioned in step 2.<br />
+6) Please look at the column names (metadata) in the tab_clinvar object (data.frame).<br />
+command: colnames(tab_clinvar)<br />
+<br />
+This will display all the columns (metadata for each variant)&nbsp; and should be around 65.Gene column would be GENEINFO. This would have Gene Symbol and corresponding ID together (but separated by full colon).&nbsp; <br />
+<br />
+7) Subset the data to identify all the genes and variants per&nbsp; each gene and store it as a separate object. This would be used for the plot.<br />
+command: tab_gene=table(tab_clinvar$GENEINFO)<br />
+<br />
+8) Look at the created table tab_gene.<br />
+&nbsp;command: dim(tab_gene); class(tab_gene) <br />
+<br />
+This would display the entries (number of genes) in the table and the class (type) of the object, tab_gene in R, which would be table, in this case.&nbsp; <br />
+<br />
+9) Convert the type of the object, tab_gene from class to data.frame.<br />
+command: tab_gene=as.data.frame(tab_gene)<br />
+<br />
+10) Check again the numer of entries and type of the object.<br />
+command: dim(tab_gene); class(tab_gene).<br />
+<br />
+Number displayed should be the same as those in step 8 and class should be data.frame, instead of table.<br />
+<br />
+11) Look at the first two lines of object tab_gene. Please note that there would be an extra line with a large number. This should be removed before proceeding further. This extra line means that there are around 15689 without any genes being assigned to them i.e either they are unassigned or fall in intergenic /regulatory regions.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-thMzpBCkcUw/VWjoG7SJ7pI/AAAAAAAAAMA/8U4_RyhEmI8/s1600/vcf_example1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="447" src="http://2.bp.blogspot.com/-thMzpBCkcUw/VWjoG7SJ7pI/AAAAAAAAAMA/8U4_RyhEmI8/s640/vcf_example1.png" width="640" /></a></div>
+<br />
+<br />
+Commands:<br />
+head (tab_gene,2) #This would print first two lines<br />
+head (tab_gene,2)[-1,] # This would remove first row<br />
+tab_gene=tab_gene[-1,] # This would remove the first row of the object, tab_gene and saves it as tab_gene (same object but without first line)<br />
+head (tab_gene,2) # This would display updated object.&nbsp; <br />
+<br />
+12) Please note that column names are not descriptive the contents. Let us change the name of the columns for better representation.<br />
+command: colnames(tab_gene)= c("Gene_Name", "Variants_per_gene")<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-TJwXXITNfx8/VWjqHMlDWEI/AAAAAAAAAMM/ZykmF-qw2nw/s1600/vcf_example2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="154" src="http://1.bp.blogspot.com/-TJwXXITNfx8/VWjqHMlDWEI/AAAAAAAAAMM/ZykmF-qw2nw/s640/vcf_example2.png" width="640" /></a></div>
+<br />
+13) Run some basic statistics to know about the number of variants per gene. For eg. maximum number of variants, average number of variants etc.<br />
+<br />
+command: summary(tab_gene$Variants_per_gene)<br />
+<br />
+This would give us the maximum number of variants observed for a gene, average number of variants per gene and most common variant number for most of the genes.<br />
+<br />
+14) Let us look at the genes with more than 1000 clinical variants per gene.<br />
+command: tab_gene[tab_gene$Variants_per_gene&gt;=1000,]. This should like this:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-8J5-JaeqeSE/VWjr1AuvYnI/AAAAAAAAAMY/8bwhFyvo2hw/s1600/vcf_example%2B3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="226" src="http://2.bp.blogspot.com/-8J5-JaeqeSE/VWjr1AuvYnI/AAAAAAAAAMY/8bwhFyvo2hw/s640/vcf_example%2B3.png" width="640" /></a></div>
+<br />
+15) Let us store the list of genes with more than 1000 clinical variants per gene.<br />
+command:tab_gene_1000=tab_gene[tab_gene$Variants_per_gene&gt;=1000,] <br />
+16) Like wise, let us store the list of genes with more than 500 clinical variants per gene.<br />
+command: tab_gene_500=tab_gene[tab_gene$Variants_per_gene&gt;=500,]<br />
+17) Let us plot number of total number variants per each gene. Numer of variants per gene on Y-axis and genes on X-axis. Let us not label tick marks on X-axis as the listing of ~11k gene names on X-axis would look messy.<br />
+command:<br />
+plot(tab_gene$Variants_per_gene, xlab="Genes", ylab="Variants per gene", pch=21, col="blue", xaxt="n")<br />
+<br />
+(parameter: pch=21 means empty circles, xaxt = n means do not draw tick marks and tick labels) <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-rSK2l9NNpBA/VWjuI1sxeZI/AAAAAAAAAMk/g5pBxwzNJS4/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="488" src="http://4.bp.blogspot.com/-rSK2l9NNpBA/VWjuI1sxeZI/AAAAAAAAAMk/g5pBxwzNJS4/s640/Rplot.png" width="640" /></a></div>
+13) Label the gene list with more than 1000 variants per gene.<br />
+&nbsp;command:text(x=rownames(tab_gene_1000), y=tab_gene_1000$Variants_per_gene, labels=tab_gene_1000$Gene_Name,cex=0.7, pos=1)<br />
+<br />
+and should look like this:<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-gxn-3OHEFt4/VWjwX1Cde8I/AAAAAAAAAMw/xMhzUTdkCaE/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="488" src="http://1.bp.blogspot.com/-gxn-3OHEFt4/VWjwX1Cde8I/AAAAAAAAAMw/xMhzUTdkCaE/s640/Rplot01.png" width="640" /></a></div>
+&nbsp;18) User can test the same code with genes with more than 500 variants with the list from step 16. <br />
+19) User can list the top 20 genes with highest number of variants<br />
+command: tab_gene_top20=head(tab_gene[order(-tab_gene$Variants_per_gene),],20)<br />
+20) Labeled top 20 genes will look following way<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-PNrf0V_2giY/VWjyVk-X5QI/AAAAAAAAAM8/74drEhU3CoQ/s1600/Rplot03.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="488" src="http://1.bp.blogspot.com/-PNrf0V_2giY/VWjyVk-X5QI/AAAAAAAAAM8/74drEhU3CoQ/s640/Rplot03.png" width="640" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Entire code (assumption is that user knows how to save the images):</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+tab_clinvar=read.delim2("clinvar.tab") # imports clinvar variants table</div>
+dim(tab_clinvar) # Displays the dimentions of the object<br />
+head(tab_clinvar) # Displays top lines of object<br />
+colnames(tab_clinvar) # Displays the column names (meta data) of clinvar data<br />
+tab_gene=table(tab_clinvar$GENEINFO) # stores the variant number per gene for all the genes<br />
+dim(tab_gene); class(tab_gene) # displays the dimensions and type of the object <br />
+head(tab_gene) # displays the first few lines of the object<br />
+tab_gene=as.data.frame(tab_gene) # converts the object as data.frame<br />
+dim(tab_gene); class(tab_gene) # displays the dimentions and type of the object <br />
+colnames(tab_gene) # Column names of the object are displayed<br />
+head(tab_gene,2) # first two lines of the object are printed<br />
+head(tab_gene,2)[-1,] # Removes first line of two lines printed above<br />
+tab_gene=tab_gene[-1,] # Removes the first line of the objest and stores the remainig object with the same name<br />
+head(tab_gene,2) # Displays first two lines of the object<br />
+colnames(tab_gene) # Displays the column names of the object<br />
+colnames(tab_gene)= c("Gene_Name", "Variants_per_gene") # changes the column names of the object<br />
+colnames(tab_gene) # displays the column names<br />
+summary(tab_gene$Variants_per_gene) # Displays basic summary of variants per gene<br />
+tab_gene[tab_gene$Variants_per_gene&gt;=1000,] # Displays genes with more than 1000 variants per gene<br />
+tab_gene_1000=tab_gene[tab_gene$Variants_per_gene&gt;=1000,] # stores the genes with more than 1000 variants per gene<br />
+tab_gene_1000 # displays the stored genes with more than 1000 variats per gene<br />
+tab_gene_500=tab_gene[tab_gene$Variants_per_gene&gt;=500,] # stores the genes with more than 500 variants<br />
+tab_gene_500 # dispalys the stored genes with more than 500 variants<br />
+<br />
+<div class="separator" style="clear: both; text-align: left;">
+plot(tab_gene$Variants_per_gene, xlab="Genes", ylab="Variants per gene", pch=21, col="blue", xaxt="n") # plots the variants per gene with no ticks on x-axis</div>
+<br />
+<div class="separator" style="clear: both; text-align: left;">
+text(x=rownames(tab_gene_1000), y=tab_gene_1000$Variants_per_gene, labels=tab_gene_1000$Gene_Name,cex=0.7, pos=1) # adds the label to genes with more than 1000 variants</div>
+<br />
+<div class="separator" style="clear: both; text-align: left;">
+tab_gene_top20=head(tab_gene[order(-tab_gene$Variants_per_gene),],20) # stores top 20 genes in ascending order wrt variants per gene</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+text(x=rownames(tab_gene_top20), y=tab_gene_top20$Variants_per_gene, labels=tab_gene_top20$Gene_Name,cex=0.7, pos=1) # labels the top 20 genes (<b>please plot before running this code</b>)<br />
+<br />
+Please note that dplyr package, further simplifies summary of variants per gene.<br />
+<br />
+For those, who is interested, my session info is:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-keTMYil9HRk/VWj2RJDL8YI/AAAAAAAAANI/lqjGrSoPbaE/s1600/session_info.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="394" src="http://4.bp.blogspot.com/-keTMYil9HRk/VWj2RJDL8YI/AAAAAAAAANI/lqjGrSoPbaE/s640/session_info.png" width="640" /></a></div>
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<br />
+&nbsp; </div>

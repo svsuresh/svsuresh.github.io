@@ -1,0 +1,18 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Well, there are times one has to download chromosome information for organisms. It could be any thing including sequences, annotations, other meta information. Chromosome names in general are mix of both numbers and string/text. For humans, it would be from chromosome 1 and chromosome 22, chromosome X, chromosome Y and mitochondrial chromosome. So one cannot use expansion in bash (shell). Parallel allows user download all the chromosomes, with both integers and strings/text. First let us echo chromosome names with parallel, then we can use the same in downloading multiple chromosomal information with chromosomes numbered and with text.&nbsp;</div>
+<br />
+Let us echo all the chromosomes in human with parallel:<br />
+=============================== <br />
+$ parallel --dry-run&nbsp; {} ::: chr{1..22} chr{X..Y}<br />chr1<br />chr2<br />chr3<br />chr4<br />chr5<br />chr6<br />chr7<br />chr8<br />chr9<br />chr10<br />chr11<br />chr12<br />chr13<br />chr14<br />chr15<br />chr16<br />chr17<br />chr18<br />chr19<br />chr20<br />chr21<br />chr22<br />chrX<br />chrY<br />==========================<br />
+<div style="text-align: justify;">
+Now we would use the same trick in download all .<a href="https://www.ncbi.nlm.nih.gov/assembly/agp/AGP_Specification/">agp</a> files for all chromosomes. URL for agp files&nbsp; is:&nbsp; ftp://ftp.ncbi.nlm.nih.gov/genomes/Homo_sapiens/Assembled_chromosomes/agp</div>
+<div style="text-align: justify;">
+=======================================</div>
+<div style="text-align: justify;">
+$ parallel --dry-run 'wget ftp://ftp.ncbi.nlm.nih.gov/genomes/Homo_sapiens/Assembled_chromosomes/agp/hs_ref_GRCh38.p12_{}.agp.gz' ::: chr{1..22} chr{X..Y}</div>
+<div style="text-align: justify;">
+========================================</div>
+<div style="text-align: justify;">
+&nbsp;Now this would download all chromosome agp files including x and y. </div>
+</div>

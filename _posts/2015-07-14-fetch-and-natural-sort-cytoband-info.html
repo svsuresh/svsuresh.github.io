@@ -1,0 +1,23 @@
+---
+layout: post
+title: Fetch and natural sort cytoband info from UCSC
+date: '2015-07-14T23:00:00.003+05:30'
+author: suresh
+tags:
+- cytoband
+- UCSC
+- natural sort
+modified_time: '2015-07-14T23:00:58.393+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8034060531728279983
+blogger_orig_url: https://digibio.blogspot.com/2015/07/fetch-and-natural-sort-cytoband-info.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Certain analysis and graphs need cytoband information in R or else where. In this note, we will fetch cytoband info from UCSC (goldenpath) ftp server, parse it to get cytoband information for Chr1 to Chr Y, sorted naturally i.e (Chr1-9, Chr10-22, ChrX, Y) excluding chrM and other assemblies (for eg. chrUn, Alt)<br />
+<br />
+Command:<br />
+wget -qO- "http://hgdownload.cse.ucsc.edu/goldenPath/hg38/database/cytoBand.txt.gz"| gzip -d | sort -V&nbsp; |egrep -v -E&nbsp; -i 'random|alt|chrun*|m'&nbsp; &gt; hg38.cyto.<br />
+<br />
+This command would download gzipped cytoband file for hg38, unzips the file, sorts the entries in human/natural sort, extracts those records that do not contain words "random, alt, chrun* and m (ignoring the case).&nbsp; This would result in a file with cytoband file without chromosome M and other assemblies.<br />
+<br />
+<br /></div>

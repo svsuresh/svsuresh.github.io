@@ -1,0 +1,12 @@
+---
+layout: post
+title: Batch rename files from a file
+date: '2020-09-03T18:27:00.002+05:30'
+author: suresh
+tags: 
+modified_time: '2020-09-03T18:44:59.500+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-2507587924729774500
+blogger_orig_url: https://digibio.blogspot.com/2020/09/rename-files-from-file.html
+---
+
+<p>Let us say you have few files to be renamed and you would like to rename the files in bulk. Old names and new names are present in two columns in a separate file and are separated by tab (or any delimiter that is unique between two columns).&nbsp;</p><p>Example file:</p><p>Old_file<span>&nbsp;&nbsp;&nbsp; </span>New_file<br />boomer<span>&nbsp;&nbsp;&nbsp; </span>genZ<br /></p><p>You can change the file names in&nbsp; multiple ways:</p><ol style="text-align: left;"><li>awk -v OFS=" " '{print "mv",$1,$2}' file.txt| sh</li><li>while IFS=$'\t' read old new; do echo mv $old $new;done &lt; test.txt</li></ol>

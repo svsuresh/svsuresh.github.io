@@ -1,0 +1,86 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+There are times, we come across to<br />
+<ol style="text-align: left;">
+<li>Find common genes between two pathways/lists</li>
+<li>Find genes that are unique to list 1 excluding common genes between two lists</li>
+<li>Find genes that are unique to list 2, excluding common genes between two lists </li>
+</ol>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-gS_nG5rUiLg/WYYkwcev36I/AAAAAAAAAiw/XPOvrL1MplkXd0PNQVbtpJh11p3piRNzwCLcBGAs/s1600/Untitled%2B2.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="338" data-original-width="554" height="244" src="https://2.bp.blogspot.com/-gS_nG5rUiLg/WYYkwcev36I/AAAAAAAAAiw/XPOvrL1MplkXd0PNQVbtpJh11p3piRNzwCLcBGAs/s400/Untitled%2B2.jpg" width="400" /></a></div>
+<br />
+Following note is an R code examples to do above tasks. For this you would need to R (grab latest version) and&nbsp; dplyr package (again, grab latest package).<br />
+<br />
+Before we dive into the code execution, let me briefly explain join function we will be using below. Join function does what it says. It joins.&nbsp; When we say join, we need to tell program how to join two gene lists (L1 and L2). Both the gene lists (L1 and L2) should have same column names for gene lists and other columns. For eg. If list 1 has gene names under column named "Genes", list2 column with gene names should have title "Genes".<br />
+<br />
+When joining, there can be three types of joining: Genes&nbsp; common between two lists (called inner_join),Genes unique to list 1 only (exclude common genes and list2 genes) and Genes unique to list 2 only (exclude common genes and list2 genes). Common genes are those genes which are common between list1 and list 2. Now let us get to work:<br />
+<br />
+Let us assume that we have two gene lists: L1 and L2 with following genes and they also have expression trends.<br />
+<br />
+------------------------------------------------------------------------------<br />
+L1<br />
+------------------------------------------------------------------------------<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Expression<br />
+<ol style="text-align: left;">
+<li><i>RARA</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; up</li>
+<li><i>RNF40</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down</li>
+<li><i>RUVBL2</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down</li>
+<li><i>SETD1A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down</li>
+<li><i>ACTR8</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down</li>
+</ol>
+------------------------------------------------------------------------------<br />
+L2<br />
+------------------------------------------------------------------------------<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Expression<br />
+<ol style="text-align: left;">
+<li>ACTL6A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down</li>
+<li>ACTL6B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; up</li>
+<li>ACTR5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; up</li>
+<li>ACTR8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down</li>
+</ol>
+&nbsp;-------------------------------------------------------------------------------<br />
+<br />
+-------------------------------------------------------------------------------<br />
+<b>Common genes between L1 and L2:</b><br />
+------------------------------------------------------------------------------<br />
+Let us find out the common genes between L1 and L2:<br />
+<b> </b><br />
+<b>_____________________________________________</b><br />
+<br />
+<b>Code <br />______________________________________________ </b><br />
+<b>$ library(dplyr)</b><br />
+<b>$ inner_join(L1,L2)<br />&nbsp;</b><br />
+<b>Output:</b><br />
+<b>&nbsp;Joining, by = c("gene", "Expression")<br />&nbsp;&nbsp;&nbsp; gene&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Expression <br />1 ACTR8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down </b><br />
+==================================================<br />
+<br />
+--------------------------------------------------------------------------------<br />
+<b>Genes unique to L1 (exclude common genes and genes in L2)</b><br />
+<b>-------------------------------------------------------------------------------- </b><br />
+Let us find out the unique genes to L1:<br />
+<b> </b><b>_____________________________________________</b><br />
+<br />
+<b>Code <br />______________________________________________ </b><br />
+<b>$ library(dplyr)</b><br />
+<b>$ anti_join(L1,L2) #Note L1 is on left side<br />&nbsp;</b><br />
+<b>Output:</b><br />
+<b>&nbsp;Joining, by = c("gene", "Expression")<br />&nbsp;&nbsp;&nbsp; gene&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Expression </b><br />
+<b>1 SETD1A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down<br />2 RUVBL2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down<br />3 RNF40&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down<br />4 RARA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; up</b><br />
+<b><br /></b>
+<br />
+==================================================<br />
+<br />
+----------------------------------------------------------------------------------<br />
+<b>Genes unique to L2 (exclude common genes and genes in L1)</b><br />
+-----------------------------------------------------------------------------------<br />
+Let us find out the unique genes to L2:<br />
+<b> </b><b>_____________________________________________</b><br />
+<br />
+<b>Code <br />______________________________________________ </b><br />
+<b>$ library(dplyr)</b><br />
+<b>$ anti_join(L2,L1) #Note L1 is on right side<br />&nbsp;</b><br />
+<b>Output:</b><br />
+<b>&nbsp;Joining, by = c("gene", "Expression")<br />&nbsp;&nbsp;&nbsp; gene&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Expression </b><br />
+<b>1&nbsp; ACTR5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; up<br />2 ACTL6B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; up<br />3 ACTL6A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; down</b><br />
+<b><br /></b></div>

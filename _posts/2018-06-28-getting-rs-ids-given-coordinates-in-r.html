@@ -1,0 +1,100 @@
+---
+layout: post
+title: Getting rs IDs given coordinates in R and shell
+date: '2018-06-28T13:38:00.007+05:30'
+author: suresh
+tags:
+- dbSNP
+- GNU-Parallel
+- rsID
+- bash
+- biomart
+- cran-R
+modified_time: '2020-08-15T18:30:11.044+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-6962978470855374726
+blogger_orig_url: https://digibio.blogspot.com/2018/06/getting-rs-ids-given-coordinates-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Some times brain acts like a child. Let us a give an example of conversation between me and my kid.&nbsp; Background is that I am trying to give her (10 yo) example of bird flying and principle behind aeroplanes.<br />
+<br />
+me:&nbsp; Hi! do you know how birds fly?<br />
+kid:&nbsp; which one exactly?<br />
+me:&nbsp; any bird. sweetie!<br />
+kid:&nbsp; well, be specific. You ask me to be specific.<br />
+me:&nbsp; let us say crow<br />
+kid: You mean the crow that keeps cawing on outside tree<br />
+me: yes<br />
+kid: Do you know yesterday it was limping?<br />
+me: why? did you do any thing?<br />
+kid: no, i think some one hit it.<br />
+me: oh bad. One should not harm animals willingly. We should care for other humans and animals. (not realizing that she pulled me into her world) <br />
+<br />
+Now my self and brain (Mr. B- Male brain):<br />
+<br />
+me: Hi! I saw&nbsp; a post and user wants to get rsIDs<br />
+Mr.B: well, what format is the data?<br />
+me: VCF<br />
+Mr.B: How can you get rsIDs for vCard format?<br />
+me: It's not contact format. It variant call format.<br />
+Mr.B: oh okay.<br />
+me: Now I want a method. Give me now<br />
+Mr.B: sure, take this loop in R.<br />
+me: great. Thanks. I will work on it. <br />
+Mr.B: (after 5 min) You know what? I have apply method. No need of loop.<br />
+me: Why didn't you tell me earlier. Give me that.<br />
+Mr.B: (after 5 min) You don't even need R. You can use bedtools and intersect<br />
+me: oh boy. Give me that.<br />
+Mr.B: (after 5 min). Well, you don't need even that. You need awk, parallel and tabix. Simply extract it from NCBI servers.<br />
+me: (banging my head virtually), give me that. Why didn't you give me this first?<br />
+Mr.B: I am getting sleep. Moreover, you suffer from staircase wit.<br />
+<br />
+Well, this is how I get side tracked and never be able to get answers straight. Let me get to the point. Some one requested to get rsIDs, given chromosome coordinates for genome build b37/hg19. I had to do three times almost. Here is the input file:<br />
+==================<br />
+chr1&nbsp;&nbsp;&nbsp; 207679307&nbsp;&nbsp;&nbsp; 207679307<br />chr1&nbsp;&nbsp;&nbsp; 207684192&nbsp;&nbsp;&nbsp; 207684192<br />chr1&nbsp;&nbsp;&nbsp; 207685786&nbsp;&nbsp;&nbsp; 207685786<br />chr1&nbsp;&nbsp;&nbsp; 207685965&nbsp;&nbsp;&nbsp; 207685965<br />chr1&nbsp;&nbsp;&nbsp; 207692049&nbsp;&nbsp;&nbsp; 207692049<br />
+====================</div><div dir="ltr" style="text-align: left;" trbidi="on">Now user wants to get rsIDs, alleles. We can annotate using R, Shell (shell + system tools). Let us look at all the options. First let us do it in command line using awk, parallel and tabix&nbsp;</div><div dir="ltr" style="text-align: left;" trbidi="on"><br />
+============================================ <br />
+$ awk '{gsub("chr","",$1)} {print $1":"$2"-"$3}' coord.txt | parallel --delay 1 tabix ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/All_20180423.vcf.gz {} | awk -v OFS="\t" 'BEGIN {print "chromosome","Coordinate","rsID","Ref","Alt"} {print "chr"$1,$2,$3,$4,$5}'<br />&nbsp;</div><div dir="ltr" style="text-align: left;" trbidi="on">output: <br />
+chr1&nbsp;&nbsp;&nbsp; 207684192&nbsp;&nbsp;&nbsp; rs12037841&nbsp;&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp; G<br />chr1&nbsp;&nbsp;&nbsp; 207679307&nbsp;&nbsp;&nbsp; rs4844600&nbsp;&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp; C,G<br />chr1&nbsp;&nbsp;&nbsp; 207685786&nbsp;&nbsp;&nbsp; rs4266886&nbsp;&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp; C<br />chr1&nbsp;&nbsp;&nbsp; 207692048&nbsp;&nbsp;&nbsp; rs386638846&nbsp;&nbsp;&nbsp; CATC&nbsp;&nbsp;&nbsp; CGTT<br />chr1&nbsp;&nbsp;&nbsp; 207692049&nbsp;&nbsp;&nbsp; rs6656401&nbsp;&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp; G,T<br />==============================================<br />
+<div style="text-align: justify;"><ol><li>
+First we will chop of string "chr" from the first column (using awk)&nbsp;</li><li>Use parallel to send parallel requests to NCBI servers to get the information.&nbsp;</li><li>get desired output by Awk operations as follows: <br /></li><ol><li>Print header (using awk begin) <br /></li><li>Append string "chr" to the first column&nbsp;</li><li>Print the columns using information from NCBI. Output from tabix is in general is VCF. So we take first 5 columns.</li></ol></ol></div><div style="text-align: justify;">==================================================== <br /></div>
+<div style="text-align: justify;">
+Now let us do the same with biomart and R (with loop and without loop):</div><div style="text-align: justify;"><ol><li>First read file</li><li>Create enviroment for biomart to download the annotations from</li><li>Create empty data frame to fill later</li><li>Use with and without loop methods for getting annotations.<br /></li></ol></div>
+<div style="text-align: justify;">
+====================================================</div>
+<div style="text-align: justify;">
+## Load the coordinates file </div>
+<div style="text-align: justify;">
+$ coords=read.csv("coord.txt", stringsAsFactors = F, strip.white = T, header = F, sep="\t")</div>
+<div style="text-align: justify;">
+## Chop off string "chr" from the first column. </div>
+<div style="text-align: justify;">
+$ coords$V1=gsub("chr","",coords$V1)&nbsp;</div>
+<div style="text-align: justify;">
+## Load library biomart </div>
+<div style="text-align: justify;">
+$&nbsp; library(biomaRt)</div>
+<div style="text-align: justify;">
+## Create a mart and dataset from which we would like get information from<br />$ mart=useMart(biomart="ENSEMBL_MART_SNP", host= "grch37.ensembl.org", path="/biomart/martservice", dataset="hsapiens_snp")</div>
+<div style="text-align: justify;">
+## Create an empty data frame. Rows do not matter. Number of columns must ## be same number as attributes in getBM function.<br />$ results=data.frame(matrix(ncol=5,nrow=0))=</div><div style="text-align: justify;">=============================================================</div>
+<div style="text-align: justify;">Now get the annotations using a loop<br /></div><div style="text-align: justify;">=============================================================== <br /></div>
+<div style="text-align: justify;">
+## Now write a loop and append the output to dataframe (results) row wise (rbind)&nbsp;</div><div style="text-align: justify;">&nbsp;<br /></div><div style="text-align: left;">
+$ for (i in seq (1,nrow(coords))){<br />&nbsp;&nbsp;&nbsp; ens=getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'), filters = c('chr_name','start','end'), values = as.list(coords[i,]), mart = mart)<br />&nbsp;&nbsp;&nbsp; results=rbind(results,ens)<br />}</div>
+<div style="text-align: justify;">
+=================================================================<br /></div>
+<div style="text-align: justify;">Get the annotations using apply function, without using loop<br /></div><div style="text-align: justify;">================================================================&nbsp; </div>
+<div style="text-align: justify;"><div style="text-align: left;">
+$ do.call(rbind,(apply(coords,1, function (x) getBM(attributes = c('refsnp_id', 'chrom_start','chrom_end', 'chrom_strand','allele'), filters = c('chr_name','start','end'), values = as.list(x), mart = mart))))<br /></div>================================================================</div>
+<div style="text-align: justify;">
+Now one of the gentlemen on Biostars forum corrected the code that apply and loops are not necessary for annotation. I agree with him/her totally. Following is the better way in biomart:<br /></div><div style="text-align: justify;">=======================================================</div>
+<div style="text-align: justify;">
+## create a new dataframe with by pasting all the data into chrom:start:end format. </div>
+<div style="text-align: justify;">
+$ coords1=apply(coords,1, paste, collapse=":")&nbsp;</div>
+<div style="text-align: justify;">
+## Now run the getBM function </div>
+<div style="text-align: justify;"><div style="text-align: left;">
+$ getBM(attributes = c('refsnp_id','chrom_start','chrom_end', 'chrom_strand', 'allele'), filters = "chromosomal_region", values = coords1, mart = mart)<br /></div>========================================================</div><div style="text-align: justify;">&nbsp;</div><div style="text-align: justify;">If you have any queries, please post some example data here so that I can understand the problem. Please do not describe the data. For some reason, let us say you have file in text format, where in first 3 columns are coordinate information and rest of the columns are some other data, you can use this tutorial to annotate the data: https://digibio.blogspot.com/2020/08/annotate-text-file-with-dbsnp-reference.html </div>
+</div>

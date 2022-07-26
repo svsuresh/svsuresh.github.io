@@ -1,0 +1,134 @@
+I"�6<p>Data operations in R can be done in so many ways that it’s confusing for newbies. This note denotes simple operations using dplyr (and other
+packages from tidyverse). Let us do this using standard datasets available within R.</p>
+
+<h4 id="load-libraries">Load libraries</h4>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">suppressPackageStartupMessages</span><span class="p">(</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">))</span><span class="w">
+</span><span class="n">suppressPackageStartupMessages</span><span class="p">(</span><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="column-wise-operations">Column wise operations</h3>
+
+<p>Let us do some basic statistics.</p>
+
+<h5 id="find-maximum-value-in-each-column">Find maximum value in each column</h5>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iris</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">summarise</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w"> </span><span class="n">max</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 1          7.9         4.4          6.9         2.5
+</code></pre></div></div>
+
+<h5 id="find-maximum-value-in-each-group">Find maximum value in each group</h5>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iris</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">group_by</span><span class="p">(</span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">summarise</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w"> </span><span class="n">max</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## `summarise()` ungrouping output (override with `.groups` argument)
+
+## # A tibble: 3 x 5
+##   Species    Sepal.Length Sepal.Width Petal.Length Petal.Width
+##   &lt;fct&gt;             &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+## 1 setosa              5.8         4.4          1.9         0.6
+## 2 versicolor          7           3.4          5.1         1.8
+## 3 virginica           7.9         3.8          6.9         2.5
+</code></pre></div></div>
+
+<h5 id="find-minimum-and-maximum-value-within-each-column">Find minimum and maximum value within each column</h5>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iris</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">)))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   Sepal.Length_min Sepal.Length_max Sepal.Width_min Sepal.Width_max
+## 1              4.3              7.9               2             4.4
+##   Petal.Length_min Petal.Length_max Petal.Width_min Petal.Width_max
+## 1                1              6.9             0.1             2.5
+</code></pre></div></div>
+
+<p>Now as you see, the table has grown horizontally with two functions (max and min). Imagine having 5 functions and multiple groups. Let us format
+this to a better table, with 3 functions (min, max, mean).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iris</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">summarise</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">Min</span><span class="o">=</span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="n">Max</span><span class="o">=</span><span class="n">max</span><span class="p">,</span><span class="w"> </span><span class="n">Mean</span><span class="o">=</span><span class="n">mean</span><span class="p">)))</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w">
+                 </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">".value"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Stat"</span><span class="p">),</span><span class="w">
+                 </span><span class="n">names_pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"(\\w+\\W\\w+)_(\\w+)"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## # A tibble: 3 x 5
+##   Stat  Sepal.Length Sepal.Width Petal.Length Petal.Width
+##   &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+## 1 Min           4.3         2            1           0.1 
+## 2 Max           7.9         4.4          6.9         2.5 
+## 3 Mean          5.84        3.06         3.76        1.20
+</code></pre></div></div>
+
+<p>There is easier way to do this outside dplyr.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">suppressPackageStartupMessages</span><span class="p">(</span><span class="n">library</span><span class="p">(</span><span class="n">Rfast</span><span class="p">))</span><span class="w">
+</span><span class="n">data.frame</span><span class="p">(</span><span class="n">apply</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="w"> </span><span class="m">-5</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">colMinsMaxs</span><span class="p">),</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Min"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##     Sepal.Length Sepal.Width Petal.Length Petal.Width
+## Min          4.3         2.0          1.0         0.1
+## Max          7.9         4.4          6.9         2.5
+</code></pre></div></div>
+
+<p>with Rfast package, finding min and maximum values in a vector might be easier, but not extensible. For eg, let us say you want mean, median and
+sd. You cannot get all of them in the same function. However, dplyr code allows to include as many functions as you need and format as per your
+needs.</p>
+
+<h5 id="find-minimum-and-maximum-value-within-each-column-for-each-plant-species">Find minimum and maximum value within each column, for each plant species:</h5>
+
+<p>Now let us find minimum and maximum in each group (Species)</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iris</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">)))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## `summarise()` ungrouping output (override with `.groups` argument)
+
+## # A tibble: 3 x 9
+##   Species Sepal.Length_min Sepal.Length_max Sepal.Width_min Sepal.Width_max
+##   &lt;fct&gt;              &lt;dbl&gt;            &lt;dbl&gt;           &lt;dbl&gt;           &lt;dbl&gt;
+## 1 setosa               4.3              5.8             2.3             4.4
+## 2 versic…              4.9              7               2               3.4
+## 3 virgin…              4.9              7.9             2.2             3.8
+## # … with 4 more variables: Petal.Length_min &lt;dbl&gt;, Petal.Length_max &lt;dbl&gt;,
+## #   Petal.Width_min &lt;dbl&gt;, Petal.Width_max &lt;dbl&gt;
+</code></pre></div></div>
+
+<p>Let us format this table to a meaningful table as below:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iris</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">group_by</span><span class="p">(</span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">summarise</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="w"> </span><span class="n">min</span><span class="o">=</span><span class="n">min</span><span class="p">,</span><span class="n">max</span><span class="o">=</span><span class="n">max</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">)))</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w">
+    </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">where</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">),</span><span class="w">
+                 </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">".value"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Stat"</span><span class="p">),</span><span class="w">
+                 </span><span class="n">names_pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"(\\w+\\W\\w+)_(\\w+)"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## `summarise()` ungrouping output (override with `.groups` argument)
+
+## # A tibble: 9 x 6
+##   Species    Stat  Sepal.Length Sepal.Width Petal.Length Petal.Width
+##   &lt;fct&gt;      &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+## 1 setosa     min           4.3         2.3          1          0.1  
+## 2 setosa     max           5.8         4.4          1.9        0.6  
+## 3 setosa     mean          5.01        3.43         1.46       0.246
+## 4 versicolor min           4.9         2            3          1    
+## 5 versicolor max           7           3.4          5.1        1.8  
+## 6 versicolor mean          5.94        2.77         4.26       1.33 
+## 7 virginica  min           4.9         2.2          4.5        1.4  
+## 8 virginica  max           7.9         3.8          6.9        2.5  
+## 9 virginica  mean          6.59        2.97         5.55       2.03
+</code></pre></div></div>
+
+<p>We can further beautify this table with kable package.</p>
+:ET

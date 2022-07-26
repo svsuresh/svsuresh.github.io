@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/nucleotide-base-frequency-per-read-and">Dec 1, 2017 - Nucleotide (base) frequency per read and per position using bioconductor</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: justify;" trbidi="on">
+Some times we need to relearn the basics. Base (nucleotide) frequency per sequence (read) and positional frequency for each base are well understood at the time of first generation bioinformatics (with fasta sequences mostly). Now that are we into NGS, we forget (at least I) tend to forget the basics. For such people (like me), here is a&nbsp; note on calculation base frequency per read and also positional frequency for a set of reads. Please note that tools such as FastQC does this. But FastQC does it for first few bases and there are several independent tools to do that.<br />
+For today, let us do this in R/Bioconductor. Packages used are biostrings for calculation and for&nbsp; plotting, ggplot and reshape2 packages are used.<br />
+We can do this with both fastq and fasta files. For loading fasta files, code is at the end. For fastq and fasta code is same except for loading initial input files.<br />
+Let us take a fastq file with several reads. Each read has certain A, T, G, C and other bases (such as N, B etc). There are two cases here:<br />
+1) Let us say there are 20 reads and we want total number of As, Ts, Gs and Cs per read. We want it for all 20 reads.<br />
+2) Let us say there are 20 reads of length 55 nt. At each position of the read ( across 20 reads), we would like to have each base frequency or number i.e at position 1 of all 20 reads, how many As are there and how many Ts and how many Gs and so on.<br />
+Let us deal with first case. You can download example fastq file <a href="https://drive.google.com/file/d/1kKax91cwmaeEW4BEp7ypgYg_1cUrLexw/view?usp=sharing" target="_blank">here.</a> A little statistics about sample.fastq:<br />
+==============================================================<br />
+$ seqkit stats sample.fastq <br />
+file&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; format&nbsp; type&nbsp; num_seqs&nbsp; sum_len&nbsp; min_len&nbsp; avg_len&nbsp; max_len<br />
+sample.fastq&nbsp; FASTQ&nbsp;&nbsp; DNA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 92&nbsp;&nbsp; 13,892&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 151&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 151&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 151<br />
+==============================================================<br />
+There are around 92 reads and average length of read is 151bp. Minimum and maximum length is 151 bp.<br />
+Let us do it using biostrings:<br />
+==============================================<br />
+# Load biostrings library <br />
+$ library(Biostrings)<br />
+# read fastq file into R and save it as object<br />
+$ fastq &lt;- readDNAStringSet("sample.fastq","fastq")<br />
+# Now count the number of bases (ATGC and other) per each read and for all reads. #Number is expressed as percentage<br />
+$ freq &lt;- alphabetFrequency(fastq, as.prob = T,baseOnly=T)<br />
+# Result is matrix. Now plot it using mat plot and type of graph is line graph <br />
+$ matplot(freq,type='l')<br />
+# Add legend to the image.<br />
+$ legend(legend = colnames(freq),"topright",lty=1:5,col=1:5)<br />
+=================================================<br />
+Final result:<br />
+<div class="separator" style="clear: both;">
+<a href="https://4.bp.blogspot.com/-jtI2IjqnEvs/WiFu7nTGOcI/AAAAAAAAA5g/B7oKRZdg6UAzsQs1Ak5-bH6L6qpEjGJzACLcBGAs/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="686" data-original-width="1200" height="364" src="https://4.bp.blogspot.com/-jtI2IjqnEvs/WiFu7nTGOcI/AAAAAAAAA5g/B7oKRZdg6UAzsQs1Ak5-bH6L6qpEjGJzACLcBGAs/s640/Rplot01.png" width="640" /></a></div>
+What does this image tell us? It tells us that there are around ~90 sequences and in each sequence, we have percentage of each base (A, T, G, C and non-ATGC (other) bases)<br />
+Now let us address the second requirement where we need base frequency at each position, for all reads.<br />
+========================<br />
+## Load library <br />
+$ library(Biostrings)<br />
+## Read fastq file into R and save it as object<br />
+$ fastq &lt;- readDNAStringSet("sample.fastq","fastq")<br />
+## Calculate base percentage at each position, for all reads<br />
+$ afmc=consensusMatrix(fastq, baseOnly=T,as.prob = T)<br />
+## Transpose the data frame<br />
+$ tafmc=t(afmc)<br />
+## Plot the data: -5 is to remove others column keeping only ATG and C columns<br />
+$ matplot(tafmc[,-5], type="l", lwd=2, xlab="Read Length", ylab= "Base frequency at each position")<br />
+## Add legend<br />
+$ legend(legend = colnames(tafmc)[-5],"topright",col=1:4, lty=1:4, lwd=2)<br />
+=====================================<br />
+Final result:<br />
+<div class="separator" style="clear: both;">
+<a href="https://1.bp.blogspot.com/-crTGc13yaRY/WiFv47r2zsI/AAAAAAAAA5s/IcOrkNQLqJ8_i08lLxum5436dn3yJ_gcACLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="686" data-original-width="1200" height="364" src="https://1.bp.blogspot.com/-crTGc13yaRY/WiFv47r2zsI/AAAAAAAAA5s/IcOrkNQLqJ8_i08lLxum5436dn3yJ_gcACLcBGAs/s640/Rplot02.png" width="640" /></a></div>
+What does this plot say. This plot says that the average length of all reads is a little more 150 bps and at each position (in all reads), we have percentage of each base, denoted by color lines.<br />
+Now can we draw in ggplot?<br />
+&nbsp;=======================<br />
+## Load libraries ggplot2 and reshape2 <br />
+$ library(ggplot2)<br />
+$ library(reshape2)<br />
+## Convert the data from wide format to long format<br />
+$ rtafmc=melt(tafmc)<br />
+## Now change the column names some meaning ful names <br />
+$ colnames(rtafmc)=c("Position","Base","Percentage")<br />
+## Let us draw and apply black and white theme instead of ggplot default theme. We want ##line plot and we would like only ATGC columns<br />
+$ qplot(Position,Percentage, data=subset(rtafmc, Base!="other"), group=Base, geom="line", color=Base)+ theme_bw()<br />
+=======================<br />
+Let us look at the ggplot image (well, one can always improve the visualization:))<br />
+<br />
+<div class="separator" style="clear: both;">
+<a href="https://3.bp.blogspot.com/-EQo6Ba4PQHo/WiFxP_9OJYI/AAAAAAAAA54/7V-s2_ObcvYibT64V3VFo-a3PzXTsORJgCLcBGAs/s1600/Rplot03.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="686" data-original-width="1200" height="364" src="https://3.bp.blogspot.com/-EQo6Ba4PQHo/WiFxP_9OJYI/AAAAAAAAA54/7V-s2_ObcvYibT64V3VFo-a3PzXTsORJgCLcBGAs/s640/Rplot03.png" width="640" /></a></div>
+Now after doing this, one can always wonder about much easier way to do this. We have a library called <a href="https://bioconductor.org/packages/release/bioc/html/seqTools.html" target="_blank">SeqTools</a>. Let us use that and see how easy it is:<br />
+===========================================<br />
+## Load SeqTools library<br />
+library(seqTools)<br />
+# Reads fastq file<br />
+fq=fastqq("sample.fastq")<br />
+# Plots nucleotide frequency at each position<br />
+plotNucFreq(fq,1)<br />
+====================================<br />
+<br />
+<div class="separator" style="clear: both;">
+<a href="https://3.bp.blogspot.com/-K-NxL9ICMO4/WiFxzrFwvQI/AAAAAAAAA6A/4dWiKPkkKz47oM8lj8riZijLOTZSBRPPwCLcBGAs/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="686" data-original-width="1200" height="364" src="https://3.bp.blogspot.com/-K-NxL9ICMO4/WiFxzrFwvQI/AAAAAAAAA6A/4dWiKPkkKz47oM8lj8riZijLOTZSBRPPwCLcBGAs/s640/Rplot.png" width="640" />&nbsp;</a></div>
+<div class="separator" style="clear: both;">
+For loading fasta file in R, using biostrings package, use this code:</div>
+<div class="separator" style="clear: both;">
+============================================== </div>
+<div class="separator" style="clear: both;">
+fastq &lt;- readDNAStringSet("test3.fa","fasta")&nbsp;</div>
+<div class="separator" style="clear: both;">
+==============================================</div>
+<div class="separator" style="clear: both;">
+Example code to use produce frequencies for fasta:</div>
+<div class="separator" style="clear: both;">
+=============================================</div>
+<div class="separator" style="clear: both;">
+$ library(Biostrings)<br />$ fasta &lt;- readDNAStringSet("test3.fa","fasta")<br />$ freq &lt;- alphabetFrequency(fasta, as.prob = T,baseOnly=T)</div>
+<div class="separator" style="clear: both;">
+$ matplot(freq,type='l')<br />$ legend(legend = colnames(freq),"topright",lty=1:5,col=1:5)</div>
+<div class="separator" style="clear: both;">
+=================================================</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/extract-sequences-into-individual-files" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/heat-map-with-rnaseq-featurecounts" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

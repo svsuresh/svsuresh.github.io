@@ -1,0 +1,37 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+There is a request to break fasta file by nucleotide (N) i.e if a sequence contains "N" or multiple "N"s,&nbsp; break the sequence into parts before and after Ns. Headers must continue the names with consecutive numbers.<br />
+<br />
+Input fasta:<br />
+======================= <br />
+&gt;chr1<br />
+ATCGCTGATCGATNCTAGCTAGCTAGCGTAGCTGCTAGNCGTAGCCGTAGCT<br />
+&gt;chr2<br />
+CCTGANGTAGT<br />
+&gt;chr3<br />
+ATGNNNNNN<br />
+&gt;chr4<br />
+NNNNCnT<br />
+========================== <br />
+Output fasta:<br />
+========================== <br />
+&gt;chr1<br />
+ATCGCTGATCGAT<br />
+&gt;chr1_2<br />
+CTAGCTAGCTAGCGTAGCTGCTAG<br />
+&gt;chr1_3<br />
+CGTAGCCGTAGCT<br />
+&gt;chr2<br />
+CCTGA<br />
+&gt;chr2_2<br />
+GTAGT<br />
+&gt;chr3<br />
+ATG<br />
+&gt;chr4<br />
+C<br />
+&gt;chr4_2<br />
+T <br />
+===========================<br />
+using awk:<br />
+=========================== <br />
+$&nbsp; awk '{gsub("[Nn]+","\n&gt;\n");}1' test.fa | awk '/^&gt;/ {if ($0 == "&gt;") {$0=prev} prev=$0}1' | awk '/^&gt;/ {getline seq} {if(seq!="") {print $0"\n"seq}}' | awk '(/^&gt;/ &amp;&amp; a[$0]++) {$0=$0"_"a[$0]}1' <br />
+===========================</div>

@@ -1,0 +1,104 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+For bioinformaticians, fasta files routine files to deal with. There are certain times, a bioinformatician needs following information from the fasta file (with few sequences within it):<br />
+<br />
+1) Extract partial sequence out of each sequence and store it in a separate file as different sequences<br />
+2) Extract partial sequence out of each sequence and store in a separate file as one single sequence.<br />
+<br />
+Strange it may seems with such a request. But one never knows what comes from a some one higher up.<br />
+<br />
+Let us work with an example fasta file with three sequences in it.<br />
+<div>
+<div>
+</div>
+<div>
+======================= </div>
+<div>
+&gt;gene1</div>
+<div>
+ACATATTGGAGGCCGAAACAATGAGGCGTG<wbr></wbr>ATCAACTCAGTATATCAC</div>
+<div>
+&gt;gene2</div>
+<div>
+CTAACCTCTCCCAGTGTGGAACCTCTATCT<wbr></wbr>CATGAGAAAGCTGGGATGAG</div>
+<div>
+&gt;gene3</div>
+<div>
+ATTTCCTCCTGCTGCCCGGGAGGTAACACC<wbr></wbr>CTGGACCCCTGGAGTCTGCA</div>
+</div>
+<div>
+=========================</div>
+<div>
+<br /></div>
+<div>
+Above example contains 3 sequences saved in a file (let us call the file: genes.fa). We have two requirements:</div>
+<div>
+</div>
+<div>
+1) Extract first one third of nucleotides (bases) from each sequence and store the extracted sequences as separate sequences in a new file. For eg. take first 1/3 bases from gene 1 and store it as a new sequence. Do the same thing for second and third genes as well. New file will have 3 sequences, but with shortened sequences.</div>
+<div>
+</div>
+<div>
+</div>
+<div>
+2)&nbsp; Extract first one third of nucleotides (bases) from each sequence and 
+store the extracted sequences as a single sequence in a new file. Take first 1/3 bases from gene1, first 1/3 bases from gene2 and first 1/3 bases from gene3, combine all of them into one single sequence.</div>
+<div>
+<br /></div>
+<div>
+For this, let us use R and biostrings package. code is as follows:</div>
+<div>
+<br />
+Let us do first part:<br />
+<br />
+# load the library biostrings </div>
+<div>
+<div>
+<div>
+$ library(Biostrings)<br />
+<br />
+# Read the file and save it as biostring object </div>
+<div>
+$ genes=readDNAStringSet("genes.<wbr></wbr>fa", format = "fasta")<br />
+<br />
+# Extract first 1/3 sequence from each sequence in biostring object </div>
+<div>
+$ subfasta=subseq(s,1,ceiling(<wbr></wbr>width(s)/3))<br />
+<br />
+# Save it to a file subgenes.fa with three newly created sequences </div>
+<div>
+&nbsp;$ writeXStringSet(subfasta, "subgenes.fa")<br />
+<br />
+<br />
+Let us do second part:<br />
+&nbsp; <br />
+# load the library biostrings <br />
+<div>
+$ library(Biostrings)<br />
+<br />
+# Read the file and save it as biostring object </div>
+<div>
+$ genes=readDNAStringSet("genes.<wbr></wbr>fa", format = "fasta")<br />
+<br />
+# Extract first 1/3 sequence from each sequence in biostring object </div>
+$ subfasta=subseq(s,1,ceiling(<wbr></wbr>width(s)/3))<br />
+&nbsp; <br />
+# combine all the new sequences in to one single sequence<br />
+$ csubfasta=DNAStringSet(unlist(<wbr></wbr>subfasta))</div>
+<div>
+<br />
+# Give the name to new sequence<br />
+$ names(csubfasta)="new_gene"</div>
+<div>
+<br />
+# Write this new sequence to a new file.&nbsp; <br />
+$ writeXStringSet(DNAStringSet(<wbr></wbr>scubfasta),"new_gene.fasta")</div>
+</div>
+</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+</div>
+<br />
+<br /></div>

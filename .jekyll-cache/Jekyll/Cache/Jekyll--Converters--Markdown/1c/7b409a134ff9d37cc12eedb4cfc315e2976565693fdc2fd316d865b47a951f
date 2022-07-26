@@ -1,0 +1,62 @@
+I"æ<p>One of the requests I came across is to split the sequence with two alleles into two sequences. Each one carrying one allele each and then convert the all sequences to fasta records. Eg is given below</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+input sequence: AT[G/C]CT
+
+</code></pre></div></div>
+
+<p>Expected output:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span>seq1
+ATGCT
+<span class="o">&gt;</span>seq2
+ATCCT
+
+</code></pre></div></div>
+
+<p>A few records below with the code. First input:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAGGGTTTAGAAAAAAACCAAACAAACAATCGAAA[C/T]GAAATAGAAAAAGAAAAAGGGAAGGGGTTAAGTTC
+TTCATATAAAAATTGATATAGAATCTTTGAAAAAG[A/C]CCTTTCTTCCTAAGAAAGAAAAGGCTTACTGTCTT
+CCCAAATAAACAGGTATGGAAGCTATAATTGGAAA[C/T]CACGATCGAATTTATGGAAGCATTGGTTTATACAT
+</code></pre></div></div>
+
+<p>Code with output:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$awk</span> <span class="nt">-F</span> <span class="s2">"[][/]"</span> <span class="nt">-v</span> <span class="nv">OFS</span><span class="o">=</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="s1">'{print $1$2$4,$1$3$4}'</span> test.txt | <span class="nb">awk</span>  <span class="nt">-v</span> <span class="nv">OFS</span><span class="o">=</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="s1">'{print "&gt;seq_"NR,$0}'</span>
+
+<span class="o">&gt;</span>seq_1
+AAGGGTTTAGAAAAAAACCAAACAAACAATCGAAACGAAATAGAAAAAGAAAAAGGGAAGGGGTTAAGTTC
+<span class="o">&gt;</span>seq_2
+AAGGGTTTAGAAAAAAACCAAACAAACAATCGAAATGAAATAGAAAAAGAAAAAGGGAAGGGGTTAAGTTC
+<span class="o">&gt;</span>seq_3
+TTCATATAAAAATTGATATAGAATCTTTGAAAAAGACCTTTCTTCCTAAGAAAGAAAAGGCTTACTGTCTT
+<span class="o">&gt;</span>seq_4
+TTCATATAAAAATTGATATAGAATCTTTGAAAAAGCCCTTTCTTCCTAAGAAAGAAAAGGCTTACTGTCTT
+<span class="o">&gt;</span>seq_5
+CCCAAATAAACAGGTATGGAAGCTATAATTGGAAACCACGATCGAATTTATGGAAGCATTGGTTTATACAT
+<span class="o">&gt;</span>seq_6
+CCCAAATAAACAGGTATGGAAGCTATAATTGGAAATCACGATCGAATTTATGGAAGCATTGGTTTATACAT
+
+</code></pre></div></div>
+
+<p>But what if you want to append the allele to the headers and retain sequence order? Following is the code:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">awk</span> <span class="nt">-F</span> <span class="s2">"[][/]"</span> <span class="nt">-v</span> <span class="nv">OFS</span><span class="o">=</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="s1">'{print "&gt;seq_"NR"_"$2,$1$2$4,"&gt;seq_"NR"_"$3,$1$3$4}'</span> test.txt 
+
+<span class="o">&gt;</span>seq_1_C
+AAGGGTTTAGAAAAAAACCAAACAAACAATCGAAACGAAATAGAAAAAGAAAAAGGGAAGGGGTTAAGTTC
+<span class="o">&gt;</span>seq_1_T
+AAGGGTTTAGAAAAAAACCAAACAAACAATCGAAATGAAATAGAAAAAGAAAAAGGGAAGGGGTTAAGTTC
+<span class="o">&gt;</span>seq_2_A
+TTCATATAAAAATTGATATAGAATCTTTGAAAAAGACCTTTCTTCCTAAGAAAGAAAAGGCTTACTGTCTT
+<span class="o">&gt;</span>seq_2_C
+TTCATATAAAAATTGATATAGAATCTTTGAAAAAGCCCTTTCTTCCTAAGAAAGAAAAGGCTTACTGTCTT
+<span class="o">&gt;</span>seq_3_C
+CCCAAATAAACAGGTATGGAAGCTATAATTGGAAACCACGATCGAATTTATGGAAGCATTGGTTTATACAT
+<span class="o">&gt;</span>seq_3_T
+CCCAAATAAACAGGTATGGAAGCTATAATTGGAAATCACGATCGAATTTATGGAAGCATTGGTTTATACAT
+
+</code></pre></div></div>
+:ET

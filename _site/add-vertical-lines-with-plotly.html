@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/add-vertical-lines-with-plotly">May 12, 2020 - Add vertical lines with plotly</a></h1>
+            <div class="post-content">
+            <div style="text-align: justify;"><font size="2"><span style="font-family: &quot;verdana&quot;;">Plotly is a useful a graphing library available in python, R and other languages. One of the challenges for ggplot users is to add vertical and horizontal lines. It's a convoluted way in R compared to ggplot. Let us do it for iris data. We will take Sepal and petal lengths and draw a scatter plot. Though we are not making any scientific conclusions from the analysis, we will see how vertical lines are added to plotly graph.<br /></span></font><font size="2"><span style="font-family: &quot;verdana&quot;;">======================================================<br /></span></font></div><div style="text-align: justify;"><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"># Load data iris<br /></span></font></pre></div><div style="text-align: justify;"><pre><font size="2"><span style="font-family: &quot;verdana&quot;;">data (iris)</span></font></pre></div><div style="text-align: justify;"><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"># Create plotly object with iris data and sepal and petal length are to be compared against<br />fig=plot_ly(iris, x=~Sepal.Length, y=~Petal.Length)</span></font></pre></div><div style="text-align: justify;"><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"># Add markers to the object<br />fig &lt;- fig %&gt;% add_markers()</span></font></pre></div><div style="text-align: justify;"><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"># Add vertical lines as layout shapes. Vertical lines are red in color and dashed<br />fig &lt;- fig %&gt;% layout(shapes=list(<br /><span>&nbsp;&nbsp; &nbsp;</span>&nbsp;&nbsp;&nbsp; list(type='line', x0= 5, x1= 5, y0=min(iris$Petal.Length), <br /><span>&nbsp;&nbsp; &nbsp;</span>&nbsp;&nbsp;&nbsp; y1=max(iris$Petal.Length), line=list(dash='dot', width=3,color = "red")),</span></font></pre></div><div style="text-align: justify;"><pre><pre><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"><span style="font-family: &quot;verdana&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; list(type='line', x0= 7, x1= 7, y0=min(iris$Petal.Length), <span></span></span></span></font></pre><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"><span style="font-family: &quot;verdana&quot;;"><span>&nbsp;&nbsp; &nbsp;</span><span>&nbsp;&nbsp; &nbsp;</span><span></span>y1=max(iris$Petal.Length), line=list(dash='dot', width=3,color = "red"))))</span></span></font></pre><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"><span style="font-family: &quot;verdana&quot;;"># Plot the figure</span></span></font></pre><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"><span style="font-family: &quot;verdana&quot;;">fig</span></span></font></pre><pre><font size="2"><span style="font-family: &quot;verdana&quot;;"><span style="font-family: &quot;verdana&quot;;"></span></span></font></pre><font size="2"><span style="font-family: &quot;verdana&quot;;"><span style="font-family: &quot;verdana&quot;;">===</span>========================================================<br /></span></font></pre><font size="2"><span style="font-family: &quot;verdana&quot;;">Now look at the output:<br /><br /><br /></span><div class="separator" style="clear: both; text-align: center;"><img border="0" data-original-height="450" data-original-width="700" height="257" src="https://1.bp.blogspot.com/-ROli8lS5PdY/Xrp8zdA_7DI/AAAAAAAABTo/-3T4rQ9zS8kRShahEX3183R39zGwY8WbwCK4BGAsYHg/w400-h257/newplot.png" width="400" /><br /></div><div class="separator" style="clear: both; text-align: center;"><br /></div></font><font size="2"><div class="separator" style="clear: both; text-align: center;"><br /></div><span style="font-family: &quot;verdana&quot;;">On x-axis, Sepal length and on y-axis, petal length are drawn. Vertical lines are added as layout<br />shapes. </span></font><br /><font size="2"></font><br /><font size="2"></font><br /><font size="2"></font><br /><font size="2"></font><br /><font size="2"><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-ROli8lS5PdY/Xrp8zdA_7DI/AAAAAAAABTo/-3T4rQ9zS8kRShahEX3183R39zGwY8WbwCK4BGAsYHg/newplot.png" style="margin-left: 1em; margin-right: 1em;"></a></div></font><br /></pre></div>
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/conditional-filtering-of-columns-with" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/compare-all-or-few-columns-against" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

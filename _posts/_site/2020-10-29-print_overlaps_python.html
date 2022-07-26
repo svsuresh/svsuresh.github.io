@@ -1,0 +1,47 @@
+<p>Let us say you are asked to generate substrings of a large string with a defined length and overlap, following is python(3) script.</p>
+
+<h4 id="import-the-libraries">Import the libraries</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+</code></pre></div></div>
+<h4 id="collect-user-input-as-three-arguments-first-input-is-a-string-and-will-be-converted-as-string-second-argument-is-length-of-the-substring-and-third-argument-is-overlap-window-size-all-must-be-supplied-by-a-space-in-between">Collect user input, as three arguments. First input is a string and will be converted as string. Second argument is length of the substring and third argument is overlap window size. All must be supplied by a space in between.</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">Len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">Wind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+</code></pre></div></div>
+<h4 id="if-user-enters-a-window-size-larger-than-or-equal-to-string-size-the-code-stops">If user enters a window size larger than or equal to string size, the code stops.</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">Wind</span> <span class="o">&gt;=</span> <span class="n">Len</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"String is smaller than or equal to over lapping window"</span><span class="p">)</span>
+    <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">()</span>
+</code></pre></div></div>
+<h4 id="now-let-us-generate-stard-and-end-positions-of-the-substrings-on-user-input-string">Now, let us generate stard and end positions of the substrings on user input string</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Start</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">Len</span><span class="p">,</span> <span class="n">Len</span> <span class="o">-</span> <span class="n">Wind</span><span class="p">))</span>
+<span class="n">End</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">Len</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Len</span> <span class="o">-</span> <span class="n">Wind</span><span class="p">))</span>
+</code></pre></div></div>
+<h4 id="store-output-in-a-list-named-test">Store output in a list named “test”</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test</span> <span class="o">=</span> <span class="p">[</span><span class="n">string</span><span class="p">[</span><span class="n">i</span><span class="p">:</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">)]</span>
+</code></pre></div></div>
+<h4 id="now-in-the-list-count-the-unique-strings-and-print-the-substring-and-number-of-their-occurences">Now, in the list count the unique strings and print the substring and number of their occurences.</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">values</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">unique</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">counts</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s">"</span><span class="se">\t</span><span class="s">"</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+</code></pre></div></div>
+<h4 id="save-the-script-as-print_overlapspy">Save the script as **print_overlaps.py”.</h4>
+<p>Command line argument would as follows below with an example:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">python3</span> <span class="n">print_overlaps</span><span class="p">.</span><span class="n">py</span> <span class="n">mystring</span> <span class="mi">3</span> <span class="mi">2</span>
+</code></pre></div></div>
+<p><strong>Note</strong> Output is sorted alphabetically.</p>
+
+<h4 id="output-looks-like-below">Output looks like below:</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">python3</span> <span class="n">print_overlaps</span><span class="p">.</span><span class="n">py</span> <span class="n">mystring</span> <span class="mi">4</span> <span class="mi">2</span>
+
+<span class="n">myst</span> 	 <span class="mi">1</span>
+<span class="n">ring</span> 	 <span class="mi">1</span>
+<span class="n">stri</span> 	 <span class="mi">1</span>
+</code></pre></div></div>
+<h4 id="another-example">another example:</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">python3</span> <span class="n">print_overlaps</span><span class="p">.</span><span class="n">py</span> <span class="n">mystring</span> <span class="mi">5</span> <span class="mi">3</span>
+<span class="n">mystr</span> 	 <span class="mi">1</span>
+<span class="n">strin</span> 	 <span class="mi">1</span>
+</code></pre></div></div>

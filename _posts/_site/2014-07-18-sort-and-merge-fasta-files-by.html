@@ -1,0 +1,35 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+One of the most used tasks in ngs analysis is to create a single reference file in either hgxx (for eg hg19, hg38) or b3x (b32, b35) format. &nbsp; For hg19, it is explained below. I downloaded hg19 reference files from UCSC goldenpath&nbsp; with name: hg19_gp_chromFa.tar.gz&nbsp; (current version is&nbsp; hg38 ).&nbsp; When I unzip the gzipped file, I get multiple fasta files. I got rid of chrun and hap files (for this example sake). I am left with only chr&lt;number, X,Y, M&gt;.fa files. These files are to be merged&nbsp; into one single reference file (hg19) either in bxx (eg. b32) or hgxx (hg18, hg19) format. Since they are from UCSC, all files start with "chr" word.<br />
+<br />
+&nbsp;ls *.fa command in GNU-linux&nbsp; would output&nbsp; files in following order: chr10.fa&nbsp; chr14.fa&nbsp; chr18.fa&nbsp; chr21.fa&nbsp; chr4.fa&nbsp; chr8.fa&nbsp; chrY.fa chr11.fa&nbsp; chr15.fa&nbsp; chr19.fa&nbsp; chr22.fa&nbsp; chr5.fa&nbsp; chr9.fa chr12.fa&nbsp; chr16.fa&nbsp; chr1.fa&nbsp;&nbsp; chr2.fa&nbsp;&nbsp; chr6.fa&nbsp; chrM.fa chr13.fa&nbsp; chr17.fa&nbsp; chr20.fa&nbsp; chr3.fa&nbsp;&nbsp; chr7.fa&nbsp; chrX.fa.<br />
+<br />
+This is not required order. Easiest way to get them sorted by human readable chromosome number is:<br />
+<br />
+$ ls&nbsp; *.fa | sort -V | grep -i -v chrM<br />
+<br />
+This command would remove chrM from the list and chromosomes are sorted in natural order.&nbsp; If one has to create a single reference files from chr*.fasta files,&nbsp; use following command (in bash shell):<br />
+<br />
+<h4 style="text-align: left;">
+Creating b3x style reference:</h4>
+<div style="text-align: left;">
+$ cat `ls&nbsp; *.fa | sort -V | grep -i -v chrM ` chrM.fa &gt; b32.fa</div>
+<div style="text-align: left;">
+(Please note that this doesn't work in fish shell)</div>
+<div style="text-align: left;">
+To check if chromosomes are ordered as expected, run following command:</div>
+$ grep chr &lt;final&gt;.fa<br />
+Example: $ grep chr b32.fa and output is as show below:&nbsp; <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-tAXqfSPLW5o/U8jb2CBg44I/AAAAAAAAAGc/Sjpt8ZKyGJ8/s1600/b32.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="400" src="http://1.bp.blogspot.com/-tAXqfSPLW5o/U8jb2CBg44I/AAAAAAAAAGc/Sjpt8ZKyGJ8/s400/b32.png" width="353" /></a></div>
+Please note that b3x style doesn't have "chr" appended to chromosomes. Names would be 1 to 22, X, Y, MT<br />
+<br />
+<h4 style="text-align: left;">
+Creating hgxx style reference:</h4>
+<div style="text-align: left;">
+&nbsp;$ cat chrM.fa `ls&nbsp; *.fa | sort -V | grep -i -v chrM `&nbsp; &gt; hg19.fa</div>
+&nbsp;To view the order of chromosomes in fasta file,<br />
+&nbsp;$ grep chr hg19.fa <br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-s9Ya6m7E5E4/U8jfd3w3QcI/AAAAAAAAAGo/bvJkQputUOI/s1600/hg19.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="380" src="http://3.bp.blogspot.com/-s9Ya6m7E5E4/U8jfd3w3QcI/AAAAAAAAAGo/bvJkQputUOI/s640/hg19.png" width="640" /></a></div>
+</div>

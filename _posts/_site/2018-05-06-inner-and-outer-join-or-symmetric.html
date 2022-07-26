@@ -1,0 +1,130 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Well, I had a request to identify common and not-common elements between two frames in python (pandas). Not-common means not shared between either frames. In pandas, outer join terminology is confusing for SQL folks. Outer join means union in Pandas, in SQL, outer join means symmetric difference. Since no outer join (in terms of SQL) in pandas, we have a round about way. Let us go that way.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Data frame1:</div>
+<div style="text-align: justify;">
+gene1 1.5183</div>
+<div style="text-align: justify;">
+gene2 1.49</div>
+<div style="text-align: justify;">
+gene3 1.4991</div>
+<div style="text-align: justify;">
+gene4 1.4104</div>
+<div style="text-align: justify;">
+gene5 0.964</div>
+<div style="text-align: justify;">
+gene6 59.19</div>
+<div style="text-align: justify;">
+gene7 118.4</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Data frame 2:</div>
+<div style="text-align: justify;">
+gene1 1.5052</div>
+<div style="text-align: justify;">
+gene2 1.505</div>
+<div style="text-align: justify;">
+gene3 1.5037</div>
+<div style="text-align: justify;">
+gene8 1.7976</div>
+<div style="text-align: justify;">
+gene9 1.3445</div>
+<div style="text-align: justify;">
+gene10 117.68</div>
+<div style="text-align: justify;">
+gene6 60.3</div>
+<div style="text-align: justify;">
+gene7 116.99</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Now user wants common elements between data frame 1 and data frame 2. This is easy in pandas. User also wants elements unique to each dataframe. This is tricky.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Expected output of common elements:</div>
+<div style="text-align: justify;">
+gene1&nbsp; &nbsp; &nbsp; 1.5183&nbsp; &nbsp; 1.5052</div>
+<div style="text-align: justify;">
+gene2&nbsp; &nbsp; &nbsp; 1.49&nbsp; &nbsp; &nbsp; 1.505</div>
+<div style="text-align: justify;">
+gene3&nbsp; &nbsp; &nbsp; 1.4991&nbsp; &nbsp; 1.5037</div>
+<div style="text-align: justify;">
+gene6&nbsp; &nbsp; &nbsp; 59.19&nbsp; &nbsp; &nbsp;60.3</div>
+<div style="text-align: justify;">
+gene7&nbsp; &nbsp; &nbsp; 118.4&nbsp; &nbsp; &nbsp;116.99</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Expected outcome of unique elements:</div>
+<div style="text-align: justify;">
+gene4&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1.4104&nbsp; &nbsp; &nbsp; –</div>
+<div style="text-align: justify;">
+gene5&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0.964&nbsp; &nbsp; &nbsp; &nbsp; –</div>
+<div style="text-align: justify;">
+gene8&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; –&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1.7976</div>
+<div style="text-align: justify;">
+gene9&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; –&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1.3445</div>
+<div style="text-align: justify;">
+gene10&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; –&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 117.68</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Code:</div>
+<div style="text-align: justify;">
+----------------------</div>
+<div style="text-align: justify;">
+import pandas as pd</div>
+<div style="text-align: justify;">
+test1=pd.read_csv("test1.txt", sep="\t",&nbsp; header=None)</div>
+<div style="text-align: justify;">
+test1.columns=["a","b"]</div>
+<div style="text-align: justify;">
+test2=pd.read_csv("test2.txt", sep="\t",&nbsp; header=None)</div>
+<div style="text-align: justify;">
+test2.columns=["a","b"]</div>
+<div style="text-align: justify;">
+pd.merge(test1, test2, on='a', how='inner') # prints common elements</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; a&nbsp; &nbsp;b_x&nbsp; &nbsp; &nbsp;b_y</div>
+<div style="text-align: justify;">
+0&nbsp; &nbsp;gene1&nbsp; &nbsp;1.5183&nbsp; 1.5052</div>
+<div style="text-align: justify;">
+1&nbsp; &nbsp;gene2&nbsp; &nbsp;1.4900&nbsp; 1.5050</div>
+<div style="text-align: justify;">
+2&nbsp; &nbsp;gene3&nbsp; &nbsp;1.4991&nbsp; 1.5037</div>
+<div style="text-align: justify;">
+3&nbsp; &nbsp;gene6&nbsp; 59.1900&nbsp; &nbsp; &nbsp;60.3000</div>
+<div style="text-align: justify;">
+4&nbsp; &nbsp;gene7&nbsp; 118.4000&nbsp; &nbsp; 116.9900</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+outer_common=pd.merge(test1, test2, on='a', how='outer', indicator=True)</div>
+<div style="text-align: justify;">
+outer_common_nc=outer_common[outer_common['_merge']!="both"]</div>
+<div style="text-align: justify;">
+outer_common_nc.iloc[:,0:3] # prints unique elements.</div>
+<div style="text-align: justify;">
+a&nbsp; &nbsp;b_x&nbsp; &nbsp; &nbsp;b_y</div>
+<div style="text-align: justify;">
+3&nbsp; &nbsp;gene4&nbsp; &nbsp;1.4104&nbsp; NaN</div>
+<div style="text-align: justify;">
+4&nbsp; &nbsp;gene5&nbsp; 0.9640&nbsp; NaN</div>
+<div style="text-align: justify;">
+7&nbsp; &nbsp;gene8&nbsp; &nbsp;NaN&nbsp; &nbsp; &nbsp;1.7976</div>
+<div style="text-align: justify;">
+8&nbsp; &nbsp;gene9&nbsp; NaN&nbsp; &nbsp; &nbsp;1.3445</div>
+<div style="text-align: justify;">
+9&nbsp; &nbsp;gene10&nbsp; NaN&nbsp; &nbsp; &nbsp;117.6800</div>
+<div style="text-align: justify;">
+=============================</div>
+<div style="text-align: justify;">
+indicator in merge function gives the element presence in each data frame. First we created a frame with union (outer join in pandas). Then we filtered the data frame for elements that are not in both frames. After that we removed unwanted _merge column. Ofcourse, one can always replace NaN with whatever user wants.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+</div>

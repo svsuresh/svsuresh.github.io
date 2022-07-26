@@ -1,0 +1,53 @@
+---
+layout: post
+title: Replace fasta headers from a file
+date: '2017-09-13T12:23:00.001+05:30'
+author: suresh
+tags:
+- fasta headers
+- sed
+- fasta
+modified_time: '2017-09-13T12:30:22.005+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-6256702438437649137
+blogger_orig_url: https://digibio.blogspot.com/2017/09/replace-fasta-headers-from-file.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<span style="font-family: Arial,Helvetica,sans-serif;">Most bioinformatics data analysts come across several issues when dealing with fasta files. One such issue is change the headers of multiple fasta files (with a single sequence in each fasta file)&nbsp; and headers are listed in another text file.</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Examples are given below:</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;"><b>Folder name</b>: test</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><b>Folder contents</b>: test1.fasta, test2.fasta, test3.fasta so on</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><b>Each fasta file content</b>:</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">$ cat test1.fasta</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;"><code>$ cat test1.fasta<br />&gt;gene=test1 <br />ATGAAGTTCTTTCTGTTGCTTTTCACCATTGGGTTCTGCTGGGCTCAGTATTCCCCAAATACACAACAAG<br /><br />$ cat test2.fasta<br />&gt;gene = test2<br />GACGGACATCTATTGTTCATCTGTTTGAATGGCGATGGGTTGATATTGCTCTTGAATGTGAGCGATATTT</code></span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Now another file with headers (to be used in replacement):</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash">$ cat Headers.txt </code><code class="language-bash"><br />transcript1</code><code class="language-bash"><br />transcript2&nbsp;</code></span><br />
+<div style="text-align: left;">
+<span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash"></code><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Expected output is:</span></div>
+<pre class="pre" style="text-align: left;"><span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><code>$ cat test1.fasta</code>
+<code></code></span></pre>
+<div style="text-align: left;">
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><code><br />&gt;transcript1 <br />ATGAAGTTCTTTCTGTTGCTTTTCACCATTGGGTTCTGCTGGGCTCAGTATTCCCCAAATACACAACAAG<br /><br />$ cat test2.fasta<br />&gt;transcript2<br />GACGGACATCTATTGTTCATCTGTTTGAATGGCGATGGGTTGATATTGCTCTTGAATGTGAGCGATATTT</code></span></div>
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Expected output should not change the file name (as in test1.fasta, test2.fasta etc), but should change the headers of each file from a list of headers in another text file (headers.txt in this example).</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">&nbsp;Code is:</span><br />
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><b><code class="language-bash">$ mkdir test</code></b></span><br />
+<pre class="pre"><span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash"><b><span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><span itemscope="" itemtype="http://schema.org/Answer"><pre class="pre"><code class="language-bash">$ for i in $(seq 1 $(ls *.fasta |wc -l)); do sed -n "$i"p headers.txt| 
+   sed 's/^/&gt;/'&gt; test/$(ls *.fasta| sed -n "$i"p); cat $(ls *.fasta| sed -n "$i"p)|
+   sed '1d' &gt;&gt;test/$(ls *.fasta| sed -n "$i"p); done</code></pre>
+</span></span><span itemscope="" itemtype="http://schema.org/Answer">
+</span></b></code><code class="language-bash"></code>Now there are certain assumptions:</span></pre>
+<ul style="text-align: left;">
+<li><span style="font-family: Arial,Helvetica,sans-serif;">Order of fasta files in the directory and order of headers in headers.txt are same</span></li>
+<li><span style="font-family: Arial,Helvetica,sans-serif;">User must be using bash shell</span></li>
+</ul>
+<pre class="pre" style="text-align: left;"><span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash">
+</code></span></pre>
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span></div>

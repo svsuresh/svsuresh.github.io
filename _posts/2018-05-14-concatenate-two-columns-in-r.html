@@ -1,0 +1,50 @@
+---
+layout: post
+title: 'concatenate two columns in R '
+date: '2018-05-14T16:43:00.001+05:30'
+author: suresh
+tags:
+- assertr
+- concatenate
+- matrix
+- dataframe
+- cran-R
+modified_time: '2018-05-14T16:43:32.637+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5606695440774465641
+blogger_orig_url: https://digibio.blogspot.com/2018/05/concatenate-two-columns-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+In R, there are things that are super easy and there are simple things that are frustrating to do. I came across such a thing yesterday. Concatenating two columns of a matrix. There are millions of solutions online to do this. Most of them are almost same thing again and again and some of them are convoluted. However, none addressed the issue. Issue is that from an output with two columns, one should concatenate columns. There are tidyverse solutions and I was looking for simple solutions.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Let us create a data frame with 3 columns:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ test=data.frame(let=sample(letters,10),LET=sample(LETTERS,10),tel=sample(letters,10))</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Then let us concatenate columns 2,3:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ library(assertr)</div>
+<div style="text-align: justify;">
+$ col_concat(test[,c(2:3)], sep="_")</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Output would be:</div>
+&gt; col_concat(test[,c(2:3)], sep="_")&nbsp;<div>
+[1] "C_z" "I_p" "Y_k" "N_m" "D_b" "Z_c" "H_l" "B_y" "K_u" "T_q"</div>
+<div>
+<br /></div>
+<div>
+Because this frame already exists, the same can be achieved by paste. However, these two columns are output from a different function, there is no easier way to merge columns.&nbsp; This is one of the easiest solutions.<br /><div style="text-align: justify;">
+<br /></div>
+</div>
+</div>

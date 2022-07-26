@@ -1,0 +1,62 @@
+I"�<p>One the requests I got was to append file name at the end of each file (csv) in a directory. This can be easily done with Awk, but user wanted in R. Let us do it in awk</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="k">for </span>i <span class="k">in</span> <span class="k">*</span>.csv<span class="p">;</span> <span class="k">do </span><span class="nb">awk</span> <span class="s1">'NR==1{gsub(/,|$/,"_"FILENAME","); sub (/,$/,"")}1'</span> <span class="nv">$i</span> <span class="o">&gt;</span> <span class="k">${</span><span class="nv">i</span><span class="p">%\.csv</span><span class="k">}</span><span class="s2">"_new.csv"</span><span class="p">;</span> <span class="k">done</span>
+
+</code></pre></div></div>
+<p>Though I prefer <code class="language-plaintext highlighter-rouge">find</code> or <code class="language-plaintext highlighter-rouge">fd</code>, quick way is to use <code class="language-plaintext highlighter-rouge">ls</code>. Example input and output as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input:
+
+<span class="nv">$ </span><span class="nb">cat </span>test.csv 
+col1,col2
+line1,line1
+line2,line2
+
+output:
+
+<span class="nv">$ </span><span class="nb">cat </span>test_new.csv 
+col1_test.csv,col2_test.csv
+line1,line1
+line2,line2
+
+directory tree:
+
+<span class="nv">$ </span>tree  <span class="nb">.</span> <span class="nt">-P</span> <span class="s2">"*.csv"</span>
+<span class="nb">.</span>
+├── test1.csv
+├── test1_new.csv
+├── test2.csv
+├── test2_new.csv
+├── test.csv
+└── test_new.csv
+
+
+</code></pre></div></div>
+
+<p>Now let us do the same thing in R. Difference is that instead of writing files, it stores as objects.</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list.files</span><span class="p">(</span><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">".csv"</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"~/Desktop/"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">Method</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="w">
+</span><span class="n">append_name</span><span class="o">=</span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="w">
+    </span><span class="n">iname</span><span class="o">=</span><span class="n">sub</span><span class="p">(</span><span class="s2">"\\.csv"</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="n">x</span><span class="p">)</span><span class="w">
+    </span><span class="n">f</span><span class="o">=</span><span class="n">read.csv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+    </span><span class="n">colnames</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">=</span><span class="n">paste</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">f</span><span class="p">),</span><span class="n">iname</span><span class="p">,</span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_"</span><span class="p">)</span><span class="w">
+    </span><span class="n">assign</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="n">iname</span><span class="p">,</span><span class="s2">"_new"</span><span class="p">),</span><span class="n">f</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">sapply</span><span class="p">(</span><span class="n">files</span><span class="p">,</span><span class="w"> </span><span class="n">append_name</span><span class="p">,</span><span class="n">simplify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="n">USE.NAMES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="o">**</span><span class="n">Method</span><span class="o">:</span><span class="m">2</span><span class="o">**</span><span class="w">
+
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">files</span><span class="p">){</span><span class="w">
+    </span><span class="n">iname</span><span class="o">=</span><span class="n">sub</span><span class="p">(</span><span class="s2">"\\.csv"</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="n">i</span><span class="p">)</span><span class="w">
+    </span><span class="n">f</span><span class="o">=</span><span class="n">read.csv</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+    </span><span class="n">colnames</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">=</span><span class="n">paste</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">f</span><span class="p">),</span><span class="n">iname</span><span class="p">,</span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_"</span><span class="p">)</span><span class="w">
+    </span><span class="n">assign</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="n">iname</span><span class="p">,</span><span class="s2">"_new"</span><span class="p">),</span><span class="n">f</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="n">ls</span><span class="p">()</span><span class="w">
+
+</span></code></pre></div></div>
+<p>Method1 produces a list of data frames, method 2 saves the data farmes as individual objects</p>
+:ET

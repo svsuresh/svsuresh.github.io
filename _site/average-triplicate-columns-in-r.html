@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/average-triplicate-columns-in-r">Jun 2, 2018 - Average triplicate columns in R </a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+&nbsp;&nbsp;&nbsp; Recently I came across a post where user wants to average over triplicates for each time point. I wish there were easy solutions in R. For eg. group and sum by rows or group and sum by columns without common column name. For eg triplicates will have names R1, R2 and R3. There is no way to group them esp when one has multiple triplicates. Here are three solutions for such a scenario.<br />
+<br />
+<h4 style="text-align: left;">
+Create a data frame with two triplicates, for four genes</h4>
+df1 = data.frame(<br />
+genes = paste("gene", seq(1, 4), sep = "_"),<br />
+X_T0_R1 = seq(1, 4),<br />
+X_T0_R2 = seq(1, 4),<br />
+X_T0_R3 = seq(1, 4),<br />
+X_T1_R1 = seq(3, 6),<br />
+X_T1_R2 = seq(3, 6),<br />
+X_T1_R3 = seq(3, 6)<br />
+)<br />
+<br />
+df1<br />
+genes X_T0_R1 X_T0_R2 X_T0_R3 X_T1_R1 X_T1_R2 X_T1_R3<br />
+gene_1&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; <br />
+gene_2&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; <br />
+gene_3&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; <br />
+gene_4&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; 6&nbsp; <br />
+<br />
+User wants to average (mean) triplicates for each gene for each time point (in this case: X_T0 and X_T1). Triplicates are represented by R1,R2 and R3.<br />
+<br />
+There are 3 methods in R to do this: <br />
+<br />
+<h4 style="text-align: left;">
+Method 1: Using tidyverse</h4>
+&gt; suppressPackageStartupMessages(library(tidyr))<br />
+&gt; suppressPackageStartupMessages(library(stringr))<br />
+&gt; gdf1 = gather(df1, "group", "Expression", -genes)<br />
+&gt; gdf1$tgroup = apply(str_split_fixed(gdf1$group, "_", 3)[, c(1, 2)], 1, paste, collapse ="_")<br />
+&gt; suppressPackageStartupMessages(library(dplyr))<br />
+&gt; final_df=gdf1 %&gt;% group_by(genes, tgroup) %&gt;% summarize(expression_mean = mean(Expression)) %&gt;% spread(., tgroup, expression_mean)<br />
+&gt; final_df<br />
+<div style="text-align: left;">
+<br />
+genes X_T0 X_T1<br />
+gene_1&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+gene_2&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+gene_3&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+gene_4&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp; </div>
+<h4 style="text-align: left;">
+Method 2: Using apply and arrays: Note that headers are not stored</h4>
+<div style="text-align: left;">
+&gt; final_df=data.frame(apply(array(as.matrix(df1[,-1]), c(nrow(df1),3, ncol(df1)/3)),3, rowMeans))<br />
+&gt; final_df=cbind(df1$genes, final_df)<br />
+&gt; final_df</div>
+<div style="text-align: left;">
+df1$genes X1 X2</div>
+<div style="text-align: left;">
+gene_1&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+gene_2&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+gene_3&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+gene_4&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; </div>
+<h4 style="text-align: left;">
+Method 3: Using a loop, apply</h4>
+<div style="text-align: left;">
+&gt; final_df=data.frame(matrix(nrow = nrow(df1)))<br />
+&gt; for (i in unique(gsub("_R[1-9]","",names(df1)))[-1]){<br />
+final_df[,i]=apply(df1[,grepl(gsub("_R[1-9]","",i),names(df1))],1, mean)}<br />
+&gt; final_df[,1]=df1[,1]<br />
+&gt; names(final_df)[1]=names(df1)[1]<br />
+&gt; final_df<br />
+Gene X_T0 X_T1 X_T2 X_T3<br />
+AA&nbsp;&nbsp;&nbsp; 1.3260611&nbsp;&nbsp;&nbsp; 1.4999564&nbsp;&nbsp;&nbsp; 1.1185287&nbsp;&nbsp;&nbsp; 1.0250821&nbsp;&nbsp;&nbsp; <br />
+PQ&nbsp;&nbsp;&nbsp; 0.2227680&nbsp;&nbsp;&nbsp; 0.2931172&nbsp;&nbsp;&nbsp; 0.5482280&nbsp;&nbsp;&nbsp; 0.8411926&nbsp;&nbsp;&nbsp; <br />
+XY&nbsp;&nbsp;&nbsp; 0.2934894&nbsp;&nbsp;&nbsp; 0.3244539&nbsp;&nbsp;&nbsp; 0.8463782&nbsp;&nbsp;&nbsp; 1.1081067&nbsp;&nbsp;&nbsp; <br />
+UBQ&nbsp;&nbsp;&nbsp; 1.2741957&nbsp;&nbsp;&nbsp; 1.1195535&nbsp;&nbsp;&nbsp; 0.9363191&nbsp;&nbsp;&nbsp; 0.9577433&nbsp;<br />
+<br />
+What if the rows are duplicate and you need to average the triplicate? Code is available at my <a href="https://github.com/svsuresh">github</a> repo. Please find the script in repo rscripts.</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/extract-kegg-pathways-and-ids-using" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/plot-gene-expression-time-series-in" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

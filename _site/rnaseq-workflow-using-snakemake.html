@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/rnaseq-workflow-using-snakemake">Jan 30, 2018 - RNAseq workflow using snakemake</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+<u><b><span style="color: red;">(Note: This script is a working, but WIP script and make sure that it is not used on production machines)</span></b></u><br />
+<br />
+Data analysis reproducibility dogs NGS data analysis for several reasons including software versions, OS versions and several other reasons. There are several platforms to automate sequential steps. Experienced bioinformatics programmers in bioinformatics,  use one or more programming languages to automate the analysis (eg. perl, python, go, ruby, groovy etc) to track and store provenance information of data analysis. In the past, in this blog, I presented a RNAseq variant calling workflow using <a href="https://digibio.blogspot.in/2015/07/variant-calling-in-rna-seq-and-bpipe.html" target="_blank">bpipe</a> (bpipe is based on groovy language). In this note, I am providing a snakemake script that is used in reproducing RNAseq work explained <a href="https://digibio.blogspot.in/2017/10/rnaseq-data-analysis-tuxedo-new-protocol.html" target="_blank">here</a> (new tuxedo protocol). To run this snakemake, you need to have following packages on your machine (preferably running ubuntu OS): python3, snakemake. Data is downloaded from <a href="https://github.com/griffithlab/rnaseq_tutorial/wiki/RNAseq-Data" target="_blank">here</a>.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+In addition, you should know where your raw data is and where results should go in. This script is missing logs and adding tags to bam files. You can tweak the code as per your need.&nbsp; Make sure that Rscript (ballgown.R) exists in right place (currently, is same directory as working directory) and edit the script as per sample names and sample grouping. Ballgown R script is available from my earlier note <a href="https://digibio.blogspot.in/2017/10/rnaseq-ballgown-analysis.html" target="_blank">here</a>. </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Assuming that you have edited the script and made enough changes to reflect your analysis, script can be run as:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ snakemake -s &lt;input_snakemake_file&gt; --cores &lt;number of cores on your machine&gt;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Code starts below:</div>
+<div style="text-align: justify;">
+===============</div>
+import glob<br />
+import os<br />
+from os.path import join<br />
+from snakemake.utils import R<br />
+<br />
+BASE_DIR = "/home/user/"<br />
+raw_data = BASE_DIR + "Desktop/raw_data"<br />
+<br />
+if os.path.exists("rnaseq_analysis"):<br />
+&nbsp;&nbsp;&nbsp; print ("Your base directory is rnaseq analysis and the directory exists")<br />
+else:<br />
+&nbsp;&nbsp;&nbsp; print ("creating rnaseq_analysis directory")<br />
+&nbsp;&nbsp;&nbsp; os.mkdir("rnaseq_analysis")<br />
+&nbsp;&nbsp;&nbsp; print ("rnaseq_analysis directory created")<br />
+WDIR = BASE_DIR + "Desktop/rnaseq_analysis/"<br />
+<br />
+workdir: WDIR<br />
+<br />
+# print("The current working directory is " + WDIR)<br />
+<br />
+# Reference files and index locations<br />
+# (fasta, gtf,index locations)<br />
+INDEX = BASE_DIR + "/reference/hg38/hg38.chr22"<br />
+GTF = BASE_DIR + "/reference/hg38/ucsc.ncbirefseq.hg38.chr22.gtf"<br />
+FASTA = BASE_DIR + "/reference/hg38/hg38.chr22.fa"<br />
+<br />
+sample = glob_wildcards(raw_data + "/{sample}_r1.fastq.gz").sample<br />
+<br />
+## create directories for analysis<br />
+<br />
+DIR = ["fastqc", "cutadapt", "hisat2", "ballgown", "stringtie"]<br />
+<br />
+for dir in DIR:<br />
+&nbsp;&nbsp;&nbsp; if os.path.exists(dir):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print (dir + " directory exists")<br />
+&nbsp;&nbsp;&nbsp; else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; os.mkdir(dir)<br />
+<br />
+<br />
+<br />
+rule all:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('fastqc/{sample}_r1_fastqc.zip', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('fastqc/{sample}_r2_fastqc.zip', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('cutadapt/{sample}_r1_cutadapt.fastq.gz', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('cutadapt/{sample}_r2_cutadapt.fastq.gz', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('cutadapt/{sample}_r1_cutadapt_fastqc.zip', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('hisat2/{sample}.cutadapt.sam', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('hisat2/{sample}.cutadapt.bam', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('stringtie/{sample}/transcript.gtf', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('stringtie/{sample}/gene_abundances.tsv', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('stringtie/{sample}/cov_ref.gtf', sample=sample),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('stringtie/merge_transcripts.gtf'),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand('ballgown/SigDE.txt')<br />
+<br />
+rule fastqc:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = join(raw_data, "{sample}_r1.fastq.gz"),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = join(raw_data, "{sample}_r2.fastq.gz")<br />
+<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'fastqc/{sample}_r1_fastqc.zip',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = 'fastqc/{sample}_r2_fastqc.zip'<br />
+&nbsp;&nbsp;&nbsp; message:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "--- running fastqc ---"<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fastqc&nbsp; {input.r1} {input.r2} -q -f fastq -o fastqc/<br />
+&nbsp;&nbsp;&nbsp; """<br />
+<br />
+<br />
+rule cutadapt:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = join(raw_data, "{sample}_r1.fastq.gz"),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = join(raw_data, "{sample}_r2.fastq.gz")<br />
+<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'cutadapt/{sample}_r1_cutadapt.fastq.gz',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = 'cutadapt/{sample}_r2_cutadapt.fastq.gz'<br />
+&nbsp;&nbsp;&nbsp; message:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "--- running cutadapt ---"<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cutadapt -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT&nbsp; -o {output.r1} -p {output.r2} {input.r1} {input.r2}<br />
+&nbsp;&nbsp;&nbsp; """<br />
+<br />
+rule fastqc_after:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'cutadapt/{sample}_r1_cutadapt.fastq.gz',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = 'cutadapt/{sample}_r2_cutadapt.fastq.gz'<br />
+<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'cutadapt/{sample}_r1_cutadapt_fastqc.zip',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = 'cutadapt/{sample}_r2_cutadapt_fastqc.zip'<br />
+&nbsp;&nbsp;&nbsp; message:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "--- running fastqc again ---"<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fastqc&nbsp; {input.r1} {input.r2} -q -f fastq -o cutadapt/<br />
+&nbsp;&nbsp;&nbsp; """<br />
+<br />
+rule hisat2:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'cutadapt/{sample}_r1_cutadapt.fastq.gz',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = 'cutadapt/{sample}_r2_cutadapt.fastq.gz'<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'hisat2/{sample}.cutadapt.sam'<br />
+&nbsp;&nbsp;&nbsp; message:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "------aligning with hisat2....wait.."<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hisat2&nbsp; -x {INDEX} --dta&nbsp; --rna-strandness RF -1 {input.r1}&nbsp; -2 {input.r2} -S {output.r1}<br />
+&nbsp;&nbsp;&nbsp; """<br />
+<br />
+rule create_bams:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'hisat2/{sample}.cutadapt.sam'<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'hisat2/{sample}.cutadapt.bam'<br />
+<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp; samtools view -bh {input.r1} | samtools sort - -o {output.r1}; samtools index {output.r1}<br />
+&nbsp;&nbsp;&nbsp; """<br />
+<br />
+rule stringtie:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'hisat2/{sample}.cutadapt.bam'<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'stringtie/{sample}/transcript.gtf',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2 = 'stringtie/{sample}/gene_abundances.tsv',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r3 = 'stringtie/{sample}/cov_ref.gtf'<br />
+<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp; stringtie -G {GTF} --rf&nbsp; -e -B -o {output.r1} -A {output.r2} -C {output.r3} --rf {input.r1}<br />
+&nbsp;&nbsp;&nbsp; """<br />
+<br />
+rule gtf_merge:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = expand('stringtie/{sample}/transcript.gtf', sample=sample)<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1 = 'stringtie/merge_transcripts.gtf'<br />
+&nbsp;&nbsp;&nbsp; threads: 2<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp; stringtie -p {threads} --merge&nbsp; -G {GTF} -o {output.r1} {input.r1}<br />
+&nbsp;&nbsp;&nbsp; """<br />
+<br />
+rule ballgown:<br />
+&nbsp;&nbsp;&nbsp; input: 'stringtie/merge_transcripts.gtf'<br />
+&nbsp;&nbsp;&nbsp; output: 'ballgown/SigDE.txt'<br />
+&nbsp;&nbsp;&nbsp; shell: """<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Rscript ballgown.R {input} {output}<br />
+&nbsp;&nbsp;&nbsp; """ <br />
+==============================<br />
+<br />
+I modularized the code and uploaded on&nbsp; <a href="https://github.com/svsuresh">github</a></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/control-igv-from-shell-and-local-browser" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/hisat2-conda-bioconda-and-windows-10" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

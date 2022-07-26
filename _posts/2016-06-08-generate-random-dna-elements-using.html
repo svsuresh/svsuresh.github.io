@@ -1,0 +1,29 @@
+---
+layout: post
+title: Generate random DNA elements using python/biopython
+date: '2016-06-08T02:23:00.001+05:30'
+author: suresh
+tags:
+- simulate
+- python
+- IUPAC
+- biopython
+- DNA
+modified_time: '2016-06-08T02:23:13.143+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-4692586092682860047
+blogger_orig_url: https://digibio.blogspot.com/2016/06/generate-random-dna-elements-using.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Sequence simulations are useful in several studies in bioinformatics. Such simulations are covered <a href="http://digibio.blogspot.com/2015/07/generate-random-nucleotide-and-amino.html" target="_blank">here</a> in earlier blogs. Note that the simulation scripts are written in R. In this note, we will use python/biopython to simulate DNA elements. Objective of the study is to simulate DNA sequence after taking following inputs from user:<br />
+1) Length of the desired sequence<br />
+2) Desired number of sequences<br />
+3) IUPAC code or Standard code (ATGC)<br />
+<br />
+script will take above input and stores the sequences in the same folder where code is executed with date and time stamp. Stored format is fasta.<br />
+<br />
+============================================<br />
+from Bio.Alphabet import IUPAC<br />import random<br />from datetime import datetime<br /><br />n=int(input("type the length of the sequence: "))<br />j=int(input("type the number of sequences: "))<br />k=(input("choose S for standard code and I for IUPAC: "))<br /><br />if k == "S":<br />&nbsp;&nbsp;&nbsp; sequnce=IUPAC.IUPACUnambiguousDNA.letters<br />elif k == "I":<br />&nbsp;&nbsp;&nbsp; sequnce=IUPAC.IUPACAmbiguousDNA.letters<br />dnafile = open("dnasequence_"+datetime.now().strftime("%Y%m%d_%H%M%S")+".fa", "a")<br />for j in range(j):<br />&nbsp;&nbsp;&nbsp; my_seq=''.join(random.choice(sequnce) for i in range(n))<br />&nbsp;&nbsp;&nbsp; id="seq "+str(j+1)<br />&nbsp;&nbsp;&nbsp; my_seq = "&gt;"+id+"\n"+my_seq <br />&nbsp;&nbsp;&nbsp; dnafile.write(my_seq+"\n")<br />dnafile.close()<br />
+============================================<br />
+<br />
+Please note that python is particular about indentation and make sure that indentation is correct. </div>

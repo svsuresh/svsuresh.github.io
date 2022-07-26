@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/sql-join-3-data-frames-with-dots-in">May 19, 2018 - Pandas multijoin dataframes with dots in column names</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+Pandas is a data analysis library available in python. There are several operations that are same between R and Pandas esp data frame operations. However, Pandas inherits object based operations from python which makes operations easy on data frames. In this note, we will merge 3 data frames and extract common ones. One can use sql libraries available in python or use pandas it self to get the result.<br />
+<br />
+Following is the issue:<br />
+User has 3 data frames (df) as follows:<br />
+<br />
+df1:<br />
+Seq1.id&nbsp;&nbsp;&nbsp; Seq2.id<br />
+seq1.01&nbsp;&nbsp;&nbsp; seq5.02<br />
+seq2.01&nbsp;&nbsp;&nbsp; Seq6.02<br />
+seq3.01&nbsp;&nbsp;&nbsp; Seq7.02<br />
+seq4.01&nbsp;&nbsp;&nbsp; Seq8.02<br />
+<br />
+df2:<br />
+Seq.1.id<br />
+seq1.01<br />
+seq2.01<br />
+seq4.01<br />
+<br />
+df3:<br />
+Seq.2.id<br />
+seq5.02<br />
+Seq6.02<br />
+Seq7.02<br />
+<br />
+Now 2 and 3 are single column data frames. They both share single column each, with data frame1. User wants to common values between three data frames.<br />
+<br />
+I wanted to join the dataframes by SQL. However it is tricky because SQL separates the columns from data frames by ".". If column name has . in it, SQL join will have two ".". Let us see how pandas handles this. We will use pandasql library for SQL join and "merge" function in pandas. <br />
+<br />
+code: (with pandasql)<br />
+===============<br />
+&gt; import pandas as pd<br />
+&gt; from pandasql import sqldf as psql<br />
+<br />
+&gt; df1=pd.read_csv("df1", sep="\t")<br />
+&gt; df2=pd.read_csv("df2", sep="\t")<br />
+&gt; df3=pd.read_csv("df3", sep="\t")<br />
+<br />
+&gt; print(df1)<br />
+&gt; print(df2)<br />
+&gt; print(df3) <br />
+<br />
+Seq1.id&nbsp; Seq2.id<br />
+0&nbsp; seq1.01&nbsp; seq5.02<br />
+1&nbsp; seq2.01&nbsp; Seq6.02<br />
+2&nbsp; seq3.01&nbsp; Seq7.02<br />
+3&nbsp; seq4.01&nbsp; Seq8.02 <br />
+<br />
+&nbsp; Seq.1.id<br />
+0&nbsp; seq1.01<br />
+1&nbsp; seq2.01<br />
+2&nbsp; seq4.01 <br />
+<br />
+&nbsp; Seq.2.id<br />
+0&nbsp; seq5.02<br />
+1&nbsp; Seq6.02<br />
+2&nbsp; Seq7.02<br />
+<br />
+&gt; psql('select [Seq1.id],[Seq2.id] from df1 inner join df2 on df1.[Seq1.id]=df2.[Seq.1.id] inner join df3 on df1.[Seq2.id]=df3.[Seq.2.id]')<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Seq1.id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Seq2.id<br />
+0 &nbsp;&nbsp;&nbsp; seq1.01 &nbsp;&nbsp;&nbsp; seq5.02<br />
+1 &nbsp;&nbsp;&nbsp; seq2.01 &nbsp;&nbsp;&nbsp; Seq6.02<br />
+===================================<br />
+<br />
+Now, let us do the same with pd.merge function. Load all the data frames like above and execute following command:<br />
+===============<br />
+&gt; df1.merge(df2, left_on='Seq1.id', right_on='Seq.1.id', sort=True, how='inner').merge(df3,left_on='Seq2.id', right_on='Seq.2.id',sort=True, how="inner").loc[:,"Seq1.id":"Seq2.id"]<br />
+<br />
+&nbsp;&nbsp;&nbsp; Seq1.id &nbsp;&nbsp;&nbsp; Seq2.id<br />
+0 &nbsp;&nbsp;&nbsp; seq2.01 &nbsp;&nbsp;&nbsp; Seq6.02<br />
+1 &nbsp;&nbsp;&nbsp; seq1.01 &nbsp;&nbsp;&nbsp; seq5.02<br />
+================<br />
+<br />
+<br />
+<br />
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/rna-seq-data-analysis-using-salmon" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/back-referencing-and-string" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

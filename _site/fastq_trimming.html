@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/fastq_trimming">Mar 24, 2021 - Extract reads between primers including one side primer only</a></h1>
+            <div class="post-content">
+            <p>There are times that biologists may have to extract sequences between primers or motifs. For eg aptamer sequencing requires user to trim reads as per the sequences instead of adapters. Cutadapt has a provision to retain sequences used in sequencing. However, some times, one may need to retain one side of the sequence. Following is example and solution (taken from biostars).</p>
+
+<p>Example fastq</p>
+
+<pre><code class="language-code">@A00877:568:HVV57DSXY:4:1101:27724:1408 1:N:0
+GGGTCAGTAGCGGACGGGAACTGCATCACGCAATACGACTCACTATAGGGTCAGTAGCGGAC
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+@A00877:568:HVV57DSXY:4:1102:27724:1408 1:N:0
+GGGTCAGTAGCGGACGGGAAACGTCGCACGCAATACGACTCACTATAGGGTCAGTAGCGGAC
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+@A00877:568:HVV57DSXY:4:1103:27724:1408 1:N:0
+GGGTCAGTAGCGGACGGGAACTGCACGTCAGCTGGCGACTCACTATAGGGTCAGTAGCGGAT
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+</code></pre>
+
+<p>Now the requirement is to extract read sequences between primers <strong>GGGTCAGTAGCGGAC</strong> and <strong>GGGTCAGTAGCGGAC</strong>. But retain 3’ primer sequence. Following is the solution</p>
+
+<pre><code class="language-code">$ cutadapt -e 0  -g GGGTCAGTAGCGGAC...GGGTCAGTAGCGGAC  --action=retain --discard-untrimmed  --quiet test.fq | cutadapt -u -17 - --quiet
+
+@A00877:568:HVV57DSXY:4:1101:27724:1408 1:N:0
+GGGTCAGTAGCGGACGGGAACTGCATCACGCAATACGACTCACTA
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+@A00877:568:HVV57DSXY:4:1102:27724:1408 1:N:0
+GGGTCAGTAGCGGACGGGAAACGTCGCACGCAATACGACTCACTA
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+</code></pre>
+<p>-e 0 is for zero errors in matching the primer sequence. Rest parameters are standard parameters.</p>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/sed_magic" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/break_multifasta_with_awk" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

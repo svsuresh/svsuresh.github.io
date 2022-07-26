@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/concatenate-two-columns-in-r">May 14, 2018 - concatenate two columns in R </a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+In R, there are things that are super easy and there are simple things that are frustrating to do. I came across such a thing yesterday. Concatenating two columns of a matrix. There are millions of solutions online to do this. Most of them are almost same thing again and again and some of them are convoluted. However, none addressed the issue. Issue is that from an output with two columns, one should concatenate columns. There are tidyverse solutions and I was looking for simple solutions.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Let us create a data frame with 3 columns:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ test=data.frame(let=sample(letters,10),LET=sample(LETTERS,10),tel=sample(letters,10))</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Then let us concatenate columns 2,3:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ library(assertr)</div>
+<div style="text-align: justify;">
+$ col_concat(test[,c(2:3)], sep="_")</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Output would be:</div>
+&gt; col_concat(test[,c(2:3)], sep="_")&nbsp;<div>
+[1] "C_z" "I_p" "Y_k" "N_m" "D_b" "Z_c" "H_l" "B_y" "K_u" "T_q"</div>
+<div>
+<br /></div>
+<div>
+Because this frame already exists, the same can be achieved by paste. However, these two columns are output from a different function, there is no easier way to merge columns.&nbsp; This is one of the easiest solutions.<br /><div style="text-align: justify;">
+<br /></div>
+</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/back-referencing-and-string" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/volcano-plot-with-ggplot2-and-basic" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

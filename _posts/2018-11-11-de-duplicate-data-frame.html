@@ -1,0 +1,28 @@
+---
+layout: post
+title: De duplicate data frame
+date: '2018-11-11T17:59:00.003+05:30'
+author: ssv
+tags:
+- data frame
+- deduplicate
+- cran-R
+modified_time: '2018-11-11T17:59:45.769+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-2721688694469526533
+blogger_orig_url: https://digibio.blogspot.com/2018/11/de-duplicate-data-frame.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Well, this is fairly easy one for if you are looking to remove duplicate entries. There are several queries online to remove duplicated rows or duplicated columns or remove duplicated rows/ and columns if there are any duplicated values. However, let us say you want to de duplicate a data frame where each column will have only those values that are not repeated in entire data frame. For eg. let us say column 1 has value x and requirement is that no other column should have x except column 1 and then order the values in each data frame.&nbsp; Let us start with a simple data or simple data frame and then work on it.<br />
+File is some thing like this and user wants each column should have only unique values that are not found elsewhere in the data frame:<br />
+A&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp; C&nbsp;&nbsp;&nbsp; D&nbsp;&nbsp;&nbsp; E&nbsp;&nbsp;&nbsp; F<br />12&nbsp;&nbsp;&nbsp; 15&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp; 55&nbsp;&nbsp;&nbsp; 27&nbsp;&nbsp;&nbsp; 13<br />15&nbsp;&nbsp;&nbsp; 25&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp; 21&nbsp;&nbsp;&nbsp; 23&nbsp;&nbsp;&nbsp; 20<br />20&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp; 14&nbsp;&nbsp;&nbsp; 25&nbsp;&nbsp;&nbsp; 15&nbsp;&nbsp;&nbsp; 25<br />25&nbsp;&nbsp;&nbsp; 27&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp;&nbsp; 35&nbsp;&nbsp;&nbsp; 25&nbsp;&nbsp;&nbsp; 10<br />35&nbsp;&nbsp;&nbsp; 15<br />
+<br />
+Given that output is:<br />
+&nbsp; A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F<br />&nbsp; 12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 23&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 21<br />
+<br />
+Now the code below is almost near to it. Output from code is:<br />
+&nbsp;&nbsp; A B&nbsp; C&nbsp; D&nbsp; E&nbsp; F<br />1 12&nbsp;&nbsp; 14 55 23 13<br />2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30 21&nbsp; <br />
+<br />
+code is as follows:<br />===================================<br />
+df1 %&gt;%<br />&nbsp;&nbsp;&nbsp; gather(k,v) %&gt;%<br />&nbsp;&nbsp;&nbsp; mutate(k=as.factor(k)%&gt;%<br />&nbsp;&nbsp;&nbsp; na.omit()) %&gt;%<br />&nbsp;&nbsp;&nbsp; group_by(v) %&gt;%<br />&nbsp;&nbsp;&nbsp; filter(n() == 1) %&gt;%<br />&nbsp;&nbsp;&nbsp; group_by(k)%&gt;%<br />&nbsp;&nbsp;&nbsp; mutate(g = row_number()) %&gt;%<br />&nbsp;&nbsp;&nbsp; spread(k,v,drop = F, fill="") %&gt;%<br />&nbsp;&nbsp;&nbsp; select(-g) %&gt;%<br />&nbsp;&nbsp;&nbsp; as.data.frame()<br />
+=====================================</div>

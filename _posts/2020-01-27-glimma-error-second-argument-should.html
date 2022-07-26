@@ -1,0 +1,114 @@
+---
+layout: post
+title: 'glimma error: Second argument should contain the first.'
+date: '2020-01-27T12:46:00.002+05:30'
+author: suresh
+tags:
+- error
+- glimma
+- bioconductor
+- cran-R
+modified_time: '2020-01-27T12:46:31.907+05:30'
+thumbnail: https://1.bp.blogspot.com/-27kZDkpDcSQ/Xi6NrGynOmI/AAAAAAAABRI/s_KZrFeYRtgFCja2PzbluG9KVOyq5kJSwCLcBGAsYHQ/s72-c/Screenshot.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-3183591002171914536
+blogger_orig_url: https://digibio.blogspot.com/2020/01/glimma-error-second-argument-should.html
+---
+
+<div style="text-align: justify;">
+<a href="https://bioconductor.org/packages/release/bioc/html/Glimma.html">Glimma</a> package&nbsp; is an interactive visualization package for RNAseq data, in general. However, one can visualize any numeric data that follows required data format. Some times, user can run into an error like this: "Warning: Error in checkThat: Second argument should contain the first". This error might be due to several issues as I am unaware of the code. However, one of the fixes is furnished below with example.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Test&nbsp; expression data can be downloaded from <a href="https://drive.google.com/open?id=1YyiZlnzM5M4tdkXyr0lUw5AkmC-pHFGVC3Nd1XJ-G9c">here</a> (taken from one of the Biostar posts). It is a plain text file (tab separated) as follows:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+=========================================== </div>
+<div style="text-align: justify;">
+symbol&nbsp;&nbsp;&nbsp; genes&nbsp;&nbsp;&nbsp; logFC&nbsp;&nbsp;&nbsp; logCPM&nbsp;&nbsp;&nbsp; LR&nbsp;&nbsp;&nbsp; PValue&nbsp;&nbsp;&nbsp; FDR&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div style="text-align: justify;">
+===========================================<br />
+ENSG00000018625&nbsp;&nbsp;&nbsp; CXorf56&nbsp;&nbsp;&nbsp; 4.731732&nbsp;&nbsp;&nbsp; 7.700889&nbsp;&nbsp;&nbsp; 21.57148&nbsp;&nbsp;&nbsp; 3.408840e-06&nbsp;&nbsp;&nbsp; 0.005551464&nbsp;&nbsp;&nbsp; <br />
+ENSG00000065534&nbsp;&nbsp;&nbsp; SPEN&nbsp;&nbsp;&nbsp; 4.131256&nbsp;&nbsp;&nbsp; 12.597048&nbsp;&nbsp;&nbsp; 19.89395&nbsp;&nbsp;&nbsp; 8.185875e-06&nbsp;&nbsp;&nbsp; 0.005551464&nbsp;&nbsp;&nbsp; <br />
+ENSG00000007933&nbsp;&nbsp;&nbsp; DNAJC11&nbsp;&nbsp;&nbsp; 5.340935&nbsp;&nbsp;&nbsp; 5.797704&nbsp;&nbsp;&nbsp; 19.28277&nbsp;&nbsp;&nbsp; 1.127190e-05&nbsp;&nbsp;&nbsp; 0.005551464&nbsp;&nbsp;&nbsp; <br />
+ENSG00000091986&nbsp;&nbsp;&nbsp; CCDC80&nbsp;&nbsp;&nbsp; 3.829369&nbsp;&nbsp;&nbsp; 11.839320&nbsp;&nbsp;&nbsp; 18.55905&nbsp;&nbsp;&nbsp; 1.647217e-05&nbsp;&nbsp;&nbsp; 0.005551464&nbsp;&nbsp;&nbsp; <br />
+ENSG00000022267&nbsp;&nbsp;&nbsp; C8B&nbsp;&nbsp;&nbsp; 3.820883&nbsp;&nbsp;&nbsp; 11.532498&nbsp;&nbsp;&nbsp; 18.43854&nbsp;&nbsp;&nbsp; 1.754731e-05&nbsp;&nbsp;&nbsp; 0.005551464&nbsp;&nbsp;&nbsp; <br />
+ENSG00000007908&nbsp;&nbsp;&nbsp; TEAD3&nbsp;&nbsp;&nbsp; 5.402253&nbsp;&nbsp;&nbsp; 6.162232&nbsp;&nbsp;&nbsp; 18.41020&nbsp;&nbsp;&nbsp; 1.781025e-05&nbsp;&nbsp;&nbsp; 0.005551464 </div>
+<div style="text-align: justify;">
+&nbsp;============================================</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Please note that this is a dummy data, not real data AFAIK.&nbsp; Let us load this run the following code to load and prune the data:</div>
+<div style="text-align: justify;">
+==========================================</div>
+<div style="text-align: justify;">
+# Loads the library </div>
+<div style="text-align: justify;">
+$ library(Glimma)</div>
+<div style="text-align: justify;">
+# Loads the data into a dataframe<br />
+$ df=read.csv("test_glimma.txt", sep="\t", strip.white = T, stringsAsFactors = F)<br />
+df</div>
+<div style="text-align: justify;">
+# Convert first column to row names of the dataframe<br />
+$ row.names(df)=df[,1]</div>
+<div style="text-align: justify;">
+# Remove the first column<br />
+$ df=df[,-1]</div>
+<div style="text-align: justify;">
+==========================================</div>
+<div style="text-align: justify;">
+Now let us execute the code for interactive html page:</div>
+<div style="text-align: justify;">
+==========================================</div>
+<div style="text-align: justify;">
+$ glXYPlot(df$logFC, -log10(df$FDR), xlab="logFC",ylab="-log(FDR)",anno=df$genes)</div>
+<div style="text-align: justify;">
+===========================================</div>
+<div style="text-align: justify;">
+Now this would throw following error: "Error in checkThat(side.main, isIn(display.columns)) : &nbsp; Second argument should contain the first. "</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+Now this error has nothing to with the data frame, as I understand. This error is due to lack of another data frame that "anno" function needs and also missing, mandatory column name.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Way to address this issue is to create a data frame with the same data as above by removing all the expression data and keeping only gene names under "GeneID" column and keeping the row names same. Data frame should have same number of rows. Let us create a new data frame. Please compare with the original data frame (df).</div>
+<div style="text-align: justify;">
+============================================== </div>
+<div style="text-align: justify;">
+$ ga=data.frame(GeneID=df[,1], row.names=row.names(df))</div>
+<div style="text-align: justify;">
+==============================================</div>
+<div style="text-align: justify;">
+Now execute the code as follows:</div>
+<div style="text-align: justify;">
+==============================================</div>
+<div style="text-align: justify;">
+$ glXYPlot(df$logFC, -log10(df$FDR), xlab="logFC",ylab="-log(FDR)",anno=ga)<br />
+&nbsp;==============================================</div>
+<div style="text-align: justify;">
+This would produce interactive html plot as shown below in image:</div>
+<div style="text-align: justify;">
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-27kZDkpDcSQ/Xi6NrGynOmI/AAAAAAAABRI/s_KZrFeYRtgFCja2PzbluG9KVOyq5kJSwCLcBGAsYHQ/s1600/Screenshot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="828" data-original-width="1600" height="331" src="https://1.bp.blogspot.com/-27kZDkpDcSQ/Xi6NrGynOmI/AAAAAAAABRI/s_KZrFeYRtgFCja2PzbluG9KVOyq5kJSwCLcBGAsYHQ/s640/Screenshot.png" width="640" /></a></div>
+<span id="goog_35377405"></span><span id="goog_35377406"></span><br /></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+Note:<br />
+<ol>
+<li>In Firefox (v 72), at first html table would look empty. Sort the Gene ID column, all the values appear.</li>
+<li>To use the status function, you need to convert the boolean filter to numeric values (eg. status=as.numeric(df$FDR &lt;= 0.05)). </li>
+</ol>
+</div>

@@ -1,0 +1,46 @@
+---
+layout: post
+title: Zero length assertion example in R
+date: '2018-07-20T19:55:00.004+05:30'
+author: suresh
+tags:
+- zero length assertion
+- lookaround
+- cran-R
+modified_time: '2018-08-08T16:52:19.909+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-1535257835300627056
+blogger_orig_url: https://digibio.blogspot.com/2018/07/lookaround-in-r-for-non-word-and-word.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+R supports lookarounds (as of v 3.4.4). Lookarounds are basically for searching for a pattern that is in front or behind some thing and you do not care about what is before or behind. For eg let us say that you want to extract last names of all persons with John as first name. You can grep first for John and you would get both first name and last names of all Johns and also if any one as John in last name that also you would get. Now you would some how have to get out John at the start of your search. Lookaround address that problem. It would fetch all the Johns, but print only last names. Kind of neat. It has several options and is kind of confusing R supports both lookforward and lookbehind assertions (lookaround functions).</div>
+<br />
+<div style="text-align: justify;">
+Let us say we have sentence with&nbsp; a mix of english words and non-english words (such as greek alphabets).&nbsp; Now the task is to break each one as string (str split in R). Let us do this in R. We do following:</div>
+<ol style="text-align: left;">
+<li>Create greek alphabets (beta, gamma, mu and phi)</li>
+<li>Put them in a string</li>
+<li>Now break the string into small words using look around in R </li>
+</ol>
+<div>
+==========================================<br />
+<div style="text-align: justify;">
+&gt; beta &lt;- intToUtf8(0x03B2)<br />
+&gt; gamma=intToUtf8(0x03B3)<br />
+&gt; mu=intToUtf8(0x03BC)<br />
+&gt; phi=intToUtf8(0x03D5)<br />
+&gt; print(c(beta,gamma,mu,phi))<br />
+[1] "β" "γ" "μ" "ϕ"<br />
+&gt; test=paste0(beta,"gene",gamma,"protein", beta, "me",beta,phi)<br />
+&gt; test<br />
+[1] "βgeneγproteinβmeβϕ"<br />
+&gt; library(stringr)</div>
+<div style="text-align: justify;">
+&gt; strsplit(test,"(?&lt;=\\W)(?=\\w)|(?&lt;=\\w)(?=\\W)|(?&lt;=\\W)(?=\\W)", perl = T)<br />
+[[1]]<br />
+[1] "β"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "gene"&nbsp;&nbsp;&nbsp; "γ"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "protein" "β"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "me"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "β"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "ϕ"&nbsp;</div>
+<div style="text-align: justify;">
+===========================================</div>
+</div>
+</div>

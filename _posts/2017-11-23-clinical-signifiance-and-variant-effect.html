@@ -1,0 +1,43 @@
+---
+layout: post
+title: 'Extract clinical signifiance and variant effect of dbSNP variants using biomart '
+date: '2017-11-23T15:35:00.004+05:30'
+author: suresh
+tags:
+- dbSNP
+- variant consequence
+- clinical significance
+- biomart
+modified_time: '2017-11-29T12:08:36.267+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-7638126305876223135
+blogger_orig_url: https://digibio.blogspot.com/2017/11/clinical-signifiance-and-variant-effect.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+There are times that one needs to get coordinates, variant effect and clinical significance of rsIDs from dbSNP. This is useful because post annotation of sample variants, user gets matching rsIDs. User wants to know the effect of variation and it's clinical significance. However, please remember that tools that match sample variants with dbSNP variants also provide clinical significance and other relevant information as well.<br />
+<br />
+Let us start with rs IDs 123 and 150. We would like to know their coordinates from dbSNP, their location and clinical significance. We will be using biomaRt package in R to do this. Following is the code:<br />
+============================================<br />
+rsid=c("rs123","rs150")<br />
+library(biomaRt)<br />
+ensembl_snp=useMart("ENSEMBL_MART_SNP", dataset="hsapiens_snp")<br />
+<br />
+getBM(attributes=c("refsnp_source",'refsnp_id','chr_name','chrom_start','chrom_end',"consequence_type_tv", "clinical_significance"), filters = 'snp_filter', values = rsid,mart = ensembl_snp)<br />
+============================================================<br />
+<br />
+1) first line is list of the rsIDs which we will be using for query<br />
+2) Second line loads package biomaRt in R<br />
+3) Third line stores the meta information. We are instructing the program to use ENSEMBL_MART_SNP and dataset "hsapiens_snp" in the mart. Each mart can have multiple data set. For biomaRt to work, we need to choose a mart and a dataset within that mart and we are storing that information in an object called "ensembl_snp"<br />
+4) In fourth line, we are extracting, SNP source (i.e dbSNP), chromosome, start and end of the variants, consequence i.e location of the variant, and it's clinical significance. What we want to extract are called attributes.&nbsp; The query variations are stored in an object called "rsid" and they are passed to values. The nature of values is passed as filters i.e what the values are. 'snp_filter' is the internal reference to rs IDs (rs 123, rs 153 etc). Following example would make it clear: values = c("John", "Jane", "Bob") and filters="name". John, Jane and Bob are names. Like wise, we are telling the program rsIDs are snp_filter (internal name)<br />
+<br />
+output is:<br />
+<br />
+==============================<br />
+&gt;getBM(attributes=c("refsnp_source",'refsnp_id','chr_name','chrom_start','chrom_end',"consequence_type_tv", "clinical_significance"), filters = 'snp_filter', values = rsid,mart = ensembl_snp)<br />
+&nbsp; refsnp_source refsnp_id chr_name chrom_start chrom_end consequence_type_tv<br />
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dbSNP&nbsp;&nbsp;&nbsp;&nbsp; rs123&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp; 24926827&nbsp; 24926827&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intron_variant<br />
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dbSNP&nbsp;&nbsp;&nbsp;&nbsp; rs150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp; 24971033&nbsp; 24971033&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intron_variant<br />
+&nbsp; clinical_significance<br />
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA<br />
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA <br />
+==============================</div>

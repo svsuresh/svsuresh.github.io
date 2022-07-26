@@ -1,0 +1,82 @@
+I"q(<p>One of the posts required to identify the sequences with contiguous stretch of 180 nucleotides, from a multiple sequence alignment. Below is the sequence file and output from the code. I have used awk and seqkit. Both the scripts give identical results</p>
+
+<p><strong>input fasta</strong></p>
+<pre><code class="language-fasta">&gt;Mitra_TRINITY_DN40971_c28_g1_i1
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------t--------------------------------------ctc
+aattattactgctt------tccaaaatcatgctgcac------------atcaattaat
+gaggtgat-------ctgtcatggaattcctgacatgagaccattagaa--agtggtgac
+attatcaacattgacat-----cactgcctaccatcggaattttcatggagacttgaacg
+agaccatgtttgtcggggaggtggatgaggccagcaaagagctagtgaagacgacgcatg
+aatgtctgatgatggccatcgatgaagtgaaaccaggggtg-------------------
+------------------------------------------------------------
+------cggtacagagagatgggaaacatcatccagaaa---cacgcccagtctcatggc
+tactctgttgtccgcagctactgcggtcatgggattcaccaattgttccacactgctcca
+agtgtgcctcattatgggaagaataaa------------gccatcggtgtgatgaaacca
+ggtcatactttcaccattgagccaatgatatctcaaggcacctggcgtgatgagatgtgg
+ccagacaactggactgcagtgacacaggacggcaaacgctcagcgcagtttgagcacaca
+ctgctggtgact------------------------------------------------
+-------------------------gacacaggatgcgaagtcttgacccgtcgtcgggc
+aaatgatggacagccccactttatggactccaaatga------------------tggac
+agcca-------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+----------------------------------------------------
+&gt;Mitra_TRINITY_DN40971_c28_g2_i1
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+---------------------------------------------------------gtg
+ctcttccgatctgccaaagaaacac-----------------------------------
+---------------------aggaggagagcaagaatggttacaacccattccccggct
+ttcgttacacgggatcattgagagcattccctgtgacaccaaagagag------------
+-agatgcctgacacaatccctcgtcctgattatgctgaccattcagaaggtatccccctg
+tcagagcgccagatgagaggttcgacaaacatcaaacagctggacgatgaagagcaggaa
+ggcatgcgagttgtgtgcaagttggctcgggaaatcctggatgaagcagccagtgctgtt
+ggcattggggtaactacagatgaaattgacagactggtccatgagg-caacaatagacag
+agagtgctatccatctcct--------------------------------------ctg
+aactactactgctt------tcccaaatcatgctgcac------------gtctatcaat
+gaagtgat-------ctgtcatggaattcctgacacgaggccattggaa--aatggtgac
+attgtcaacattgacat-----tactgcgtaccatcggagctttcatggggacttaaacg
+agaccatgtttgtcggagaggtagacgaggccagcaaggagctggtgaagaccacacacg
+aatgcctcatgatggccattgaagaagtgaaacccggtgtg-------------------
+------------------------------------------------------------
+------cggtacagagagatgggtaacatcatccagaag---catgcccaggcccatgga
+tactctgttgttcgcagctactgtggccatggt--------------------------
+
+</code></pre>
+
+<p><strong>Code and output</strong>:</p>
+<h3 id="with-awk">with awk</h3>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">awk</span>  <span class="err">'</span><span class="p">{</span><span class="k">if</span><span class="p">(</span><span class="kc">NR</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span><span class="k">print</span> <span class="nv">$0</span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="k">if</span><span class="p">(</span><span class="nv">$0</span> <span class="o">~</span> <span class="sr">/^&gt;/</span><span class="p">)</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"\n"</span><span class="nv">$0</span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="k">printf</span> <span class="nv">$0</span><span class="p">}}}</span> <span class="kr">END</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"\r"</span><span class="p">}</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fa</span><span class="o">|</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">RS</span><span class="o">=</span><span class="err">'</span><span class="o">&gt;</span><span class="err">'</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\n"</span> <span class="err">'</span><span class="nv">$2</span> <span class="o">~</span> <span class="sr">/</span><span class="se">[</span><span class="sr">atgc</span><span class="se">]{180}</span><span class="sr">/</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"&gt;"</span><span class="nv">$1</span><span class="p">,</span><span class="nv">$2</span><span class="p">}</span><span class="err">'</span>
+
+<span class="o">&gt;</span><span class="nx">Mitra_TRINITY_DN40971_c28_g2_i1</span>
+<span class="o">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><span class="nx">gtgctcttccgatctgccaaagaaacac</span><span class="o">--------------------------------------------------------</span><span class="nx">aggaggagagcaagaatggttacaacccattccccggctttcgttacacgggatcattgagagcattccctgtgacaccaaagagag</span><span class="o">-------------</span><span class="nx">agatgcctgacacaatccctcgtcctgattatgctgaccattcagaaggtatccccctgtcagagcgccagatgagaggttcgacaaacatcaaacagctggacgatgaagagcaggaaggcatgcgagttgtgtgcaagttggctcgggaaatcctggatgaagcagccagtgctgttggcattggggtaactacagatgaaattgacagactggtccatgagg</span><span class="o">-</span><span class="nx">caacaatagacagagagtgctatccatctcct</span><span class="o">--------------------------------------</span><span class="nx">ctgaactactactgctt</span><span class="o">------</span><span class="nx">tcccaaatcatgctgcac</span><span class="o">------------</span><span class="nx">gtctatcaatgaagtgat</span><span class="o">-------</span><span class="nx">ctgtcatggaattcctgacacgaggccattggaa</span><span class="o">--</span><span class="nx">aatggtgacattgtcaacattgacat</span><span class="o">-----</span><span class="nx">tactgcgtaccatcggagctttcatggggacttaaacgagaccatgtttgtcggagaggtagacgaggccagcaaggagctggtgaagaccacacacgaatgcctcatgatggccattgaagaagtgaaacccggtgtg</span><span class="o">-------------------------------------------------------------------------------------</span><span class="nx">cggtacagagagatgggtaacatcatccagaag</span><span class="o">---</span><span class="nx">catgcccaggcccatggatactctgttgttcgcagctactgtggccatggt</span><span class="o">--------------------------</span>
+</code></pre></div></div>
+
+<h3 id="with-seqkit">with seqkit:</h3>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">seqkit</span> <span class="o">-</span><span class="nx">w</span> <span class="mi">0</span> <span class="nx">grep</span> <span class="o">-</span><span class="nx">sdip</span> <span class="s2">"n{180}"</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fa</span>
+
+<span class="o">&gt;</span><span class="nx">Mitra_TRINITY_DN40971_c28_g2_i1</span>
+<span class="o">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><span class="nx">gtgctcttccgatctgccaaagaaacac</span><span class="o">--------------------------------------------------------</span><span class="nx">aggaggagagcaagaatggttacaacccattccccggctttcgttacacgggatcattgagagcattccctgtgacaccaaagagag</span><span class="o">-------------</span><span class="nx">agatgcctgacacaatccctcgtcctgattatgctgaccattcagaaggtatccccctgtcagagcgccagatgagaggttcgacaaacatcaaacagctggacgatgaagagcaggaaggcatgcgagttgtgtgcaagttggctcgggaaatcctggatgaagcagccagtgctgttggcattggggtaactacagatgaaattgacagactggtccatgagg</span><span class="o">-</span><span class="nx">caacaatagacagagagtgctatccatctcct</span><span class="o">--------------------------------------</span><span class="nx">ctgaactactactgctt</span><span class="o">------</span><span class="nx">tcccaaatcatgctgcac</span><span class="o">------------</span><span class="nx">gtctatcaatgaagtgat</span><span class="o">-------</span><span class="nx">ctgtcatggaattcctgacacgaggccattggaa</span><span class="o">--</span><span class="nx">aatggtgacattgtcaacattgacat</span><span class="o">-----</span><span class="nx">tactgcgtaccatcggagctttcatggggacttaaacgagaccatgtttgtcggagaggtagacgaggccagcaaggagctggtgaagaccacacacgaatgcctcatgatggccattgaagaagtgaaacccggtgtg</span><span class="o">-------------------------------------------------------------------------------------</span><span class="nx">cggtacagagagatgggtaacatcatccagaag</span><span class="o">---</span><span class="nx">catgcccaggcccatggatactctgttgttcgcagctactgtggccatggt</span><span class="o">--------------------------</span>
+
+</code></pre></div></div>
+:ET

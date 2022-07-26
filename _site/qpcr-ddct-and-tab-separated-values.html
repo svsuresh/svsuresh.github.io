@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/qpcr-ddct-and-tab-separated-values">Apr 18, 2016 - qPCR, ddCt and tab separated values</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+qPCR/RT-PCR is a regularly used quantification method in&nbsp; expression studies. Quantitation of transcripts (mRNA/miRNA) often involves a value known as cT for each transcript (in both, case and control samples)&nbsp; and a method called ddct. ddct&nbsp; method is explained in the<a href="http://www.gene-quantification.net/livak-2001.pdf" target="_blank"> paper </a>authored by K&nbsp; J Livak and T D. Schmittgen.&nbsp; The same method is implemented in R/Bioc package called "ddCt". ddCt package accepts several formats including SDS from SA Biosciences.<br />
+<br />
+In this note, I will explain calculating expression levels using tab separated values. For this, I have used example data provided by ddCt package. Please note that example data provided by ddCt package is in SDS format. SDS formatted files are text files with extra header information and lots of other values.<br />
+&nbsp;&nbsp; <br />
+I extracted data from these SDS files (as they are simple text files with extra information) and calculated differential expression. Later I compared output ( values and graphs) from the script using tab separated values with that from script provided by ddCt manual. Both are identical (and they should be). <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/ddCt/inst/doc/rtPCR.pdf" target="_blank">ddCt manual</a> provides ddct algorithm and example script.<br />
+<br />
+script used by ddCt package (source: rtPCR.R in .R/library/ddCt/doc/ folder on linux) ( I removed the comments)<br />
+<br />
++++++++++++++++++++++++++++++++++++++++++<br />
+<br />
+library(Biobase)<br />
+library(lattice)<br />
+library(RColorBrewer)<br />
+library(ddCt)<br />
+<br />
+<br />
+datadir &lt;- function(x) system.file("extdata", x, package="ddCt")<br />
+savedir &lt;- function(x) file.path(tempdir(), x)<br />
+<br />
+file.names &lt;- c(datadir("Experiment1.txt"),datadir("Experiment2.txt"))<br />
+info &lt;- datadir("sampleData.txt")<br />
+warningFile &lt;- savedir("warnings.txt")<br />
+name.reference.sample &lt;- c("Sample1", "Sample2")<br />
+name.reference.gene &lt;- c("Gene2")<br />
+<br />
+<br />
+CtData &lt;- SDMFrame(file.names)<br />
+sampleInformation &lt;- read.AnnotatedDataFrame(info,header=TRUE, row.names=NULL)<br />
+<br />
+result &lt;- ddCtExpression(CtData,<br />
+calibrationSample=name.reference.sample,<br />
+housekeepingGene=name.reference.gene,<br />
+sampleInformation=sampleInformation,<br />
+warningStream=warningFile)<br />
+CtErr(result)<br />
+br &lt;- errBarchart(result)<br />
+print(br)<br />
+<br />
+++++++++++++++++++++++++++++++++++++++++++++++++++++<br />
+<br />
+Error bar chart is given below:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-Npu8xf1BuZU/VxT_OmzfGpI/AAAAAAAAAbs/sF4YxL8hkJwhxnzGG8NuVO4VvPdmz5LPQCLcB/s1600/example.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="428" src="https://3.bp.blogspot.com/-Npu8xf1BuZU/VxT_OmzfGpI/AAAAAAAAAbs/sF4YxL8hkJwhxnzGG8NuVO4VvPdmz5LPQCLcB/s640/example.png" width="640" /></a></div>
+Error of all replicates are as follows:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-RaxGUBO_x2Y/VxT_khe6D6I/AAAAAAAAAbw/0tA0klIijNYcW6k_WYdfehj5J7-O33YfQCLcB/s1600/example_script.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="204" src="https://3.bp.blogspot.com/-RaxGUBO_x2Y/VxT_khe6D6I/AAAAAAAAAbw/0tA0klIijNYcW6k_WYdfehj5J7-O33YfQCLcB/s640/example_script.png" width="640" /></a></div>
+Now that we have output from ddCt package example script using SDS files. SDS files are Experiment 1.txt and Experiment 2. txt. Sample information is in sampleData. txt. Please note that the example files are located in extdata folder of ddCt package (for eg. on linux: /home/&lt;user name&gt;/.R/library/ddCt/extdata).<br />
+<br />
+I took the experimental values from these SDS files and stored them in tab separated single file. Values I took are: Well, Sample, Detector, Task, Ct.&nbsp; Well column contains each well number, Sample column contains Sample number, Detector column contains name of the gene, take column contains nature of the transcript (if it is a target or a control) and ct column contain CT values.<br />
+<br />
+SDS file (experiment1.txt) <br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-K1mnUpfp92E/VxUCj_mvGNI/AAAAAAAAAcA/MtM5IXKi0JcpeTwco3qAxyO4jjaLC1b3QCLcB/s1600/sds.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="321" src="https://1.bp.blogspot.com/-K1mnUpfp92E/VxUCj_mvGNI/AAAAAAAAAcA/MtM5IXKi0JcpeTwco3qAxyO4jjaLC1b3QCLcB/s640/sds.png" width="640" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: left;">
+&nbsp;Text (data) file with combined data from experiment1.txt and experiment 2.txt. Combined data is name exp.txt.</div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-CoWJorm9p3M/VxUCmTkjaYI/AAAAAAAAAcE/0KYOpMUCJVghmifVJMtAXWPCFo2X7bXSACLcB/s1600/tsv.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="538" src="https://3.bp.blogspot.com/-CoWJorm9p3M/VxUCmTkjaYI/AAAAAAAAAcE/0KYOpMUCJVghmifVJMtAXWPCFo2X7bXSACLcB/s640/tsv.png" width="640" /></a></div>
+<br />
+<br />
+R script for calculating differential expression:<br />
+Please note that sample information is not modified and is taken as such from sampleData.txt.<br />
+<br />
+++++++++++++++++++++++++<br />
+## load biobase and ddct packages <br />
+library(Biobase)<br />library(ddCt)<br />
+<br />
+## Read tab separated file and do not convert strings into factor<br />all.samples1=read.delim("exp.txt", stringsAsFactors = F)<br /><br />
+## structure of object all.samples1 <br />
+str(all.samples1)<br />
+<br />
+## Convert values in ct&nbsp; column to numeric values from character values <br />
+all.samples1$Ct=as.numeric(all.samples1$Ct)<br />
+<br />
+## convert in to a data frame acceptable to ddct<br />all.samples2=InputFrame(all.samples1)<br /><br />
+## View the values<br />
+View(all.samples2)<br />
+<br />
+## Read and store the sample information<br />
+sampleInformation &lt;- read.AnnotatedDataFrame("sampleData.txt",header=TRUE, row.names=NULL)<br /><br />
+## View the imported sample information <br />
+sampleInformation<br />
+<br />
+<br />
+## calculate the differential expression<br />result=ddCtExpression(all.samples2, calibrationSample=c("Sample1", "Sample2"),&nbsp; housekeepingGenes="Gene2", sampleInformation = sampleInformation)<br /><br />
+## View the error in replicates <br />
+CtErr(result)<br />
+<br />
+## View the out put as bar chart <br />
+errBarchart(result)<br />
++++++++++++++++++++ <br />
+<br />
+View expression data as bar chart:<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-Npu8xf1BuZU/VxT_OmzfGpI/AAAAAAAAAb0/y7KrhE2K5gc8veTrDox4nIyqQ2MbipiFwCKgB/s1600/example.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="428" src="https://2.bp.blogspot.com/-Npu8xf1BuZU/VxT_OmzfGpI/AAAAAAAAAb0/y7KrhE2K5gc8veTrDox4nIyqQ2MbipiFwCKgB/s640/example.png" width="640" /></a></div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+This image (output from tsv file) is identical to image from SDS formatted data above.</div>
+<div class="separator" style="clear: both; text-align: left;">
+Error values across replicates:</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-BE9gpaVEgso/VxUGRTuKHWI/AAAAAAAAAcY/lCbAGBUaYQ4gVmHxTD7Jpo-qZRGuHVtJgCLcB/s1600/exp_ct_err.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="200" src="https://1.bp.blogspot.com/-BE9gpaVEgso/VxUGRTuKHWI/AAAAAAAAAcY/lCbAGBUaYQ4gVmHxTD7Jpo-qZRGuHVtJgCLcB/s640/exp_ct_err.png" width="640" /></a></div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<br />
+&nbsp;This output too, matches with that from example script provided by ddCt package.<br />
+<br />
+To conclude, user can use tab separated experimental data to quantitate transcripts using ddCt package.<br />
+<br />
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/plot-interactome-data-in-r" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/rna-seq-and-gatk-best-practices" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

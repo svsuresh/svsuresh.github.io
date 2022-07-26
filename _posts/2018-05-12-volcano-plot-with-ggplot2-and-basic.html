@@ -1,0 +1,71 @@
+---
+layout: post
+title: Volcano plot with ggplot2 and basic plotting
+date: '2018-05-12T14:19:00.018+05:30'
+author: suresh
+tags:
+- basic plotting
+- ggplot2
+- volcano plot
+- cran-R
+modified_time: '2020-06-01T02:52:38.462+05:30'
+thumbnail: https://1.bp.blogspot.com/-0UNr4BrU8cY/XtQf3TRoofI/AAAAAAAABXk/z9Un8j9rzjI-peBZ0Pl7At9yagY-6xNegCK4BGAsYHg/s72-w640-c-h328/baseplot.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8077596746460159484
+blogger_orig_url: https://digibio.blogspot.com/2018/05/volcano-plot-with-ggplot2-and-basic.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on" zoompage-fontsize="16">
+<div style="text-align: justify;" zoompage-fontsize="16">
+
+
+
+
+
+</div>
+<div class="container-fluid main-container" style="text-align: justify;" zoompage-fontsize="16">
+
+
+
+
+
+
+
+
+
+
+
+<div class="fluid-row" id="header" style="text-align: justify;" zoompage-fontsize="16">
+
+
+
+
+</div>
+<div class="section level3" id="volcano-plot" style="text-align: justify;" zoompage-fontsize="16">
+<h3 zoompage-fontsize="19">
+Volcano plot</h3>
+Volcano plot is not new. In the era of microarrays, they were used in
+ conjunction with MA plots. Volcano plot is a plot between p-values 
+(Adjusted p-values, q-values, -log10P and other transformed p-values) on
+ Y-axis and fold change (mostly log2 transformed fold change values) on 
+X-axis. Then one adds all kinds of decorations to plot like cut-off 
+lines so and so forth.&nbsp; In this note, we will use basic plotting and ggplot2 to plot volcano plots. You can download the input file from<a href="https://docs.google.com/document/d/12nZ2qukpVmurKdU5BQIkyLJNBOCmctkILvWuwVyBLA8/edit?usp=sharing" zoompage-fontsize="16"> here</a> and the data has 3 columns: Gene names, Fold change (log2) and Adjusted p values (FDR). File is comma separated.<br />
+
+</div>
+
+<div class="section level3" id="basic-plotting" style="text-align: justify;" zoompage-fontsize="16">
+<h3 zoompage-fontsize="19">
+Basic plotting</h3>Plot will have fold change (log2) values on x-axis and adjusted p values (FDR) (-log10 scale) will be on Y-axis. Significant genes are upregulated or downregulated by 1.5 times (log 2 scale 0.6). Non-siginficant genes are hightlighted in grey color and significant genes are highlighted in red color. Genes are labeled with grey color. FDR cut off value is 0.05.&nbsp; Let us jump into the code. Red lines represent cut offs. P value cut offs (0.01 and 0.05) are log transformed. <br /></div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">================================================================</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16"># Load the data</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">df=read.csv("ggplot_test.txt", header = T, stringsAsFactors = F, strip.white = T)</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16"># Remove the empty lines</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">df=na.omit(df)</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16"># Plot the x and y axis with fold change and -log10 pvalues</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">with(df, <br /></div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">plot (FoldChange_log2, -log10(padj),</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">col = "darkgrey",</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">pch = 19,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">cex=2,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">xlab=expression("Fold Change, Log"[2]*""),</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">ylab=expression("Adjusted P value, Log"[10]*""),</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">abline(v=c(-0.6,0.6),h=c(-log10(0.01),-log10(0.05)), col="red", lty=3,lwd=3)))</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16"># Highlight the genes of interest</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">with(subset(df,abs(FoldChange_log2) &gt;= 0.6 &amp; padj &lt; 0.05 ),</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">points(</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">x = FoldChange_log2,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">y = -log10(padj),</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">col = "red",</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">pch = 16,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">cex=2))</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16"># Label the genes with steel blue color</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">with(subset(df,abs(FoldChange_log2) &gt;= 2 &amp; padj &lt; 0.05 ),</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">text(</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">x = FoldChange_log2,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">y = -log10(padj),</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">Gene.names,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">cex = 1,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">pos=2,</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">col = "steelblue"</div><div class="section level3" style="text-align: justify;" zoompage-fontsize="16">))<br />
+
+</div><div class="separator" style="clear: both; text-align: center;" zoompage-fontsize="16"><a href="https://1.bp.blogspot.com/-0UNr4BrU8cY/XtQf3TRoofI/AAAAAAAABXk/z9Un8j9rzjI-peBZ0Pl7At9yagY-6xNegCK4BGAsYHg/baseplot.png" style="margin-left: 1em; margin-right: 1em;" zoompage-fontsize="16"><img border="0" data-original-height="983" data-original-width="1920" height="328" src="https://1.bp.blogspot.com/-0UNr4BrU8cY/XtQf3TRoofI/AAAAAAAABXk/z9Un8j9rzjI-peBZ0Pl7At9yagY-6xNegCK4BGAsYHg/w640-h328/baseplot.png" width="640" /></a></div>
+<div class="section level3" id="with-ggplot2" style="text-align: justify;" zoompage-fontsize="16">
+<h3 zoompage-fontsize="19">
+With ggplot2</h3>
+<div class="section level4" id="load-libraries" zoompage-fontsize="16">
+<h4 zoompage-fontsize="16"><span style="font-weight: normal;" zoompage-fontsize="16">===========================================================</span><br /></h4>
+<pre class="r" zoompage-fontsize="12"><code class="hljs" zoompage-fontsize="12">suppressPackageStartupMessages(<span class="hljs-keyword" zoompage-fontsize="12">library</span>(dplyr))
+suppressPackageStartupMessages(<span class="hljs-keyword" zoompage-fontsize="12">library</span>(ggplot2))
+suppressPackageStartupMessages(<span class="hljs-keyword" zoompage-fontsize="12">library</span>(ggrepel))</code></pre>
+</div>ggplot(df, aes(x = FoldChange_log2, y = -log10(padj),color = ifelse(abs(FoldChange_log2)&gt;0.6,"red","grey"))) +<br /><div class="section level4" id="now-let-us-plot-the-data-in-ggplot2" zoompage-fontsize="16">&nbsp;&nbsp;&nbsp; geom_point() +<br />&nbsp;&nbsp;&nbsp; xlab(expression("Fold Change, Log"[2]*"")) +<br />&nbsp;&nbsp;&nbsp; ylab(expression("Adjusted P value, Log"[10]*"")) +<br />&nbsp;&nbsp;&nbsp; geom_vline(<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xintercept = c(-0.6,0.6),<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; col = "red",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; linetype = "dotted",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size = 1) +<br />&nbsp;&nbsp;&nbsp; geom_hline(<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yintercept = c(-log10(0.01),-log10(0.05)),<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; col = "red",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; linetype = "dotted",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size = 1)+<br />&nbsp;&nbsp;&nbsp; theme_bw() +<br />&nbsp;&nbsp;&nbsp; theme(legend.position = "none")+<br />&nbsp;&nbsp;&nbsp; scale_colour_manual(values = c("grey", "red")) +<br />&nbsp;&nbsp;&nbsp; geom_text_repel(data=subset(df,abs(FoldChange_log2) &gt;= 2 &amp; padj &lt; 0.05),<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; aes(FoldChange_log2, -log10(padj), label = Gene.names),size = 3, color="steelblue")</div><div class="section level4" zoompage-fontsize="16">=======================================================<br /></div><div class="section level4" zoompage-fontsize="16"><br /></div>
+</div>
+</div><div class="separator" style="clear: both; text-align: center;" zoompage-fontsize="16"><a href="https://1.bp.blogspot.com/-JEYVnyXzms4/XtQfsDN2uHI/AAAAAAAABXY/-Mk2yHC0lFosDalybNgMa1_m7nw649dGwCK4BGAsYHg/ggplot2.png" style="margin-left: 1em; margin-right: 1em;" zoompage-fontsize="16"><img border="0" data-original-height="983" data-original-width="1920" height="328" src="https://1.bp.blogspot.com/-JEYVnyXzms4/XtQfsDN2uHI/AAAAAAAABXY/-Mk2yHC0lFosDalybNgMa1_m7nw649dGwCK4BGAsYHg/w640-h328/ggplot2.png" width="640" /></a></div>
+</div>

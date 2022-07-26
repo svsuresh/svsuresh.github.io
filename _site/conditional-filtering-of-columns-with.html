@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/conditional-filtering-of-columns-with">May 24, 2020 - Conditional filtering of columns with AWK</a></h1>
+            <div class="post-content">
+            <div style="text-align: justify;" zoompage-fontsize="16">For basic processing of the text, AWK and Sed are two of the best CLI tools available in GNU-linux. Today, let us look at conditional filtering of columns using a text file and download it <a href="https://drive.google.com/open?id=1bb5CBxQs7VQQypKKeK-bYUCXmlG1MBjeviKLOx5OvoU" zoompage-fontsize="16">here</a>.&nbsp;</div><div zoompage-fontsize="16">Text file looks as below:<br /></div><div class="separator" style="clear: both; text-align: center;" zoompage-fontsize="16"><a href="https://1.bp.blogspot.com/-jrU2537CS60/XsodCfSbGZI/AAAAAAAABUk/3jJKwdsHyagAj1JpY-VaQgNYxl-JlklwgCK4BGAsYHg/test.png" style="margin-left: 1em; margin-right: 1em;" zoompage-fontsize="16"><img border="0" data-original-height="204" data-original-width="833" height="156" src="https://1.bp.blogspot.com/-jrU2537CS60/XsodCfSbGZI/AAAAAAAABUk/3jJKwdsHyagAj1JpY-VaQgNYxl-JlklwgCK4BGAsYHg/w640-h156/test.png" width="640" /><br /></a></div><div class="separator" style="clear: both; text-align: justify;" zoompage-fontsize="16">Now, one has to compare if Gene from 2nd column (gnomGene) matches with 3rd column (COSMGene) and if it matches, compare column 1 (variants in gnomAD column) and 4 (variants in COSMIC column). If column 1 matches with column 4, then put in a "match" column and if column 1 variant doesn't match column 4 variants, put in a "Nomatch" column.</div><div class="separator" style="clear: both; text-align: justify;" zoompage-fontsize="16">code:</div><div class="separator" style="clear: both; text-align: justify;" zoompage-fontsize="16">==========================================<br /></div><div zoompage-fontsize="16">$ awk -v OFS="\t" -F"\t" 'NR==1 {print $0,"Match","NoMatch"}; NR&gt;1 {if($2==$3){if($1==$4) {$7=$1} else {$8=$1}} else {};print}' file.txt</div><div zoompage-fontsize="16">==========================================</div><div zoompage-fontsize="16"><br /></div><div zoompage-fontsize="16">Final output looks like this:</div><div style="text-align: center;" zoompage-fontsize="16"><a href="https://1.bp.blogspot.com/-vy6Ze0RqMQk/XsogfDkSR5I/AAAAAAAABVE/CK_QxKVJOzQSokyqc3uAFwIYMDINrE0IQCK4BGAsYHg/test_output.png" imageanchor="1" zoompage-fontsize="16"><img border="0" data-original-height="198" data-original-width="904" height="140" src="https://1.bp.blogspot.com/-vy6Ze0RqMQk/XsogfDkSR5I/AAAAAAAABVE/CK_QxKVJOzQSokyqc3uAFwIYMDINrE0IQCK4BGAsYHg/w640-h140/test_output.png" width="640" /></a></div><div zoompage-fontsize="16"><br /></div><div zoompage-fontsize="16">Explanation of the code:</div><div zoompage-fontsize="16"><ol style="text-align: left;" zoompage-fontsize="16"><li zoompage-fontsize="16">NR==1 {print $0,"Match","NoMatch"} -- prints header of the original file and two new columns names "Match" and "NoMatch"<br /></li><li zoompage-fontsize="16">NR&gt;1 {if($2==$3){if($1==$4) {$7=$1} else {$8=$1}} else {};print} -- a nested if..else condition. First if checks column 2 matches with column3. If (first) matches, then second if kicks in. Second if checks, if first column is equivalent to 4th column. If it is equivalent, then column 1 value will be put in column 7 (match). If it is not equivalent, then column 1 value will be put in column 8 (nomatch). If first if fails (column 2 doesn't match with column 3), no action happens i.e both match and nomatch columns will be left empty.<br /></li><li zoompage-fontsize="16">print -- prints the file at the end<br /></li></ol></div><div zoompage-fontsize="16"><br /></div>
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/row-wise-filtering-for-alphanumeric" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/add-vertical-lines-with-plotly" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/add-sample-number-to-venn-diagram">Jul 16, 2018 - Add sample number to venn diagram</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+One of the packages in R to generate venn diagrams is <a href="https://cran.r-project.org/web/packages/VennDiagram/index.html">VennDiagram</a>. It draws venn diagrams fast and allows sufficient customization. However, it is not clear how to add external text to the diagram from the manual. Let us say we want to add number of samples from each list to the diagram some thing like this:</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-Qw6f2PeVOoc/W0zXbQiHC7I/AAAAAAAABKA/4ZZEpnSnd78OqYM65o6x82bA2bUzf-DYgCLcBGAs/s1600/test.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="800" data-original-width="800" height="320" src="https://4.bp.blogspot.com/-Qw6f2PeVOoc/W0zXbQiHC7I/AAAAAAAABKA/4ZZEpnSnd78OqYM65o6x82bA2bUzf-DYgCLcBGAs/s320/test.png" width="320" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: left;">
+Simulated data has two data frames:df1 and df2. Each df has 10 genes and 4 genes&nbsp; in common. Gene names are in row names of the data frame. Example code for simulation and for above image is given below:</div>
+<div class="separator" style="clear: both; text-align: left;">
+============================================ </div>
+<div class="separator" style="clear: both; text-align: left;">
+&gt; gene=paste0("gene_", 1:10)</div>
+&gt; expn=matrix(rep(rnorm(1:10),10),10,10)<br />
+&gt; df1= data.frame("expn"=expn)<br />
+&gt; row.names(df1)=gene<br />
+&gt; gene2=paste0("gene_", 7:16)<br />
+&gt; expn2=matrix(rep(rnorm(1:10),10),10,10)<br />
+&gt; df2= data.frame("expn"=expn2)<br />
+&gt; row.names(df2)=gene2<br />
+&gt; library(VennDiagram)<br />
+<div class="separator" style="clear: both; text-align: left;">
+&gt; venn.diagram(list("df1 (n=10)"=row.names(df1), "df2 (n=10)"=row.names(df2)), filename = "test.tiff", height=800, width=800, resolution =300,cex=1, cat.cex=1, cat.pos = c(-5,5),cat.dist=c(0.04,0.04))</div>
+<div class="separator" style="clear: both; text-align: left;">
+============================================ </div>
+<div style="text-align: justify;">
+In current working directory of R, you would find a tiff file with name test.tiff. There is no way of turning of log files with this function within this function, as of today. Each time the code is executed, function creates a log file and soon they will accumulate if you are fiddling with the function. However you can suppress the logs by typing in, before venn.diagram above (once per execution):<br />
+=================================================<br />
+futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")<br />
+&nbsp;===============================================</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/extract-genes-samples-from-cluster-of" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/extract-columns-using-r-and-shell-from" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

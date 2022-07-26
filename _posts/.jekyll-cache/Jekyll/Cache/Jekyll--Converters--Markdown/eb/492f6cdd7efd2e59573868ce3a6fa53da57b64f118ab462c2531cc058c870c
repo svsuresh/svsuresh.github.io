@@ -1,0 +1,40 @@
+I"@	<p>Biologists manipulate fasta headers for several reasons. Some of them are easy and some of them are complex. One of the user requirements to edit fasta headers and it involved back referencing. I did it using seqkit and sed.  Following is an example input:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input:
+
+<span class="o">&gt;</span>16:23107820-23108019<span class="o">(</span>+<span class="o">)</span>
+GTAC
+<span class="o">&gt;</span>14:54909471-54909670<span class="o">(</span>-<span class="o">)</span>
+GTAA
+<span class="o">&gt;</span>7:127020805-127021004<span class="o">(</span>-<span class="o">)</span>
+GTAGG
+<span class="o">&gt;</span>X:20848619-20848818<span class="o">(</span>+<span class="o">)</span>
+GTGAG
+<span class="o">&gt;</span>1:75547398-75547597<span class="o">(</span>+<span class="o">)</span>
+GTGGG
+</code></pre></div></div>
+<p>Now the requirement is to extract the coordinates from fasta headers including strand information.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>with <span class="nb">sed</span>:
+
+<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/^&gt;/ s/^&gt;\(\w\+\)\W\(\w\+\)\W\(\w\+\).\([+,-]\)./\1\t\2\t\3\t\4/p'</span> test.txt
+
+16      23107820        23108019        +
+14      54909471        54909670        -
+7       127020805       127021004       -
+X       20848619        20848818        +
+1       75547398        75547597        +
+</code></pre></div></div>
+
+<p>NOw let us do the same thing using seqkit.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>seqkit replace <span class="nt">-ip</span> <span class="s1">'(\w+):(\w*)-(\w*).([+,-]).'</span> <span class="nt">-r</span> <span class="s1">'$1 $2 $3 $4'</span> test.txt | seqkit <span class="nb">seq</span> <span class="nt">-n</span>
+
+16 23107820 23108019 +
+14 54909471 54909670 -
+7 127020805 127021004 -
+X 20848619 20848818 +
+1 75547398 75547597 +
+</code></pre></div></div>
+<p>Good and interesting thing is that seqkit supports back referencing.  This can be used in multiple ways. In this case to split the header. Unfortunately, it doesn’t support characters such <strong>‘\t’</strong> (tab) in replacement.</p>
+:ET

@@ -1,0 +1,30 @@
+I"s<p>Biological sequence analysts do lots of I/O on sequence files (nt,aa and others). One of the standards formats is fasta. Fasta file can hold multiple or single sequence. One of the requirements to write each sequence in multiple sequence fasta  file to an individual file and the file name must correspond to the name of the sequence. Following is input example:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>test.fa 
+<span class="o">&gt;</span>gene1
+ACATATTGGAGGCCGAAACAATGAGGCGTGATCAACTCAGTATATCAC
+<span class="o">&gt;</span>gene2
+CTAACCTCTCCCAGTGTGGAACCTCTATCTCATGAGAAAGCTGGGATGAG
+<span class="o">&gt;</span>gene3
+ATTTCCTCCTGCTGCCCGGGAGGTAACACCCTGGACCCCTGGAGTCTGCA
+
+</code></pre></div></div>
+<p>Now the requirement is to extract each sequence into an individual file and the file name correspond to sequence name (here: gene1.fasta, gene2.fasta, gene3.fasta)</p>
+
+<p>Let us do it in R.</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Load file</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">Biostrings</span><span class="p">)</span><span class="w">
+</span><span class="n">genes</span><span class="o">=</span><span class="n">readDNAStringSet</span><span class="p">(</span><span class="s2">"test.fa"</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"fasta"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now let us write each sequence into a file in a loop.</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">genes</span><span class="p">)){</span><span class="w">
+    </span><span class="n">writeXStringSet</span><span class="p">(</span><span class="n">genes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">paste0</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s2">".fasta"</span><span class="p">))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>Now let us do the same in parallel using sapply function</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sapply</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">genes</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">writeXStringSet</span><span class="p">(</span><span class="n">genes</span><span class="p">[</span><span class="n">x</span><span class="p">],</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="s2">".fasta"</span><span class="p">)))</span><span class="w">
+</span></code></pre></div></div>
+:ET

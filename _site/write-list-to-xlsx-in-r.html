@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/write-list-to-xlsx-in-r">Nov 3, 2016 - Write list to xlsx in R</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+Lists in R hold several kinds of data. Some times, user may have following needs:<br /><ol>
+<li>Concatenate all the items in a list to a single excel file and a excel sheet</li>
+<li>Create multiple sheets in a single excel file, but each data frame with a single sheet with names</li>
+<li>Create multiple excel files, with each data frame into a single excel file.</li>
+</ol>
+<br />For this, let us create a lit with 3 vectors:<br /><br />## create a list by name test_list<br />$ test_list[["num"]] = 1:4<br />$ test_list[["nt"]] = c("A","T","G","C")<br />$ test_list[["count"]] = c(1,2,3,4,5,6)<br /><br />## Print the list<br />$ test_list<br />## Look at the structure<br />$ str test_list<br /><br /><h4 style="text-align: left;">
+Concatenate all the items in a list to a single excel file and a excel sheet </h4>
+$ library(xlsx)<br />$ write.xlsx(unlist(test_list),"temp.xlsx") <br /><br /><h4 style="text-align: left;">
+Create multiple sheets in a single excel file, but each data frame with a single sheet with names</h4>
+$ library(xlsx)<br />## Since the list has 3 vectors, i used 1:3 in loop. Data sheet name would be numbers (1 to 3) <br />$ for (i in c(1:3)){<br />&nbsp; write.xlsx(test_list[i], file="temp.xlsx", sheetName=paste(i), append=T)<br />} <br /><br /><h4 style="text-align: left;">
+Create multiple excel files, with each data frame into a single excel file.</h4>
+$ library(xlsx)<br />## This loop would create 3 files with names that end with test.<br />$ for (i in c(1:3)){<br />write.xlsx(mylist[i], file=paste(i,"test.xlsx"))<br />&nbsp;&nbsp; }<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/fastq-manipulation" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/extract-sequences-from-fasta-file" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

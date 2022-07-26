@@ -1,0 +1,38 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+There are simple tricks to convert text from one format to another. For eg in biology, fasta format is simplest text format with sequence name (ID) in first line, followed by sequence in next line.&nbsp; sequence name (ID) is identified by a forward arrow (&gt;) at the beginning of header line. There are age old awk and sed tricks to convert tab separated file to fasta and also well written tools (eg seqkit) to convert tab separated file to fasta. I am adding, GNU-parallel to that long list. Remember to convert tab separated file to fasta, one should have only two columns. First column must contain sequence ID and second column must contain the sequence.</div>
+<div style="text-align: justify;">
+Let us take very simple example:</div>
+<div style="text-align: justify;">
+======================= </div>
+<div style="text-align: justify;">
+$ cat test.txt <br />
+gene1&nbsp;&nbsp; &nbsp;AGCCGCGAC<br />
+gene3&nbsp;&nbsp; &nbsp;GAGCATC<br />
+&nbsp;======================</div>
+<div style="text-align: justify;">
+Let us convert this to fasta:</div>
+with awk:<br />
+=============================<br />
+&nbsp;$ awk -v OFS="\n" '{print "&gt;"$1,$2}' test.txt<br />
+&gt;gene1<br />
+AGCCGCGAC<br />
+&gt;gene3<br />
+GAGCATC<br />
+================================<br />
+with sed:<br />
+=================================<br />
+$ sed -e 's/^/&gt;/;s/\t/\n/g' test.txt <br />
+&gt;gene1<br />
+AGCCGCGAC<br />
+&gt;gene3<br />
+GAGCATC<br />
+===================================<br />
+with Parallel:<br />
+==================================== <br />
+$ parallel&nbsp; --colsep '\t'&nbsp; echo -e '\&gt;{1}\\n{2}'&nbsp; :::: test.txt<br />
+&gt;gene1<br />
+AGCCGCGAC<br />
+&gt;gene3<br />
+GAGCATC<br />
+====================================</div>

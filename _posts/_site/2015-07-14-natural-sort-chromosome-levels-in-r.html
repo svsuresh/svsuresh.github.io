@@ -1,0 +1,36 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+In R, when we import chromosome information, if we are not careful, levels of the imported chromosomes are not naturally sorted. This would effect the graphs some times. Following is an example:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-jyL0PcOu0NM/VaVJKrduwJI/AAAAAAAAARw/wBHQOIjzPV8/s1600/chr_levels_unsorted.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="128" src="https://1.bp.blogspot.com/-jyL0PcOu0NM/VaVJKrduwJI/AAAAAAAAARw/wBHQOIjzPV8/s640/chr_levels_unsorted.png" width="640" /></a></div>
+Please note that order (sort) of the chromosome names is correct, but their levels are incorrectly sorted. This would effect the graphs produced some times. Example image is given below:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-5NbXgJfjP0o/VaOshltL_iI/AAAAAAAAARg/xIL8fUGu6mk/s1600/varcat_nolog.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="454" src="https://1.bp.blogspot.com/-5NbXgJfjP0o/VaOshltL_iI/AAAAAAAAARg/xIL8fUGu6mk/s640/varcat_nolog.png" width="640" /></a></div>
+Note the order of chromosomes on X-axis. Chromosomes (CHROM) are sorted numerically, not natural.<br />
+<br />
+Following is the tip to natural sort levels as well.<br />
+<br />
+Command:<br />
+&nbsp;&lt;Chromosome Column&gt; in data frame &lt;- factor(Chromosome Column, levels=c(1:22,"X","Y","MT")) # assuming that X, Y and MT are present in the dataframe.<br />
+<br />
+Example: clinvar$CHROM &lt;- factor(clinvar$CHROM, levels=c(1:22,"X","Y","MT"))<br />
+<br />
+Levels before and after running the command:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-Kp7Wjs5EsCI/VaVPW5AvFiI/AAAAAAAAASA/DjvPnOf8gi4/s1600/sorted.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="188" src="https://1.bp.blogspot.com/-Kp7Wjs5EsCI/VaVPW5AvFiI/AAAAAAAAASA/DjvPnOf8gi4/s640/sorted.png" width="640" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: left;">
+Note that levels order changed after running the command. Image&nbsp; produced would be as given below:</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-MXl00Pms_HI/VaVPWzQR-GI/AAAAAAAAASM/bFWx0ZBaljQ/s1600/chrlevels_sorted.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="340" src="https://2.bp.blogspot.com/-MXl00Pms_HI/VaVPWzQR-GI/AAAAAAAAASM/bFWx0ZBaljQ/s640/chrlevels_sorted.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+Note the order of chromosomes. Now they make biological sense.<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<br /></div>

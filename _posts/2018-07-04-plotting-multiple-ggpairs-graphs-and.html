@@ -1,0 +1,88 @@
+---
+layout: post
+title: Plotting ggpairs list, saving and faceting
+date: '2018-07-04T12:48:00.003+05:30'
+author: suresh
+tags:
+- ggplot2
+- ggally
+- faceting
+- ggpairs
+- cowplot
+- cran-R
+modified_time: '2018-07-04T13:05:33.651+05:30'
+thumbnail: https://1.bp.blogspot.com/-ZWdGCAomejQ/Wzx4YFvI42I/AAAAAAAABJA/krpf-DbM6LkzUBhqvRq6TjiMjpnefRFpwCLcBGAs/s72-c/ggpairs.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5304340083201485841
+blogger_orig_url: https://digibio.blogspot.com/2018/07/plotting-multiple-ggpairs-graphs-and.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<a href="https://ggobi.github.io/ggally/">GGally</a> package offers several plotting options and is an extension to ggplot. One of the functions in ggally is ggpairs which plots pair wise comparison graphs. If one has a single chart, then it would not a problem to save the plot. However if&nbsp; graphs are saved in a list and to save list of figures is challenging. Since graph already facets the data, faceting graph of graphs is not native. Let us see how to resolve this issue. Following is what we have and what we want:<br />
+<ol style="text-align: left;">
+<li>A data frame with proteins and measurement of&nbsp; variable number of fragments for each protein</li>
+<li>Now we need to compare every fragment against every other fragment per protein.&nbsp;</li>
+</ol>
+Data frame can be downloaded from <a href="https://drive.google.com/open?id=182Wqg-VlnVmaEA7Zo9A7FN_IyjLPRA9FrgyYSfGArfk">here</a>. Screenshot of the data: <br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-ZWdGCAomejQ/Wzx4YFvI42I/AAAAAAAABJA/krpf-DbM6LkzUBhqvRq6TjiMjpnefRFpwCLcBGAs/s1600/ggpairs.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="296" data-original-width="1443" height="130" src="https://1.bp.blogspot.com/-ZWdGCAomejQ/Wzx4YFvI42I/AAAAAAAABJA/krpf-DbM6LkzUBhqvRq6TjiMjpnefRFpwCLcBGAs/s640/ggpairs.png" width="640" /></a></div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: left;">
+Now that we have seen the data, let us get into action. We will do following steps using several packages.&nbsp;</div>
+<ol>
+<li>Load the data</li>
+<li>Convert wide format to long format</li>
+<li>Create a list with several data frames, one for each protein</li>
+<li>Each data frame will be converted from long format to wide format</li>
+<li>With in each data frame, select columns for ggpairs function and append the name of the data frame to the graph</li>
+<li>Save the result as individual png.&nbsp;</li>
+</ol>
+Code:<br />
+================================= <br />
+<div>
+$ df1=read.csv("ggpairs_example_data.txt", stringsAsFactors = F, strip.white = T, sep="\t")<br />
+$ library(ggplot2)<br />
+$ library(dplyr)<br />
+$ library(purrr)<br />
+$ library(tidyr)<br />
+$ library(GGally) <br />
+$ p=df1 %&gt;% <br />
+&nbsp;&nbsp;&nbsp; gather(k,v, -protein, -fragments) %&gt;% <br />
+&nbsp;&nbsp;&nbsp; split(.$protein) %&gt;% <br />
+&nbsp;&nbsp;&nbsp; map(~spread(.,fragments, v)) %&gt;% <br />
+&nbsp;&nbsp;&nbsp; map(~select(.,1:ncol(.))%&gt;%<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ggpairs(3:ncol(.), title = paste0("fragment: ",unique(.[,1]))))<br />
+$ for(i in 1:length(p)){<br />
+&nbsp;&nbsp;&nbsp; ggsave(plot = p[[i]], file = paste0(names(p)[i],".png"), dpi = 300)<br />
+} <br />
+## Now this loop would save all the graph objects in individual files with 300 dpi resolution. Let us facet all the graphs together<br />
+$ library(cowplot)<br />
+$ plot_grid(<br />
+&nbsp;&nbsp;&nbsp; ggmatrix_gtable(p[[1]]),<br />
+&nbsp;&nbsp;&nbsp; ggmatrix_gtable(p[[2]]),<br />
+&nbsp;&nbsp;&nbsp; ggmatrix_gtable(p[[3]]),<br />
+&nbsp;&nbsp;&nbsp; ggmatrix_gtable(p[[4]]),<br />
+&nbsp;&nbsp;&nbsp; nrow = 2,<br />
+&nbsp;&nbsp;&nbsp; ncol=2)<br />
+## 4 is because the number of proteins we have in the list. Actually this can be automated and I am lazy to automate it. Will do it in future. Below is the final figure. Note that I am not posting individual figures.<br />
+======================================<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-f5w0AEwUnf8/Wzx0oVa4WlI/AAAAAAAABIs/CGgDa6Qm58MyeYDybDqAj9KmfHbmvPpFwCLcBGAs/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="987" data-original-width="1200" height="526" src="https://1.bp.blogspot.com/-f5w0AEwUnf8/Wzx0oVa4WlI/AAAAAAAABIs/CGgDa6Qm58MyeYDybDqAj9KmfHbmvPpFwCLcBGAs/s640/Rplot.png" width="640" /></a></div>
+<br /></div>
+</div>

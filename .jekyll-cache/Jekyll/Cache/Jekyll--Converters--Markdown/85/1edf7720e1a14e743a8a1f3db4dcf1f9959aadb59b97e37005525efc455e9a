@@ -1,0 +1,50 @@
+I"ö<p>Some times, you may need to duplicate a dataframe with same column names. This can be either simple duplication where in duplicated data
+frame is next to current data frame. Variation of this would be to have
+duplicated columns next to each other with same column name.</p>
+
+<p>Let us create a data frame</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="w">
+    </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">),</span><span class="w">
+    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span><span class="s1">'b'</span><span class="p">,</span><span class="s1">'c'</span><span class="p">,</span><span class="s1">'d'</span><span class="p">,</span><span class="s1">'e'</span><span class="p">),</span><span class="w">
+    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="s1">'b'</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="s1">'d'</span><span class="p">,</span><span class="m">5</span><span class="p">),</span><span class="w">
+    </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="s1">'c'</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="s1">'e'</span><span class="p">))</span><span class="w">
+</span><span class="n">df</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   a b c d
+## 1 1 a 1 a
+## 2 2 b b 2
+## 3 3 c 3 c
+## 4 4 d d 4
+## 5 5 e 5 e
+</code></pre></div></div>
+
+<p>First let us take the first case where duplicated data frames are next
+to each other</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data.frame</span><span class="p">(</span><span class="n">do.call</span><span class="p">(</span><span class="n">cbind</span><span class="p">,</span><span class="nf">rep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="n">check.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   a b c d a b c d
+## 1 1 a 1 a 1 a 1 a
+## 2 2 b b 2 2 b b 2
+## 3 3 c 3 c 3 c 3 c
+## 4 4 d d 4 4 d d 4
+## 5 5 e 5 e 5 e 5 e
+</code></pre></div></div>
+
+<p>Let us take the second case wheren in duplicated columns are next to
+each other.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data.frame</span><span class="p">(</span><span class="n">do.call</span><span class="p">(</span><span class="n">cbind</span><span class="p">,</span><span class="nf">rep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">each</span><span class="o">=</span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="n">check.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   a a b b c c d d
+## 1 1 1 a a 1 1 a a
+## 2 2 2 b b b b 2 2
+## 3 3 3 c c 3 3 c c
+## 4 4 4 d d d d 4 4
+## 5 5 5 e e 5 5 e e
+</code></pre></div></div>
+:ET

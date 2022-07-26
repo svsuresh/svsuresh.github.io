@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/group-by-and-column-wise-statistics-in">Jun 26, 2018 - Group by and column wise statistics in Shell, R and Python 3</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Recently there was a request for a user. User has a data frame with 3 columns.</div>
+<div style="text-align: justify;">
+==========================</div>
+<div style="text-align: justify;">
+header&nbsp;&nbsp;&nbsp; marker&nbsp;&nbsp;&nbsp; cm<br />
+101&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 0-7.195<br />
+103&nbsp;&nbsp;&nbsp; 8&nbsp;&nbsp;&nbsp; 38.582-49.653<br />
+103&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 43.096-46.534<br />
+103&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 49.653-49.653<br />
+103&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 51.676-51.676<br />
+104&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 22.454-37.061<br />
+104&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 23.351-37.061<br />
+105&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 83.619-84.178<br />
+106&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 36.307-36.307<br />
+106&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 40.62-40.62<br />
+===========================</div>
+<div style="text-align: justify;">
+Now what user wants to group by "header" column, sum of "marker" column values for each group, take min value&nbsp; on left for each group&nbsp; from "cm" column and max value on right for each group from "cm" column. Last requirement is kind of confusing in description. For eg let us say for group 103 in header column, in "cm" column there are 4 ranges. In 4 ranges, take the min value on lowest side and take the maximum value on highest side.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Now i thought this is easier in shell as I know how to use datamash. It hardly took me 2 min for this solution. Remember this problem involves column wise statistics and also grouping on the data. However, one of the commentators said I should not be using tools like datamash, rather I should use programming languages. Then i wrote the solution in 3 different ways, but with same logic. Writing in python took more time&nbsp; (~ 2-3 hours in fact), R took 10 min and shell solution took 2 min to arrive at solution. </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Let us look at each solution and output:</div>
+<div style="text-align: justify;">
+1. Shell:</div>
+<div style="text-align: justify;">
+=========================== </div>
+<div style="text-align: justify;">
+$ tail -n+2 file.txt | sed -e 's/-/\t/g' | datamash -s -g 1 sum 2 min 3 max 4 | awk -v OFS="\t" 'BEGIN {print "header","marker","cm"} {print $1,$2,$3"-"$4}'</div>
+<div style="text-align: justify;">
+<br />
+header&nbsp;&nbsp;&nbsp; marker &nbsp;&nbsp; cm<br />
+101&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 0-7.195<br />
+103&nbsp;&nbsp;&nbsp; 15&nbsp;&nbsp;&nbsp; 38.582-51.676<br />
+104&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; 22.454-37.061<br />
+105&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 83.619-84.178<br />
+106&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 36.307-40.62<br />
+==============================</div>
+<div style="text-align: justify;">
+What I did here was to remove headers (tail -n+2), then replace "-" with tab so that "cm" column is split into two columns. Using datamash, grouped header column, then took the sum of marker per group, minimum of first column (from CM column split), maximum of second column (from CM column split), then using awk to print headers first and then the columns I wanted.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+2. R:</div>
+<div style="text-align: justify;">
+========================</div>
+<div style="text-align: justify;">
+df1 = read.csv("file.txt",stringsAsFactors = F,strip.white = T,sep = "\t")<br />
+library(stringr)<br />
+df1[, c("min", "max")] = str_split_fixed(df1$cm, "-", 2)<br />
+library(dplyr)<br />
+data.frame(df1 %&gt;%<br />
+&nbsp;&nbsp;&nbsp; group_by(header) %&gt;%<br />
+&nbsp;&nbsp;&nbsp; summarise(sum = sum(marker), range = paste(min(min), max(max), sep = "-")))<br />
+=========================</div>
+<div style="text-align: justify;">
+Using library stringr, I split "cm" column into two and appended it to data frame (df1). Then using dplyr, I grouped by header column and then summarize each column. Created a new column by name "range" by pasting min of minimum column and max of the maximum column (both min and max columns came from splitting of "cm" column)</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+3. Python:</div>
+<div style="text-align: justify;">
+=============================</div>
+<div style="text-align: justify;">
+$ python test.py <br />
+&nbsp;&nbsp; header&nbsp; marker&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range<br />
+0&nbsp;&nbsp;&nbsp;&nbsp; 101&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0-7.195<br />
+1&nbsp;&nbsp;&nbsp;&nbsp; 103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15&nbsp; 38.582-51.676<br />
+2&nbsp;&nbsp;&nbsp;&nbsp; 104&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6&nbsp; 22.454-37.061<br />
+3&nbsp;&nbsp;&nbsp;&nbsp; 105&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp; 83.619-84.178<br />
+4&nbsp;&nbsp;&nbsp;&nbsp; 106&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; 36.307-40.62</div>
+<div style="text-align: justify;">
+$ cat test.py</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+&gt; import os<br />
+&gt; import pandas as pd<br />
+# Read CSV<br />
+&gt; df1 = pd.read_csv("file.txt", sep="\t")<br />
+# Print CM column into two columns</div>
+<div style="text-align: justify;">
+&gt; df1[['Min', 'Max']] = df1.cm.str.split('-', expand=True)<br />
+# Group by header column and multiple operations on each column<br />
+&gt; df2 = pd.DataFrame(df1.groupby(['header']).agg({'marker': sum, 'Min': min, "Max": max})).reset_index()<br />
+# Create a new column<br />
+&gt; df2["range"] = df2["Min"] + "-" + df2["Max"]<br />
+# Create a new dataframe with required information<br />
+&gt; df3 = (df2.iloc[:, [0, 1, 4]])<br />
+# Print result<br />
+&gt; print(df3)<br />
+====================</div>
+<div style="text-align: justify;">
+<br />
+Import data as csv and then split cm column by -. Then do a column wise statistics and merge them to range. Then print requested columns. </div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/getting-rs-ids-given-coordinates-in-r" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/lollipot-plot-for-two-conditions-in-r" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

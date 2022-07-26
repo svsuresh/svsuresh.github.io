@@ -1,0 +1,88 @@
+---
+layout: post
+title: Heat map with RNAseq Featurecounts output
+date: '2017-11-29T12:54:00.001+05:30'
+author: suresh
+tags:
+- group
+- heatmap
+- RNAseq
+- pheatmap
+modified_time: '2018-05-16T17:30:03.417+05:30'
+thumbnail: https://4.bp.blogspot.com/-Kc8mbeVXfqU/Wh5gh5_75aI/AAAAAAAAA4w/sbdJBIOEkYMDJX2XNpuNSQH5crmi5Ue6wCLcBGAs/s72-c/Rplot.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-26394998509587197
+blogger_orig_url: https://digibio.blogspot.com/2017/11/heat-map-with-rnaseq-featurecounts.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+There are several tutorials on generating heatmaps using microarray, Exon array and tools that generate differential data. In this note, let us explore simplest way to create heatmap with RNAseq data. Post DESeq2 analysis (RNASeq HISAT2-Featurecounts-DESeq2 work flow outlined <a href="https://digibio.blogspot.in/2017/11/rna-seq-analysis-hisat2-featurecounts.html" target="_blank">here</a>), you might have arrived at a list of genes with statistical significance with expression (fold change cutoff). For generating heatmap, do following:<br />
+<br />
+<ol>
+<li>Extract genes (features of interest). From DESeq2 one would get Fold change, p-value, adjusted p-value etc. Now extract only genes</li>
+<li>Subset read count (normalized and available within DESeq2) for these genes only. </li>
+</ol>
+</div>
+<ol style="text-align: justify;"></ol>
+<div style="text-align: justify;">
+You can download the file from here: This data is DESeq2 normalized. There is another component needed i.e sample demography i.e grouping information such as age, condition, gender etc. Let us deal with very simple one i.e samples with one grouping information: Disease (Turmor and Normal). This meta information is available for these samples. Sample Names are in columns and genes are in rows. Column names of expression data ( with read counts) should match that from row names of demography data as the sample names should match between both the data (expression data and demography data). In R parlance, column names of expression data should match the row names of sample demography (meta data). In this example, you can observe the same.<br />
+<br /></div>
+<div style="text-align: justify;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; condition<br />
+hcc1395_normal_rep1&nbsp;&nbsp;&nbsp; normal<br />
+hcc1395_normal_rep2&nbsp;&nbsp;&nbsp; normal<br />
+hcc1395_normal_rep3&nbsp;&nbsp;&nbsp; normal<br />
+hcc1395_tumor_rep1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tumor<br />
+hcc1395_tumor_rep2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tumor<br />
+hcc1395_tumor_rep3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tumor</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+What we are going to do is to plot the expression values and group the samples by condition.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+code (I am not showing how the data is loaded into R. It comes from either analysis with in R or from an external file):</div>
+<div style="text-align: justify;">
+===================================================</div>
+<div style="text-align: justify;">
+$ library(pheatmap)</div>
+<div style="text-align: justify;">
+$ pheatmap(as.matrix(log.rc.fc.sig.lfcshrink_res_ddds_ordered), scale = "row", clustering_distance_rows = "correlation", clustering_method = "complete",color = c("green", "red"),annotation_col = samples, labels_col&nbsp; = str_replace(rownames(samples),"hcc.[1-9]+_",""), main="Significant genes", fontsize_col=24, fontsize_row = 4)</div>
+<div style="text-align: justify;">
+================================================================</div>
+<div style="text-align: justify;">
+Explanation of the command:</div>
+<ol style="text-align: left;">
+<li>as.matrix - convert the data to matrix</li>
+<li>scale - scale the data by row</li>
+<li>clustering_distance_rows - now the samples must be clustered by correlation. Distance estimate can be changed for eg. by Euclidean distance</li>
+<li>Clustering_method - there are&nbsp; 2-3 methods. How clustering can be done: for eg complete, average, nearest etc. Here, it is complete</li>
+<li>Color - color gradient for expression values. Here I have used only two. You can use as many as you want. But the graph becomes too clumsy. Use intuition in color selection.</li>
+<li>annotation_col - this is very important. Now we want to column (samples) data to be clustered as per the condition. For this data we provide is sample meta data data frame.</li>
+<li>labels_col - column labels. We can supply any name that we wish to. But they should match with number of columns.&nbsp; In the above code, we are chopping of sample names so that they fit well in graph</li>
+<li>main - title of the graph</li>
+<li>fontsize_col - column font size (For sample names, I put large number, as they are small in number)</li>
+<li>fontsize_row - row font size (For gene names, I put small number as they are many in number)</li>
+</ol>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+Heatmap would like this:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="about:invalid#zClosurez" imageanchor="1" style="clear: right; float: right; margin-bottom: 1em; margin-left: 1em;"></a><a href="https://4.bp.blogspot.com/-Kc8mbeVXfqU/Wh5gh5_75aI/AAAAAAAAA4w/sbdJBIOEkYMDJX2XNpuNSQH5crmi5Ue6wCLcBGAs/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="812" data-original-width="1200" height="432" src="https://4.bp.blogspot.com/-Kc8mbeVXfqU/Wh5gh5_75aI/AAAAAAAAA4w/sbdJBIOEkYMDJX2XNpuNSQH5crmi5Ue6wCLcBGAs/s640/Rplot.png" width="640" /></a></div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+</div>

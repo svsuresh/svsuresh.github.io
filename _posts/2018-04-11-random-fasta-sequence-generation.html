@@ -1,0 +1,92 @@
+---
+layout: post
+title: Random fasta sequence generation
+date: '2018-04-11T13:29:00.002+05:30'
+author: suresh
+tags:
+- seqkit
+- awk
+- bash
+- datamash
+- fasta
+modified_time: '2018-04-11T13:29:31.999+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-4561622849265228324
+blogger_orig_url: https://digibio.blogspot.com/2018/04/random-fasta-sequence-generation.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+
+
+
+
+
+<br />
+<div class="container-fluid main-container">
+Sequence information of genes and proteins are stored in fasta 
+format. These fasta files are text files with preliminary markups. 
+Several data manipulations can be done on these files. One of them is 
+random printing of sequence files. Let us say there are 10 species and 
+each species has 4 sequences. OP wanted to publish sequences random for 
+each species. In the following example, there are 3 species, each 
+species has certain number sequences (.seq{0-4}). OP wants each species 
+and one random sequence for each species, in fasta format.
+<pre class="bash"><code class="hljs">&nbsp;</code></pre>
+<pre class="bash"><code class="hljs">$ cat test.fa
+&gt;SpeciesA.seq0
+CCACTTTA
+&gt;SpeciesA.seq1
+CCTCTTTA
+&gt;SpeciesA.seq2
+CCGCTTTA
+&gt;SpeciesA.seq3
+CCACTTTA
+&gt;SpeciesB.seq0
+GCCCTTTA
+&gt;SpeciesB.seq1
+GCCCTTTA
+&gt;SpeciesB.seq2
+ACCCTTTA
+&gt;SpeciesB.seq3
+GCCCTTTA
+&gt;SpeciesC.seq0
+GCCCTTTA
+&gt;SpeciesC.seq1
+GCCCTTTA
+</code></pre>
+For this we need seqkit tool. Use bash shell for execution<br />
+
+<pre class="console"><code class="hljs">============================================================= </code></pre>
+<pre class="console"><code class="hljs">$ for i in $(seqkit seq -n test.fa | cut -f1 -d"." | uniq);
+    do seqkit grep -rp $i test.fa  | seqkit seq -n | shuf -n1 | grep -A1 -f - test.fa;
+done;</code></pre>
+<pre class="console"><code class="hljs">============================================================ </code></pre>
+Another way of doing the same but using awk and datamash:<br />
+<br />
+=========== <br />
+
+<pre class="console"><code class="hljs">$ awk 'BEGIN{RS="&gt;"}{print $1"\t"$2}' test.fa |sed -e '1d;s/\./\t/g'| datamash -sg1 rand 2,3 | sed 's/\t/\./' |  awk 'BEGIN{RS="\n"}{print "&gt;"$1"\n"$2}'</code></pre>
+========== <br />
+Using datamash and sesqkit:<br />
+
+<pre class="console"><code class="hljs">===========================</code></pre>
+<pre class="console"><code class="hljs">$ seqkit fx2tab test.fa | sed 's/\./\t/' | datamash -sg1 rand 2,3 | sed 's/\t/\./' | seqkit tab2fx</code></pre>
+============== <br />
+<br />
+output, 1st time:<br />
+<br />
+<code class="hljs">&gt;SpeciesA.seq1</code><code class="hljs"> <br />CCTCTTTA
+</code><code class="hljs"></code><code class="hljs"><br />&gt;SpeciesB.seq1
+</code><pre class="console"><code class="hljs">GCCCTTTA
+&gt;SpeciesC.seq1
+GCCCTTTA</code></pre>
+<pre class="console"><code class="hljs">&nbsp;</code></pre>
+output, 2nd time:<br />
+
+<pre class="console"><code class="hljs">&gt;SpeciesA.seq3
+CCGCTTTA
+&gt;SpeciesB.seq1
+GCCCTTTA
+&gt;SpeciesC.seq1
+GCCCTTTA</code></pre>
+</div>
+</div>

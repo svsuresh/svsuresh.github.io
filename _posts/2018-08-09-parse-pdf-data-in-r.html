@@ -1,0 +1,229 @@
+---
+layout: post
+title: Parse PDF tabular data in R
+date: '2018-08-09T22:26:00.000+05:30'
+author: suresh
+tags:
+- ggplot2
+- pdf
+- tabulizer
+- cran-R
+modified_time: '2018-08-09T22:35:18.095+05:30'
+thumbnail: https://4.bp.blogspot.com/-XBYH1UycNVk/W2xz3sxAEwI/AAAAAAAABNY/YUGKz781OfQAT5Ym7QHWxA2aE6KyV1n9wCLcBGAs/s72-c/Rplot02.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-3323525431741528921
+blogger_orig_url: https://digibio.blogspot.com/2018/08/parse-pdf-data-in-r.html
+---
+
+<div style="text-align: justify;">
+This is not a bioinformatics note, rather a generic note. Some times we may have to parse data from files from binary formats such as .doc, .docx, .xls, .xls, .pdf etc. In this note, let us analyze the data from a pdf. Source of PDF is results announced by Andhra Pradesh Government (India) for examination conducted for Assistant professor posts in government universities in lifesciences. (Link for&nbsp; PDF: https://www.psc.ap.gov.in/(S(cy3miignuzcio4zg5za5wyd4))/Documents/AsstProf/Marks/LIFE%20SCIENCESwebformat.pdf)</div>
+<div style="text-align: justify;">
+<b>Note</b>: <span style="color: red;">This note is <u><i><b>not meant</b></i></u> to draw any conclusions and all conclusions based on this data will be<b> <u><i>erroneous</i></u></b> as the <u><i><b>data is incomplete</b></i></u>. This note is strictly meant for data parsing from a public pdf into R. That is all it is. <u><i><b>Do not use</b></i></u> the file for any other statistical and/or social conclusions. </span></div>
+<div style="text-align: justify;">
+PDF page has several information for each candidate: S.No, Hall ticket number, Community information, DOB, Gender, Marks in Paper1 and Paper2, Adjusted questions, Total marks out of 300. We will do following steps in this note:</div>
+<ol style="text-align: justify;">
+<li>Import the data</li>
+<li>Construct a data frame (from matrix)</li>
+<li>Chuck out the unnecessary information</li>
+<li>Calculate each candidate age</li>
+<li>Create age range</li>
+<li>Some basic visualizations using ggplot and basic plotting</li>
+</ol>
+<div style="text-align: justify;">
+Now let us get into the work. Before you get into the work, download the PDF from the link:</div>
+<div style="text-align: justify;">
+=================</div>
+<div style="text-align: justify;">
+# This is because Hall ticket numbers are large numbers and R will convert them to exponential (e) numbers. </div>
+<div style="text-align: justify;">
+&gt; options(scipen = 999)</div>
+<div style="text-align: justify;">
+# Load libraries</div>
+<div style="text-align: justify;">
+&gt; library(tabulizer)</div>
+<div style="text-align: justify;">
+# Use extract tables function from Tabulizer package. This would extract the tables in to list. </div>
+<div style="text-align: justify;">
+&gt; result=extract_tables("LIFE SCIENCESwebformat.pdf")</div>
+<div style="text-align: justify;">
+# This would convert the data into matrix. Let us keep this as matrix for pruning </div>
+<div style="text-align: justify;">
+&gt; result1 &lt;- do.call(rbind, result[-length(result)])</div>
+<div style="text-align: justify;">
+# Remove first two rows. First two rows are not necessary for the analysis</div>
+<div style="text-align: justify;">
+&gt; result1=result1[-c(1:2),]</div>
+<div style="text-align: justify;">
+# From remaining rows, make the first row as header and then delete the first row.</div>
+<div style="text-align: justify;">
+&gt; colnames(result1)=result1[1,]</div>
+<div style="text-align: justify;">
+&gt; result1=result1[-1,]</div>
+<div style="text-align: justify;">
+# Convert the data from matrix to data frame</div>
+<div style="text-align: justify;">
+&gt; result1=as.data.frame(result1)</div>
+<div style="text-align: justify;">
+# Load libraries for data manipulation</div>
+<div style="text-align: justify;">
+&gt; library(tidyr)</div>
+<div style="text-align: justify;">
+&gt; library(dplyr)</div>
+<div style="text-align: justify;">
+&gt; library(lubridate)</div>
+<div style="text-align: justify;">
+# Select DOB, Marks and Gender columns. Convert DOB as date format, calculate the age and create age range for every 5 yr. Since lowest age was 21, for the sake of uniform ranges, 20 (21-1) was taken as lowest age for creating age ranges.</div>
+&gt;result2 = result1 %&gt;%<br />
+&nbsp;&nbsp;&nbsp; select (c(DOB, Gender, `Total Marks 300`)) %&gt;%<br />
+&nbsp;&nbsp;&nbsp; mutate_at(vars(`Total Marks 300`), funs(as.numeric(as.character(.))))%&gt;%<br />
+&nbsp;&nbsp;&nbsp; mutate_at(vars("DOB"), funs(as.Date(., "%d/%m/%Y"))) %&gt;%<br />
+&nbsp;&nbsp;&nbsp; mutate(age = time_length(Sys.Date() - DOB, "years")) %&gt;%<br />
+&nbsp;&nbsp;&nbsp; mutate(range = cut(age, breaks = seq(floor(min(age) - 1), ceiling(max(age)), by = 5)))<br />
+<div style="text-align: justify;">
+# Now that we have the dataframe we have, let us run some basic analysis.</div>
+<div style="text-align: justify;">
+# Total number of candidates attended</div>
+<div style="text-align: justify;">
+&gt; result2 %&gt;% summarise(Candidates=n())</div>
+<div style="text-align: justify;">
+&nbsp; Candidates</div>
+<div style="text-align: justify;">
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2137</div>
+<div style="text-align: justify;">
+# Total number of males and females attended:</div>
+<div style="text-align: justify;">
+&gt; result2 %&gt;% group_by(Gender) %&gt;% summarise(Candidates=n())</div>
+<div style="text-align: justify;">
+# A tibble: 3 x 2</div>
+<div style="text-align: justify;">
+&nbsp; Gender Candidates</div>
+<div style="text-align: justify;">
+&nbsp; &lt;fct&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;</div>
+<div style="text-align: justify;">
+1 F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 946</div>
+<div style="text-align: justify;">
+2 M&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1190</div>
+<div style="text-align: justify;">
+3 T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</div>
+<div style="text-align: justify;">
+It seems there is one third gender person attended.Now let us look at the average (mean) age of the each gender category.</div>
+<div style="text-align: justify;">
+&gt; result2 %&gt;% group_by(Gender)%&gt;% summarise(Candidates= n(), "Average age (in yrs)"=mean(age))<br />
+# A tibble: 3 x 3<br />
+&nbsp; Gender Candidates `Average age (in yrs)`<br />
+&nbsp; &lt;fct&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;dbl&gt;<br />
+1 F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 946&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 35.9<br />
+2 M&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1190&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 35.8<br />
+3 T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 32.1</div>
+<div style="text-align: justify;">
+It seems average age of female is 35.9 and male is 35.8. Not much difference.&nbsp; Now let us break down age into&nbsp; age range wise attendance.</div>
+<div style="text-align: justify;">
+&gt; result2 %&gt;% group_by(range)%&gt;% summarise(Candidates= n())&nbsp; %&gt;% spread(range, Candidates)</div>
+<div style="text-align: justify;">
+# A tibble: 1 x 8</div>
+<div style="text-align: justify;">
+&nbsp; `(20,25]` `(25,30]` `(30,35]` `(35,40]` `(40,45]` `(45,50]` `(50,55]` `(55,60]`</div>
+<div style="text-align: justify;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;</div>
+<div style="text-align: justify;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 36&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 256&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 692&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 694&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 313&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 34&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9</div>
+<div style="text-align: justify;">
+# Interesting. We have attendance from 20-25 to&nbsp; 55-60. Now let us break this down by gender.</div>
+<div style="text-align: justify;">
+&gt; result2 %&gt;% </div>
+<div style="text-align: justify;">
++&nbsp;&nbsp;&nbsp;&nbsp; group_by(range, Gender)%&gt;% </div>
+<div style="text-align: justify;">
++&nbsp;&nbsp;&nbsp;&nbsp; summarise(Candidates= n())&nbsp; %&gt;% </div>
+<div style="text-align: justify;">
++&nbsp;&nbsp;&nbsp;&nbsp; spread(range, Candidates)</div>
+<div style="text-align: justify;">
+# A tibble: 3 x 9</div>
+<div style="text-align: justify;">
+&nbsp; Gender `(20,25]` `(25,30]` `(30,35]` `(35,40]` `(40,45]` `(45,50]` `(50,55]` `(55,60]`</div>
+<div style="text-align: justify;">
+&nbsp; &lt;fct&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;int&gt;</div>
+<div style="text-align: justify;">
+1 F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 124&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 287&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 292&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 141&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 48&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4</div>
+<div style="text-align: justify;">
+2 M&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 132&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 404&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 402&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 172&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5</div>
+<div style="text-align: justify;">
+3 T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA</div>
+<div style="text-align: justify;">
+# This is very interesting because we have third gender person in age group of 30-35. Let us look at the histogram.<br />
+&gt;result2 %&gt;%<br />
+&nbsp;&nbsp;&nbsp; group_by(range)%&gt;%<br />
+&nbsp;&nbsp;&nbsp; summarise(Candidates= n())&nbsp; %&gt;%<br />
+&nbsp;&nbsp;&nbsp; ggplot(aes(range,Candidates, fill=range))+<br />
+&nbsp;&nbsp;&nbsp; geom_bar(stat="identity")+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp; theme(axis.text.x = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_text(size=14))+<br />
+&nbsp;&nbsp;&nbsp; labs(x = "Age range (yr)", y= "Total number of candidates")<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-XBYH1UycNVk/W2xz3sxAEwI/AAAAAAAABNY/YUGKz781OfQAT5Ym7QHWxA2aE6KyV1n9wCLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="755" data-original-width="613" src="https://4.bp.blogspot.com/-XBYH1UycNVk/W2xz3sxAEwI/AAAAAAAABNY/YUGKz781OfQAT5Ym7QHWxA2aE6KyV1n9wCLcBGAs/s1600/Rplot02.png" /></a></div>
+</div>
+<div style="text-align: justify;">
+Now that we have seen people between 30-40 age attended more, let us break it further into gender wise applications. <br />
+&gt; result2 %&gt;% <br />
+&nbsp;&nbsp;&nbsp; group_by(range, Gender)%&gt;% <br />
+&nbsp;&nbsp;&nbsp; summarise(Candidates= n())&nbsp; %&gt;% <br />
+&nbsp;&nbsp;&nbsp; ggplot(aes(range,Candidates, fill=Gender))+<br />
+&nbsp;&nbsp;&nbsp; geom_histogram(stat="identity", position = "dodge")+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp; theme(axis.text.x = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_text(size=14))+<br />
+&nbsp;&nbsp;&nbsp; labs(x = "Age range (yr)", y= "Total number of candidates") </div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-IJ5_RJuDnew/W2xb0C81XEI/AAAAAAAABMw/rERIUeR16IgxEkVnqgWpBSgcSKYQFqRhgCLcBGAs/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="755" data-original-width="572" src="https://3.bp.blogspot.com/-IJ5_RJuDnew/W2xb0C81XEI/AAAAAAAABMw/rERIUeR16IgxEkVnqgWpBSgcSKYQFqRhgCLcBGAs/s1600/Rplot.png" /></a></div>
+<div style="text-align: justify;">
+Now we have seen the age distribution, it seems 30-40 age group people applied for the job. Now it seems there are certain people who are absent. In the marks columns, they are marked "Absent". Let us count how many of the total applied people appeared for the exam.&nbsp;</div>
+<div style="text-align: justify;">
+&nbsp;&gt; table(result1$`Total Marks 300`=='Absent')<br />
+FALSE&nbsp; TRUE <br />
+&nbsp;1574&nbsp;&nbsp; 563 </div>
+<div style="text-align: justify;">
+563 people didn't attend the exam. Let us count the males and females who appeared for the exam. For this we will remove absent people and then count females and males. Before that let us create an object removing absent candidates. Since we converted marks columns to numbers, absent are converted to na. Let us remove them and store it in a different object.</div>
+<div style="text-align: justify;">
+&gt; result3=result2 %&gt;% na.omit()</div>
+<div style="text-align: justify;">
+&gt; result3 %&gt;%select(-c(DOB)) %&gt;% group_by(Gender) %&gt;% summarise(n=n())<br />
+# A tibble: 3 x 2<br />
+&nbsp; Gender Total<br />
+&nbsp; &lt;fct&gt;&nbsp; &lt;int&gt;<br />
+1 F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 701<br />
+2 M&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 872<br />
+3 T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 </div>
+<div style="text-align: justify;">
+Interesting to see that males appeared for exam more in number compared to females, in attending the exam and matches with the application trend. Let us calculate average age and average marks for each gender.</div>
+<div style="text-align: justify;">
+&gt;result3%&gt;%select(-c(DOB))%&gt;%group_by(Gender)%&gt;% summarise_at (c ("Total Marks 300", "age"), mean, na.rm=T)<br />
+# A tibble: 3 x 3<br />
+&nbsp; Gender `Total Marks 300`&nbsp;&nbsp; age<br />
+&nbsp; &lt;fct&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;dbl&gt; &lt;dbl&gt;<br />
+1 F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 78.3&nbsp; 36.2<br />
+2 M&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 83.7&nbsp; 35.9<br />
+3 T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 72.8&nbsp; 32.1</div>
+<div style="text-align: justify;">
+Now let us do boxplot of data. Let us plot all the marks, but gender wise.</div>
+<div style="text-align: justify;">
+&gt; ggplot(result3, aes(x =Gender, y = `Total Marks 300`, fill=Gender))+<br />
+&nbsp;&nbsp;&nbsp; geom_boxplot()+<br />
+&nbsp;&nbsp;&nbsp; scale_x_discrete(labels=c("F"="Female","M"="Male","T"="Trans"))+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+</div>
+<div style="text-align: justify;">
+&nbsp;&nbsp;&nbsp; theme(axis.text.x = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_text(size=14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_text(size=14))+<br />
+&nbsp;&nbsp;&nbsp; labs(x = "Age range (yr)", y= "Total number of candidates")</div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-ncy7zxZ4MK4/W2xwnGyQEfI/AAAAAAAABNE/IuwRxb9PN0YRf5TJRFlRn8YvXK9FFNeuQCLcBGAs/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="755" data-original-width="462" src="https://3.bp.blogspot.com/-ncy7zxZ4MK4/W2xwnGyQEfI/AAAAAAAABNE/IuwRxb9PN0YRf5TJRFlRn8YvXK9FFNeuQCLcBGAs/s1600/Rplot01.png" /></a></div>
+<div style="text-align: justify;">
+<br /></div>

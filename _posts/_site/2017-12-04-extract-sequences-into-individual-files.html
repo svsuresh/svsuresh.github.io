@@ -1,0 +1,56 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+some times, simple things are difficult for beginners esp when documentation addresses high level functions and difficult examples than simple ones and simple work flows. Let us look at one such function with biopython/python. Our tasks are:<br />
+1)&nbsp; To extract all the sequences from fasta file and write each sequence into a file with fasta header as file name (without "&gt;").<br />
+2) Extract only headers (without "&gt;") into a separate file. This would give us all the sequence names in the fasta file. Consider following test file:<br />
+<br />
+Example fasta file (test.fa):<br />
+&nbsp;&gt;seq1<br />
+ATGCGGCGA<br />
+&gt;seq2<br />
+GACTACTA<br />
+<br />
+1) Extact each sequence into a file:<br />
+<br />
+Now we want to extract seq1 and seq2 sequences and store them into two files with seq1 and seq2 as file names. Below code works well with python 3&nbsp; and above and biopython 1.5 and above.<br />
+===========================================================<br />
+<span itemscope="" itemtype="http://schema.org/Question"></span><br />
+<pre class="pre language-bash"><code class=" language-bash">&gt;&gt;&gt; from Bio <span class="token function">import</span> SeqIO
+<span class="token keyword">&gt;&gt;&gt; for</span> seq <span class="token keyword">in</span> SeqIO.parse<span class="token punctuation">(</span><span class="token string">"test.fa"</span>, <span class="token string">"fasta"</span><span class="token punctuation">)</span>:
+    SeqIO.write<span class="token punctuation">(</span>seq,seq.id+<span class="token string">".fa"</span>,<span class="token string">"fasta"</span><span class="token punctuation">)</span></code></pre>
+============================================================<br />
+seqIO.write will take three options: what to write (here seq- each sequence), file name to write (seq.id - fasta sequence ID in testa.fa) and the format&nbsp; (fasta) here.<br />
+<br />
+Output:<br />
+<code class=" language-bash">============================= </code><br />
+<pre class="pre language-bash"><code class=" language-bash">$ <span class="token function">ls</span> seq*.fa
+seq1.fa  seq2.fa
+----
+$ <span class="token function">cat</span> seq1.fa 
+<span class="token operator">&gt;</span>seq1
+ATGCGGCGA
+$ <span class="token function">cat</span> seq2.fa 
+<span class="token operator">&gt;</span>seq2
+GACTACTA</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">============================</code></pre>
+<br />
+2) Extract all sequence names in a fasta file (i.e all those lines starting with &gt; and while extracting discard character "&gt;"):<br />
+<br />
+use the above fasta file and output file contains seq1 and se2<br />
+=====================================================<br />
+&gt;&gt;&gt; from Bio import SeqIO<br />
+&gt;&gt;&gt; from datetime import datetime<br />
+&gt;&gt;&gt; dnafile = open("ids_"+datetime.now().strftime("%Y%m%d_%H%M%S"+".txt"), "a")<br />
+&gt;&gt;&gt; for record in SeqIO.parse("test.fa","fasta"):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dnafile.write(record.id+"\n")<br />
+&gt;&gt;&gt; dnafile.close()<br />
+====================================================<br />
+<br />
+In file name (dnafile) above we have incorporate time stamp from the system. This is a simple precaution for not overwriting ids.txt.<br />
+<br />
+output:<br />
+=====================================<br />
+$ cat ids_20171204_162253.txt (20171204_162253= time stamp)<br />
+<br />
+seq1<br />
+seq2<br />
+======================================</div>

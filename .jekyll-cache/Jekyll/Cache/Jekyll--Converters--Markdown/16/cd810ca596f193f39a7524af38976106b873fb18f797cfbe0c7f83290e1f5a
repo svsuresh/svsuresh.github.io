@@ -1,0 +1,50 @@
+I"ž
+<p>There are times where one needs to split fasta file based on header information. However, let us say we need to split the fasta file based on regex, it needs either special tools like <code class="language-plaintext highlighter-rouge">seqkit</code> or some creating thinking in <code class="language-plaintext highlighter-rouge">awk</code>. Let us do this in awk and then in seqkit. Let us take an example of a fasta file with sequences in single line.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>test.fa 
+
+<span class="o">&gt;</span>seq1_test
+atgc
+<span class="o">&gt;</span>seq2_test
+acgat
+<span class="o">&gt;</span>seq3_test
+cgtc
+<span class="o">&gt;</span>seq1_test
+cgatgc
+
+</code></pre></div></div>
+
+<p>Requirements to split this fasta file into 3 fasta files based on first 3 letters of the headers (seq1,seq2, seq3). Let us do this in awk:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$awk</span> <span class="nt">-F</span> <span class="s1">'[&gt;_]'</span> <span class="s1">'/&gt;/{getline seq; print $0"\n"seq &gt; $2".fa"}'</span> test.fa
+
+</code></pre></div></div>
+
+<p>Now you should see three files in current folder wherever test.fa is located. One of the short comings of this program it doesnâ€™t work on multiline sequences. Ofcourse, you can use another awk command to flatten sequence (from multiline to single line). Instead of that, we can use <code class="language-plaintext highlighter-rouge">seqkit</code>. Let us a take a multiline fasta file and use seqkit to split into multiple fastas:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$cat</span> test.fa 
+<span class="o">&gt;</span>seq1_test
+atgc
+<span class="o">&gt;</span>seq2_test
+acgat
+cgt
+<span class="o">&gt;</span>seq3_test
+cgtc
+<span class="o">&gt;</span>seq1_test
+cgatgc
+catc
+ct
+
+</code></pre></div></div>
+
+<p>Let us use seqkit to do the job:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$seqkit</span> <span class="nt">-w</span> 0 <span class="nb">split</span> <span class="nt">-i</span> <span class="nt">--id-regexp</span> <span class="s1">'(^[A-Z]{3})_*'</span> test.fa <span class="nt">-O</span> new_files
+
+</code></pre></div></div>
+
+<p>This would created 3 files in a folder named <code class="language-plaintext highlighter-rouge">new_files</code>. I prefer seqkit over awk for this kind of operations as it supports regex separately two components of fasta format (header, sequence)</p>
+:ET

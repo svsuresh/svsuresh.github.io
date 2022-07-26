@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/extract-sequence-and-tags-from-sam-file">Sep 2, 2018 - Sam to fastq conversion and tag extraction</a></h1>
+            <div class="post-content">
+            <div style="text-align: justify;">
+Researchers working with NGS data store aligned reads in a format called sam and it's binary format is bam. Both are interconvertible. Sam file has several information and for reference, please refer to sam format <a href="https://samtools.github.io/hts-specs/SAMtags.pdf">here</a> (in pdf format). One of the features of sam format is to tag sequences with appropriate tags. Some times, researchers may have to extract these tags and store it. One of the questions I came across was how to extract sequence, two tags (BZ and BQ- a phred quality score and base alignment score consecutively) and store it as fastq format. In directly, this is is equivalent to converting a sam record to fastq record.<br />
+<br />
+Let us do this in shell. One of the reasons I prefer scripts compared to programs is that scripts can be easily understood and can be easily fixed. But downside is that they are slow and most of the times not cross and/or backward compatible:</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Example of sam record:</div>
+<div style="text-align: justify;">
+m54071222/4194368/0_197&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 255&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AAGAGGAAGGGGGAGAGAGAGGAGGAGAGGGGGGAAGAGGTTGGGATGGAAA</div>
+<div style="text-align: justify;">
+ATAGGTGGTTAGAGGGAGAAAGG&nbsp;&nbsp; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; np:i:1&nbsp;&nbsp; qe:i:197&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; qs:i:0&nbsp; rq:f:0&nbsp; BS:Z:ATGGCCAATTGCAGAA&nbsp;&nbsp;&nbsp; BQ:Z:JJJKKKKKKKKLLLLL&nbsp; zm:i:4194368&nbsp;&nbsp;&nbsp; RG:Z:1f1bf15c&nbsp;&nbsp; sc:A:L&nbsp; sz:A:N</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+You can download the example sam with one record <a href="https://drive.google.com/file/d/19xohmMFLIMuctmMVY3SUAXyCZJxmujU3/view?usp=sharing">here</a>. Note that tags can appear in random order. For convenience, command line script is broken into multilines:</div>
+<div style="text-align: justify;">
+============================================================ </div>
+<div style="text-align: justify;">
+$ paste&nbsp; &lt;(awk '{print $1}' test.sam) \&nbsp;</div>
+<div style="text-align: justify;">
+&nbsp;&lt;( grep -wo "\&lt;BS\W\w\W\w\+\&gt;" test.sam) \</div>
+<div style="text-align: justify;">
+&nbsp;&lt;(grep -wo "\&lt;BQ\W\w\W\w\+\&gt;" test.sam) | sed 's/:/\t/g' | \</div>
+<div style="text-align: justify;">
+&nbsp;awk -v OFS="\n" -v ORS="\n\n" '{print "@"$1,$4,"+",$7}'</div>
+<div style="text-align: justify;">
+output: </div>
+<div style="text-align: justify;">
+@m54071222/4194368/0_197<br />
+ATGGCCAATTGCAGAA<br />
++<br />
+JJJKKKKKKKKLLLLL<br />
+<br />
+@m54071222/4194368/0_197<br />
+ATGGCCAATTGCAGAA<br />
++<br />
+JJJKKKKKKKKLLLLL<br />
+================================================================</div>
+<div style="text-align: justify;">
+This function/ command has several things going on. Let me explain it here:</div>
+<ol>
+<li>Script has 3 actions: paste, replacement by sed and output formatting by awk</li>
+<li>paste command takes two grep functions and one awk function.</li>
+<li>Grep functions are grepping for tags (BS and BQ) using word (-w) argument, one time for each argument</li>
+<li>Awk function is printing first column (read ID)</li>
+<li>Sed function is breaking down the tags by full colon so that tags are broken into 3 pieces (from BS:Z:ATGGCCAATTGCAGAA to BS, Z and ATGGCCAATTGCAGAA)</li>
+<li>Use awk to extract necessary columns. Append @ to the ID, print BS sequence, print + and finally BZ sequence. Each field (column) will be separated by newline so that each line (from sam) is converted to fastq and each record (each line in sam) will be separated by two new lines. User can remove this two lines if necessary. Logic was to insert to two lines separating each fastq record, for better reading.</li>
+</ol>
+<div style="text-align: justify;">
+I think this is the logic behind sam2fastq function if you ever want to convert your sam file to fastq format using any of the fields. However remember that this is for single ended, not for paired sequencing. Note that when you convert a sam record to fastq format, it must adhere fastq format standards so that downstream tools can deal with fastq files appropriately. </div>
+<div style="text-align: justify;">
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/de-duplicate-data-frame" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/multiline-pattern-search-using-r-grep" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

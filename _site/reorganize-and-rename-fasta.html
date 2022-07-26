@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/reorganize-and-rename-fasta">Sep 3, 2020 - Reorganize and rename fasta</a></h1>
+            <div class="post-content">
+            <p>Biologists regularly deal with sequences and most of them come in different formats and different arrangements depending upon the maintainer. Two of the requirements I have come across are as follows:</p><ol style="text-align: left;"><li>Separate all the fasta sequences as per organism, irrespective of strain and contig assembly</li><li>Rename the organism as per the file from NCBI</li></ol><p>&nbsp;Let me give you few examples of the file headers and show the issue is:<br />==========================================================================<br /></p><p>&gt;NZ_SADZ01000474.1 Ochrobactrum sp. AV Scaffold_480, whole genome shotgun sequence<br />&gt;NZ_PHFU01000092.1 Xylella fastidiosa subsp. fastidiosa strain CFBP8351 Xf_LSV462693, whole genome shotgun sequence<br />&gt;NZ_SACX01000165.1 Escherichia coli strain JEONG-9595 NODE_13_length_103668_cov_11.7541_ID_25, whole genome shotgun sequence<br />&gt;NZ_SADZ01000789.1 Ochrobactrum sp. AV Scaffold_806, whole genome shotgun sequence<br />&gt;NZ_SADZ01000790.1 Ochrobactrum sp. AV Scaffold_807, whole genome shotgun sequence<br />&gt;NZ_SADZ01000791.1 Ochrobactrum sp. AV Scaffold_808, whole genome shotgun sequence</p><p>======================================================================== <br /></p><p>If you look at the headers you would see that headers contain Organism name, one entry for each scaffold and each of the sequences are present in individual files and few of them are in a single file.&nbsp;</p><p>NCBI data file that would be used in changing names is present <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt">here</a>. Matching entries are copy/pasted here:<br />=========================================================================<br /></p><p>GCF_004011925.1&nbsp;&nbsp;&nbsp; PRJNA224116&nbsp; SAMN10688388&nbsp;&nbsp;&nbsp; SADZ00000000.1&nbsp; na&nbsp; 2500158 2500158 Ochrobactrum sp. AV strain=AV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; latest&nbsp; Scaffold&nbsp;&nbsp;&nbsp; Major&nbsp;&nbsp; Full&nbsp;&nbsp;&nbsp; 1/11/2019&nbsp;&nbsp; ASM401192v1 National Environmental Engineering Research Institute&nbsp;&nbsp; GCA_004011925.1 identical&nbsp;&nbsp; ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/004/011/925/GCF_004011925.1_ASM401192v1<br />GCF_004016405.1 PRJNA224116 SAMN07999362&nbsp;&nbsp;&nbsp; PHFU00000000.1&nbsp; na&nbsp; 644356&nbsp; 2371&nbsp;&nbsp;&nbsp; Xylella fastidiosa subsp. fastidiosa&nbsp;&nbsp;&nbsp; strain=CFBP8351&nbsp;&nbsp;&nbsp;&nbsp; latest&nbsp; Contig&nbsp; Major&nbsp;&nbsp; Full&nbsp;&nbsp;&nbsp; 1/14/2019&nbsp;&nbsp; ASM401640v1 INRA&nbsp;&nbsp;&nbsp; GCA_004016405.1 identical&nbsp;&nbsp; ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/004/016/405/GCF_004016405.1_ASM401640v1<br />GCF_004022065.1 PRJNA224116 SAMN04160771&nbsp;&nbsp;&nbsp; SACX00000000.1&nbsp; na&nbsp; 562 562 Escherichia coli&nbsp;&nbsp;&nbsp; strain=JEONG-9595&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; latest&nbsp; Contig&nbsp; Major&nbsp;&nbsp; Full&nbsp;&nbsp;&nbsp; 1/14/2019&nbsp;&nbsp; ASM402206v1 US Food and Drug Administration GCA_004022065.1 identical&nbsp;&nbsp; ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/004/022/065/GCF_004022065.1_ASM402206v1</p><p>=================================================================</p><p>Now the task is:</p><ol style="text-align: left;"><li>Create one fasta file for each organism and put all the assembly (scaffold) sequences within that file</li><li>Rename the fasta file names with organism names from NCBI summary file.</li></ol><p>Workflow would be:</p><ol style="text-align: left;"><li>Extract all the organism related fasta sequences using four letter symbol and name the fasta file with four letter code</li><li>Replace four letter code in file names with those from NCBI summary file.</li></ol><p>Here is the code:</p><p>===============================================================</p><ol style="text-align: left;"><li>seqkit seq -w 0 *.fa | seqkit split -i --id-regexp "^\w+_([A-z]+)[0-9]+" -O split_fasta<br /></li><li>cd split_fasta</li><li>cut -f4,8 &lt;path&gt;/assembly_summary_refseq.txt &gt; mapping.txt</li><li>while read before after; do mv ${before%%[0-9]*\.[0-9]}.fasta "$after.fasta";done &lt; mapping.txt<br /></li></ol><p>================================================================ <br /></p><p>Here is the explanation:&nbsp;</p><p>================================================================</p><ol style="text-align: left;"><li>Seqkit concatenates all the fasta files and splits the files based on 4 letters , after first three characters (from NZ_SADZ01000474.1 to SADZ) of the headers. All the files will have following names: test.id_fourlettersfromheader.fa&nbsp; and are stored in `split_fasta` folder (for eg. test.id_PHFU.fa). Seqkit automagically creates output folder. If you are in doubt, you can run seqkit function in `--dry-run` mode.</li><li>change the directory newly created split_fasta directory<br /></li><li>cut function prints only 4 and 8 columns (tab separated) from the NCBI file and stores the 4 letter code and strain names in "mapping test" file.</li><li>Changes the files names as per OP with restricted characters. Read function default read mode is tab separated.<br /></li></ol><p>==================================================================&nbsp;</p><p>Output for the code would be (with above fasta files):</p><p>===============================================================</p><p><span itemscope="" itemtype="http://schema.org/Question"></span></p><pre class="pre"><code class="language-bash">tree .                  
+.
+├── Escherichia coli strain=JEONG-9595.fasta
+├── mapping.txt
+├── Ochrobactrum sp. AV strain=AV.fasta
+└── Xylella fastidiosa subsp. fastidiosa strain=CFBP8351.fasta</code></pre><pre class="pre"><code class="language-bash">===================================================================</code></pre>Now the file names will have characters (\,=) that are not easy to parse with downstream tools. So edit the file from step 3, to 
+change these characters to appropriate delimiters (for eg underscore).&nbsp; Step 4 can be done with parallel as well: $ parallel --colsep '\t' --dry-run mv {=1s/\[0-9\]\+\.\[0-9\]//=}.fasta {2}.fasta :::: mapping.txt<br /><br /><br /><br /><br /><br /><p></p>
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/remove-named-columns-from-several-files" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/tidy-pivot-longer-matching-pairs-of" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

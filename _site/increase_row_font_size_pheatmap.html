@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/increase_row_font_size_pheatmap">May 19, 2021 - Change row font size and other properties in pheatmap</a></h1>
+            <div class="post-content">
+            <p>In one of the my earlier posts <a href="/pheatmap_change_rowcolors">here</a>, I have explained how to change the row font colors i.e gene names as per their expression direction (<strong>up</strong> or <strong>down</strong>). However, recently, there was a question on how to increase the row font size. You can understand the issue, if you see image. Let us do some coding and understand the issue.</p>
+
+<p>Let us create the data first:</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">pheatmap</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="w">
+
+</span><span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">replicate</span><span class="p">(</span><span class="m">16</span><span class="p">,</span><span class="w"> </span><span class="n">rnorm</span><span class="p">(</span><span class="m">16</span><span class="p">))</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"OTU"</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"Sample"</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span><span class="w">
+</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w">
+</span><span class="n">data</span><span class="o">$</span><span class="n">regulation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rep</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"up"</span><span class="p">,</span><span class="w"> </span><span class="s2">"down"</span><span class="p">),</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w">
+</span><span class="n">data</span><span class="o">$</span><span class="n">colors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">data</span><span class="o">$</span><span class="n">regulation</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span><span class="w"> </span><span class="s2">"red"</span><span class="p">,</span><span class="w"> </span><span class="s2">"blue"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Let us do the plotting</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Graphing</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pheatmap</span><span class="p">(</span><span class="n">data</span><span class="p">[,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">16</span><span class="p">])</span><span class="w">
+</span><span class="c1">#Assuming row labels are in grob 5</span><span class="w">
+</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">data</span><span class="p">),</span><span class="w"> </span><span class="n">p</span><span class="o">$</span><span class="n">gtable</span><span class="o">$</span><span class="n">grobs</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="o">$</span><span class="n">label</span><span class="p">)),</span><span class="w"> </span><span class="p">]</span><span class="o">$</span><span class="n">colors</span><span class="w">  
+</span><span class="n">p</span><span class="o">$</span><span class="n">gtable</span><span class="o">$</span><span class="n">grobs</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="o">$</span><span class="n">gp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gpar</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">,</span><span class="w"> </span><span class="n">fontsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w"> </span><span class="n">fontface</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bold"</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="/images/heatmap_before_19052021.png" alt="heatmap_before" /></p>
+
+<p>Now as you see, there is a overlap of the row labels (OTU’s in this case). Following is the code for above image. Let us fix it as given below:</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Graphing</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pheatmap</span><span class="p">(</span><span class="n">data</span><span class="p">[,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">16</span><span class="p">],</span><span class="w"> </span><span class="n">fontsize_row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">)</span><span class="w">
+</span><span class="n">dev.off</span><span class="p">()</span><span class="w">
+</span><span class="c1">#Assuming row labels are in grob 5</span><span class="w">
+</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">data</span><span class="p">),</span><span class="w"> </span><span class="n">p</span><span class="o">$</span><span class="n">gtable</span><span class="o">$</span><span class="n">grobs</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="o">$</span><span class="n">label</span><span class="p">)),</span><span class="w"> </span><span class="p">]</span><span class="o">$</span><span class="n">colors</span><span class="w">  
+</span><span class="n">p</span><span class="o">$</span><span class="n">gtable</span><span class="o">$</span><span class="n">grobs</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="o">$</span><span class="n">gp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gpar</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">,</span><span class="w"> </span><span class="n">fontsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w"> </span><span class="n">fontface</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bold"</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="w">
+
+</span></code></pre></div></div>
+
+<p>Following is the output:</p>
+
+<p><img src="/images/heatmap_after_19052021.png" alt="heatmap_after" /></p>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/merge_multiple_unbalanced_df" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/identify_contiguous_blocks" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

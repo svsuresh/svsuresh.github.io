@@ -1,0 +1,99 @@
+I"�<p>Some times, for some obscure reason, you are asked to generate strings
+of letters from a larger string with restriction on string size and
+overlapping Window. For eg. You are asked to generate 3 letter
+word/string from “<strong>Apple</strong>” with one alphabet overlap. From Apple, you
+would be generating, <strong>App</strong>, <strong>ppl</strong>, <strong>ple</strong> (one character overlap). You also
+would like to put in a data fram for further manipulation. Here is an
+example with radom letters of DNA code (ATCG).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">print</span><span class="w"> </span><span class="p">(</span><span class="s2">"string is ATCGATCGGGTTTAC"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>[1] “string is ATCGATCGGGTTTAC”</p>
+
+<p>Now the requirement is to print 6 letter strings, with one letter
+overlap. There are many ways to do it. Let us do it in a simple way.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">stringr</span><span class="p">)</span><span class="w">
+</span><span class="n">str_match_all</span><span class="p">(</span><span class="s2">"ATCGATCGGGTTTAC"</span><span class="p">,</span><span class="w"> </span><span class="s2">"(?=(.{6}))"</span><span class="p">)[[</span><span class="m">1</span><span class="p">]][,</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<p>[1] “ATCGAT” “TCGATC” “CGATCG” “GATCGG” “ATCGGG” “TCGGGT” “CGGGTT” “GGGTTT”</p>
+
+<p>[9] “GGTTTA” “GTTTAC”</p>
+
+<p>Now that we did this, this is temporary stop gap. Now let us make a
+general function, where user would provide a character vector (with long
+string), length of required of word and overlap window.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">seq</span><span class="o">=</span><span class="s2">"ATCGATCGGGTTTAC"</span><span class="w">
+</span><span class="n">extract_kmers</span><span class="o">=</span><span class="k">function</span><span class="p">(</span><span class="n">Seq</span><span class="p">,</span><span class="n">Len</span><span class="p">,</span><span class="n">Wind</span><span class="p">){</span><span class="w">
+    </span><span class="n">df</span><span class="o">=</span><span class="n">str_sub</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="n">nchar</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">-</span><span class="p">(</span><span class="n">Len</span><span class="m">-1</span><span class="p">),</span><span class="n">Len</span><span class="o">-</span><span class="n">Wind</span><span class="p">),</span><span class="n">seq</span><span class="p">(</span><span class="n">Len</span><span class="p">,</span><span class="n">nchar</span><span class="p">(</span><span class="n">seq</span><span class="p">),</span><span class="n">Len</span><span class="o">-</span><span class="n">Wind</span><span class="p">))</span><span class="w">
+    </span><span class="nf">return</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">dnn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"String"</span><span class="p">),</span><span class="w"> </span><span class="n">responseName</span><span class="o">=</span><span class="s2">"Counts"</span><span class="p">))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now let us extract 6 letter length (hexamers) words with one character
+overlap</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">extract_kmers</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>String Counts</p>
+<ol>
+  <li>AC	1</li>
+  <li>AT	2</li>
+  <li>CG	2</li>
+  <li>GA	1</li>
+  <li>GG	2</li>
+  <li>GT	1</li>
+  <li>TA	1</li>
+  <li>TC	2</li>
+  <li>TT	2</li>
+</ol>
+
+<p>Now let us extract 6 letter length (hexamers) words with two character
+overlap</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">extract_kmers</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>String Counts</p>
+<ol>
+  <li>ATCGAT	1</li>
+  <li>ATCGGG	1</li>
+  <li>GGTTTA	1</li>
+</ol>
+
+<p>Now let us extract 6 letter length (hexamers) words with 5 character
+overlap</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">extract_kmers</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>String Counts</p>
+<ol>
+  <li>ATCGAT	1</li>
+  <li>ATCGGG	1</li>
+  <li>CGATCG	1</li>
+  <li>CGGGTT	1</li>
+  <li>GATCGG	1</li>
+  <li>GGGTTT	1</li>
+  <li>GGTTTA	1</li>
+  <li>GTTTAC	1</li>
+  <li>TCGATC	1</li>
+  <li>TCGGGT	1</li>
+</ol>
+
+<p>Now let us extract 8 letter length (hexamers) words with one character
+overlap</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">extract_kmers</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>String Counts</p>
+<ol>
+  <li>ATCGATCG	1</li>
+  <li>CGGGTTTA	1</li>
+</ol>
+:ET

@@ -1,0 +1,138 @@
+---
+layout: post
+title: Extract sequences from fasta
+date: '2015-07-21T22:24:00.000+05:30'
+author: suresh
+tags:
+- fasta to table
+- faSplit
+- seqtk
+- faToTab
+- fasta
+modified_time: '2018-04-29T20:16:15.158+05:30'
+thumbnail: https://2.bp.blogspot.com/-ybUZPo0397I/Va55Zjdp6uI/AAAAAAAAATE/FeAwG9R3FSU/s72-c/fasta.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-1480418115945352091
+blogger_orig_url: https://digibio.blogspot.com/2015/07/extract-sequences-from-fasta.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div>
+Files in fasta format are simplest formatted sequence files with a header in single line, followed by sequence it self, be it protein or nucleotide. There are several tools to parse fasta. Earlier notes from this blog displayed how to simulate sequences (DNA and protein).&nbsp; Note here explains how to extract sequences from file (based on their names) and write each sequence to a single file. For this we need two programs: Seqtk (available in ubuntu rep) and FaSplit (from kent resources : http://hgdownload.cse.ucsc.edu/admin/exe/).<br />
+<br />
+After creating a file with random sequences, we may want to extract few sequences from this file, into another file. Example file can be downloaded from<a href="https://drive.google.com/open?id=0B0MpwluEDxNuOERnREJYaTQ0Z3M" target="_blank"> here</a>. This example file has&nbsp; with 10 fasta sequences (a to j.fasta) with 10 bases(nt) each.<br />
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="http://2.bp.blogspot.com/-ybUZPo0397I/Va55Zjdp6uI/AAAAAAAAATE/FeAwG9R3FSU/s1600/fasta.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="400" src="https://2.bp.blogspot.com/-ybUZPo0397I/Va55Zjdp6uI/AAAAAAAAATE/FeAwG9R3FSU/s400/fasta.png" width="140" /></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">10 sequences in fasta format</td></tr>
+</tbody></table>
+<div class="separator" style="clear: both; text-align: left;">
+<a href="http://4.bp.blogspot.com/kB79N8UogoWcRxhLZ0JO5-1ojMvO0tuqZEkeHEBHTS_N39Ud0p4L1FU00u_-7Epyy3Rq_Q=s400" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"></a>This note outlines how to extract selected sequences, extract all the sequences into individual files and also convert fasta file with two column file (name and sequences separated by a tab).</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+<b>1) Extract&nbsp; sequences of interest</b></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Logic: Extract the names of the sequence and create a list of wanted sequences. Pass this list to program to extract fasta sequences of interest into another fasta file.</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Extract sequence names from the fasta file (without &gt; symbol):&nbsp; </div>
+<div class="separator" style="clear: both; text-align: left;">
+Command: grep "&gt;" ds.seq.fa | cut&nbsp; -c2- &gt;names (screenshot of names)</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div style="text-align: left;">
+</div>
+</div>
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-dCC05-n4J5I/Va5mr7MQRXI/AAAAAAAAASc/ILuMPfXjKtk/s1600/seqnames1.png" imageanchor="1"><img alt="" border="0" height="200" src="https://4.bp.blogspot.com/-dCC05-n4J5I/Va5mr7MQRXI/AAAAAAAAASc/ILuMPfXjKtk/s200/seqnames1.png" title="After" width="94" /></a></div>
+<div>
+<div class="separator" style="clear: both; text-align: left;">
+<a href="http://4.bp.blogspot.com/-dCC05-n4J5I/Va5mr7MQRXI/AAAAAAAAASY/HxPmv3HBDfw/s1600/seqnames1.png" imageanchor="1"><br /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+2) Now that the file names are in stored in a file called names. (refer to screenshot above)&nbsp;</div>
+<div class="separator" style="clear: both; text-align: left;">
+&nbsp;3) Now, let us say we want last 4 sequences from the original file , execute following command.</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+command: tail -4 names | seqtk subseq ds.seq.fa - &gt;tail.fa.</div>
+<div class="separator" style="clear: both; text-align: left;">
+After exeuction, a new file would be created by name "tail.fa" with last 4 fasta sequences in ds.seq.fa ( as listed in file name "names").&nbsp; Refer to screen shot for extracted 4 sequences.</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Now let us you would like to extract few sequences from the fasta file. Let us make a dummy fasta file with 3 sequences: a, b and c.&nbsp;</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+$ cat test.fa <br />&gt;a<br />atgc<br />&gt;b<br />ctga<br />&gt;c<br />gtca<br />&nbsp;</div>
+<div class="separator" style="clear: both; text-align: left;">
+Now let us say we would like to extract sequences b and c. Now what you have to do is make a text file. Text file should have ids (with &gt; sign), one line per ID. Example text file for extracting sequences b and c look like this:</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+$ cat list <br />b<br />c</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Now let us execute the command for desired sequences:</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+$ seqtk subseq&nbsp; test.fa&nbsp; list<br />&gt;b<br />ctga<br />&gt;c<br />gtca<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+&nbsp; </div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-aM6K4PvjxI4/Va5rXhaVtXI/AAAAAAAAAS0/ZawH2EZPEmg/s1600/seqtk.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="128" src="https://1.bp.blogspot.com/-aM6K4PvjxI4/Va5rXhaVtXI/AAAAAAAAAS0/ZawH2EZPEmg/s640/seqtk.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+2) <b>Extract all the sequences and write into individual fasta files</b></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Command: faSplit byname tnames.fa .</div>
+<div class="separator" style="clear: both; text-align: left;">
+<b> </b></div>
+<div class="separator" style="clear: both; text-align: left;">
+This command would extract sequences mentioned by their name (in the file tnames) into current directory (. denotes current directory). Program faSplit x86-64 linux&nbsp; binary&nbsp; can be downloaded from <a href="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faSplit" target="_blank">here</a> (~1MB executable).</div>
+<div class="separator" style="clear: both; text-align: left;">
+&nbsp; </div>
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="http://1.bp.blogspot.com/-FQ90h-RNUUc/Va5_WRrgndI/AAAAAAAAATk/5f4Rvxymz0M/s1600/faspplit3.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="120" src="https://1.bp.blogspot.com/-FQ90h-RNUUc/Va5_WRrgndI/AAAAAAAAATk/5f4Rvxymz0M/s400/faspplit3.png" width="400" /></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">Before: Note that all the sequences are within a single file named "tnames.fa"</td></tr>
+</tbody></table>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+</div>
+</div>
+<div>
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="http://2.bp.blogspot.com/-yFuKtUtiBtA/Va5_WVLcyRI/AAAAAAAAATo/N70cxvLg4x0/s1600/faspplit2.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="80" src="https://2.bp.blogspot.com/-yFuKtUtiBtA/Va5_WVLcyRI/AAAAAAAAATo/N70cxvLg4x0/s400/faspplit2.png" width="400" /></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">Before and After: In destination directory, there are no files before splitting. After splitting, 3 files are created afresh</td><td class="tr-caption" style="text-align: center;"><br /></td><td class="tr-caption" style="text-align: center;"><br /></td><td class="tr-caption" style="text-align: center;"><br /></td><td class="tr-caption" style="text-align: center;"><br /></td></tr>
+</tbody></table>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+3) Create tab separated sequences from fasta file</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Command: faToTab &lt;input.fa&gt; &lt;output&gt;</div>
+<div class="separator" style="clear: both; text-align: left;">
+Example:&nbsp; faToTab tnames.fa tnames.tab</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-gq7uyn0YNqk/Va6Cco8BceI/AAAAAAAAAT4/GBt2erhdJoM/s1600/fatotab.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="190" src="https://2.bp.blogspot.com/-gq7uyn0YNqk/Va6Cco8BceI/AAAAAAAAAT4/GBt2erhdJoM/s400/fatotab.png" width="400" /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+faToTab can be downloaded from <a href="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faToTab" target="_blank">here</a> (~1 MB x86-64 GNU-linux executable)</div>
+</div>
+</div>

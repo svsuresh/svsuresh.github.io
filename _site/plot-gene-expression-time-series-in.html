@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/plot-gene-expression-time-series-in">May 30, 2018 - Facet gene expression time series in ggplot2</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+In other note <a href="https://digibio.blogspot.com/2018/04/time-series-experiments-and-ggplot.html">here</a>, we have plotted time series gene expression profile as bar plots. The data had 3 replicates, but without a condition. In this note, we will plot time series gene expression data with no replicates, but with a condition (treated vs untreated).<br />
+<br />
+We have 50 observations per time point (5 time points) per condition (two conditions). Hence we have 500 observations (50 values x 2 conditions x 5 times points=500). One thing what users would like to see is expression levels before and after or between any two comparable conditions (for eg normal vs tumor). Let us connect two values by a line, per each gene. So that we know which is what. We can plot the data horizontally or vertically.<br />
+<br />
+Code begins here:<br />
+========================= <br />
+# Let us simulate a dataframe with 500 values as I explained above.<br />
+x &lt;- data.frame(replicate(10, sample(0:500, 50, replace=TRUE)))<br />
+rownames(x) &lt;- paste("gene", c(1:nrow(x)), sep="")<br />
+colnames(x)[seq(1,ncol(x), 2)] &lt;- paste("treated.Month", c(1:(ncol(x)/2)), sep="")<br />
+colnames(x)[seq(2,ncol(x), 2)] &lt;- paste("untreated.Month", c(1:(ncol(x)/2)), sep="")<br />
+x$id=row.names(x)<br />
+<br />
+# Now let us convert the data from wide to long format<br />
+library(tidyverse)<br />
+gx=gather(x,"treatment","Expression",-id)<br />
+<br />
+#Let us create two more columns after splitting treatment column.<br />
+library(stringr)<br />
+gx[,c("condition","time")]=str_split_fixed(gx$treatment,"\\.",2)<br />
+<br />
+# Convert the new columns to factor<br />
+gx$time=as.factor(gx$time)<br />
+gx$condition=as.factor(gx$condition)<br />
+```<br />
+#Take any 6 genes. In this example, we take result of head.<br />
+gx6=subset(gx,gx$id %in% head(gx$id) )<br />
+<br />
+#Now plot genes vertically<br />
+library(ggplot2)<br />
+ggplot(gx6, aes( id, Expression,  color = condition)) +<br />
+geom_point(size = 4) +<br />
+geom_line(aes(group = id), color = "brown", size = 1) +<br />
+facet_wrap(~ time, nrow = 1, ncol = 5) +<br />
+theme_bw() +<br />
+theme(<br />
+axis.text.x = element_text(angle = 90, size = 17),<br />
+axis.text.y = element_text(size = 17),<br />
+axis.title.x = element_blank(),<br />
+strip.text.x = element_text(size = 15)<br />
+)<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-Ro4WbMfqWU4/Ww5rsc_p5OI/AAAAAAAABDM/w411-QoLBiYw3ZJLOD-rVazGqoNIEbkHwCLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="970" data-original-width="1200" height="516" src="https://3.bp.blogspot.com/-Ro4WbMfqWU4/Ww5rsc_p5OI/AAAAAAAABDM/w411-QoLBiYw3ZJLOD-rVazGqoNIEbkHwCLcBGAs/s640/Rplot02.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<br />
+#Now plot genes horizontally<br />
+ggplot(gx6, aes(Expression, id, color = condition)) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    geom_point(size = 4) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_line(aes(group = id), color = "brown", size = 1) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    facet_wrap(~ time, nrow = 1, ncol = 5) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    theme_bw() +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          axis.text.x = element_text(angle = 90, size = 17),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          axis.text.y = element_text(size = 17),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          strip.text.x = element_text(size = 15)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          )<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-sbcahB8aeHY/Ww5ryxfl7mI/AAAAAAAABDQ/gUr47aZAPBAuzhI0M6_dYaTa8dHkC6lUwCEwYBhgL/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="970" data-original-width="1200" height="516" src="https://2.bp.blogspot.com/-sbcahB8aeHY/Ww5ryxfl7mI/AAAAAAAABDQ/gUr47aZAPBAuzhI0M6_dYaTa8dHkC6lUwCEwYBhgL/s640/Rplot.png" width="640" /></a></div>
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/average-triplicate-columns-in-r" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/convert-three-letter-psynax-to-single" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

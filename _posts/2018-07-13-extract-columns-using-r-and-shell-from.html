@@ -1,0 +1,49 @@
+---
+layout: post
+title: Extract columns using R and shell from xls files
+date: '2018-07-13T22:41:00.000+05:30'
+author: suresh
+tags:
+- libreoffice
+- xls
+- shell
+- cran-R
+modified_time: '2018-07-13T22:41:28.787+05:30'
+thumbnail: https://1.bp.blogspot.com/-IKLBkf6ldDk/W0jYQlG6fzI/AAAAAAAABJo/cO7mAr2kvCEn_n4fb5m0rxrdROcayEi6gCLcBGAs/s72-c/data_13072018.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-3620224063668464266
+blogger_orig_url: https://digibio.blogspot.com/2018/07/extract-columns-using-r-and-shell-from.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+okay. This is small task but interesting one. Data is irrelevant, but requirement is kind of interesting. Let us get data out first and you can download it from <a href="https://docs.google.com/spreadsheets/d/11h92gCOdIHGHkbT0GTWukSFVf-4GkxrV5EyZT0SSTLo/edit?usp=sharing">here</a>.<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-IKLBkf6ldDk/W0jYQlG6fzI/AAAAAAAABJo/cO7mAr2kvCEn_n4fb5m0rxrdROcayEi6gCLcBGAs/s1600/data_13072018.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="352" data-original-width="1600" height="140" src="https://1.bp.blogspot.com/-IKLBkf6ldDk/W0jYQlG6fzI/AAAAAAAABJo/cO7mAr2kvCEn_n4fb5m0rxrdROcayEi6gCLcBGAs/s640/data_13072018.png" width="640" /></a></div>
+<div style="text-align: justify;">
+Now the requirement is extract certain columns from first few columns and append it to each sample column. Each sample column and the first few columns are to be extracted in individual files. Now let us say, we want to extract molwt column, total column and each sample column into individual files i.e each sample file should have sample column, mol wt column and total column.&nbsp;</div>
+<div style="text-align: justify;">
+Now we can do this in R, python and other languages, Let us do this in R first:</div>
+<div style="text-align: justify;">
+===========================================</div>
+<div style="text-align: justify;">
+$ setwd("~/Desktop/test") # change this to directory of interest<br />$ fn=list.files(pattern = "\\.xls") # lists files with .xls extension</div>
+<div style="text-align: justify;">
+$ library(readxl)<br />$ library(WriteXLS)<br />$ for (i in fn){<br />&nbsp;&nbsp;&nbsp; df=data.frame(read_xls(i))<br />&nbsp;&nbsp;&nbsp; for (j in 11:ncol(df)){<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; temp_df=df[,c(2,5,j)]<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WriteXLS(temp_df, ExcelFileName = paste0(sub('\\.xls$', '', i) ,"_","sample_",names(df)[j],".xls"))<br />&nbsp;&nbsp;&nbsp; }<br />}<br />=============================================</div>
+<div style="text-align: justify;">
+This would create individual files for each sample and appends excel file name to the final xls file. Final excel file for each sample will have source excel file name and sample name in file name.</div>
+<div style="text-align: justify;">
+Now, interesting would be to do the same in shell. One obstacle is to convert xls files into files that can be handled in shell. I chose csv. User can choose tsv as well. Steps are:</div>
+<ol style="text-align: left;">
+<li>convert the excel file to csv</li>
+<li>extract columns from csv to another csv (output csv)</li>
+<li>Append sample and excel file names to output csv&nbsp;</li>
+<li>Convert new csv (output) to excel&nbsp;</li>
+<li>Delete the output csv from 2 and 3</li>
+</ol>
+=======================================<br />
+for i in *.xls;<br />&nbsp;&nbsp;&nbsp; do libreoffice --headless --convert-to csv $i --outdir .;<br />&nbsp;&nbsp;&nbsp; nf=$(awk -F"," '{print NF;exit}' ${i%.*}.csv);<br />&nbsp;&nbsp;&nbsp; for j in $(seq 11 18);<br />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;do nf_head=$(awk -v j=$j -F"," '{print $j;exit}' ${i%.*}.csv); <br />&nbsp;&nbsp;&nbsp; cut -d"," -f 3,5,$j ${i%.*}.csv &gt; ${i%.*}_$nf_head.csv;<br />&nbsp;&nbsp;&nbsp; libreoffice --headless --convert-to xls ${i%.*}_$nf_head.csv&nbsp; --outdir .;<br />&nbsp;&nbsp;&nbsp; rm ${i%.*}_$nf_head.csv;<br />&nbsp;&nbsp;&nbsp; done;<br />done<br />
+==================================== <br />
+<div>
+<div style="text-align: justify;">
+<br /></div>
+</div>
+</div>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/annotate-text-file-with-dbsnp-reference">Aug 15, 2020 - Annotate text file with dbSNP reference</a></h1>
+            <div class="post-content">
+            <p style="text-align: justify;">Let us say we have a text file and we need to annotate it with dbSNP vcf to get rsIDs. We will use an example text file as follows and down load the text file from <a href="https://docs.google.com/document/d/1t2hoYMAjpv2fYZUd71I7bQxo33mhbVZiQxLALQX_kSs/edit?usp=sharing">here</a>:</p><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-JBO7w_S9Evk/Xze9JveKyPI/AAAAAAAABgU/K1j0txndUcsyRr4_OumnOnNoJtlPd2IWgCLcBGAsYHQ/s505/test.png" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="125" data-original-width="505" src="https://1.bp.blogspot.com/-JBO7w_S9Evk/Xze9JveKyPI/AAAAAAAABgU/K1j0txndUcsyRr4_OumnOnNoJtlPd2IWgCLcBGAsYHQ/d/test.png" /></a></div><p style="text-align: justify;">Now we have starting coordinate in 2nd column, end coordinate in 3rd column. Chromosome names in 1st column do not match the chromosome name convention followed by dbSNP. Instead of chromosome 1, dbSNP uses "1" as chromosome name. We will remove it while we run the script. In addition, bedtools expects the file to be in bed format. Bed format is zero based where as vcf is 1 based. One must be careful when matching such files together. Please note that reference file used in the note is an example file. You need to download dbSNP vcf files for appropriate genome builds. </p><p style="text-align: justify;">To get only rsIDs, one needs some code writing and run it. Instead what we would do here is:</p><ol style="text-align: left;"><li>Convert text to bed</li><li>Use bedtools to intersect reference vcf (dbSNP vcf)&nbsp;</li><li>Get all the records from dbSNP and input file. Then we can filter in whatever way we want.</li></ol><p>Above steps can be done in a single line (download the reference file from <a href="https://drive.google.com/file/d/1NCJGMFGSOm1_StFEhnWYqK_rfitXVyA1/view?usp=sharing">here</a>):</p><p>================================================================ <br /></p><p>$ sed "s/^chr//g" test.txt |&nbsp; awk -v OFS="\t" '{$2=$2-1;print $1,$2,$3,$4}' |&nbsp; bedtools&nbsp; intersect -wb -wa -a stdin -b ref.sorted.vcf.gz</p><p>================================================================</p><p>output is as follows:</p><p>==================================================================<br />1&nbsp;&nbsp; &nbsp;207679306&nbsp;&nbsp; &nbsp;207679307&nbsp;&nbsp; &nbsp;pan1&nbsp;&nbsp; &nbsp;1&nbsp;&nbsp; &nbsp;207679307&nbsp;&nbsp; &nbsp;rs4844600&nbsp;&nbsp; &nbsp;A&nbsp;&nbsp; &nbsp;C,G&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;RS=4844600;RSPOS=207679307;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050328000b05110536000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;PM;PMC;S3D;SLO;NSM;REF;SYN;ASP;G5;HD;GNO;KGPhase1;KGPhase3;CAF=0.1496,.,0.8504;COMMON=1;TOPMED=0.16070177115188583,0.00227765035677879,0.83702057849133537<br />1&nbsp;&nbsp; &nbsp;207684191&nbsp;&nbsp; &nbsp;207684192&nbsp;&nbsp; &nbsp;pan1&nbsp;&nbsp; &nbsp;1&nbsp;&nbsp; &nbsp;207684192&nbsp;&nbsp; &nbsp;rs12037841&nbsp;&nbsp; &nbsp;T&nbsp;&nbsp; &nbsp;G&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;RS=12037841;RSPOS=207684192;dbSNPBuildID=120;SSR=0;SAO=0;VP=0x050100080005110136000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;GNO;KGPhase1;KGPhase3;CAF=0.06649,0.9335;COMMON=1;TOPMED=0.12155963302752293,0.87844036697247706<br />1&nbsp;&nbsp; &nbsp;207685785&nbsp;&nbsp; &nbsp;207685786&nbsp;&nbsp; &nbsp;pan1&nbsp;&nbsp; &nbsp;1&nbsp;&nbsp; &nbsp;207685786&nbsp;&nbsp; &nbsp;rs4266886&nbsp;&nbsp; &nbsp;T&nbsp;&nbsp; &nbsp;C&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;RS=4266886;RSPOS=207685786;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050100080005110536000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;HD;GNO;KGPhase1;KGPhase3;CAF=0.1426,0.8574;COMMON=1;TOPMED=0.16106810652395514,0.83893189347604485<br />1&nbsp;&nbsp; &nbsp;207685964&nbsp;&nbsp; &nbsp;207685965&nbsp;&nbsp; &nbsp;pan1&nbsp;&nbsp; &nbsp;1&nbsp;&nbsp; &nbsp;207685965&nbsp;&nbsp; &nbsp;rs4562624&nbsp;&nbsp; &nbsp;A&nbsp;&nbsp; &nbsp;C,T&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;RS=4562624;RSPOS=207685965;dbSNPBuildID=111;SSR=0;SAO=0;VP=0x050100080005110136000100;GENEINFO=CR1:1378;WGT=1;VC=SNV;SLO;INT;ASP;G5;GNO;KGPhase1;KGPhase3;CAF=0.06669,0.9333,.;COMMON=1;TOPMED=0.12107384046890927,0.87892615953109072,.<br />1&nbsp;&nbsp; &nbsp;207692048&nbsp;&nbsp; &nbsp;207692049&nbsp;&nbsp; &nbsp;pan1&nbsp;&nbsp; &nbsp;1&nbsp;&nbsp; &nbsp;207692048&nbsp;&nbsp; &nbsp;rs386638846&nbsp;&nbsp; &nbsp;CATC&nbsp;&nbsp; &nbsp;CGTT&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;RS=386638846;RSPOS=207692049;dbSNPBuildID=138;SSR=0;SAO=0;VP=0x050000080005000002000800;GENEINFO=CR1:1378;WGT=1;VC=MNV;INT;ASP<br />1&nbsp;&nbsp; &nbsp;207692048&nbsp;&nbsp; &nbsp;207692049&nbsp;&nbsp; &nbsp;pan1&nbsp;&nbsp; &nbsp;1&nbsp;&nbsp; &nbsp;207692049&nbsp;&nbsp; &nbsp;rs6656401&nbsp;&nbsp; &nbsp;A&nbsp;&nbsp; &nbsp;G,T&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;.&nbsp;&nbsp; &nbsp;RS=6656401;RSPOS=207692049;dbSNPBuildID=116;SSR=0;SAO=0;VP=0x05016808000511053e030100;GENEINFO=CR1:1378;WGT=1;VC=SNV;PM;PMC;SLO;INT;ASP;G5;HD;GNO;KGPhase1;KGPhase3;MTP;OM;CAF=0.06669,0.9333,.;COMMON=1;TOPMED=0.09828937308868501,0.87834480122324159,0.02336582568807339</p><p>==================================================================</p><p>Output will have input columns (in bed format) and all the matching output from dbSNP VCF. Now we can extract information we want using cut, awk or any other column based extraction tool.<br />&nbsp;<br /></p>
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/collapse_two_columns" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/tabix-error-and-bcftools-failure" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

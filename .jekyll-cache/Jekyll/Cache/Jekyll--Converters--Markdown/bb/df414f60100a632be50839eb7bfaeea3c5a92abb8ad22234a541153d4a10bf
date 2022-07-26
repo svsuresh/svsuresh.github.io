@@ -1,0 +1,39 @@
+I"®<p>Many tools are available for removing duplicates and retaining one representative value (minimum, maxium, sum, mean etc). But it is not straight forward to delete all the duplicate values from a data frame. Let us work on that today. Following is the example data.</p>
+
+<pre><code class="language-code">&gt; df
+    Skin   Ear  Nose
+1 A4GALT A4GNT  AACS
+2   AAAS  AAAS AABAD
+3   AACS  AACS AAGAB
+4  AADAC AADAC  AAK1
+5  AADAT AAGAB AAMDC
+</code></pre>
+
+<p>Now you see that there are genes, present multiple times in multiple tissues. Now user wants only genes unique to each tissue. In general, many methods exist to retain one distinct value. Following is the code to retain only unique genes i.e unique to each tissue. Following is the code:</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span><span class="n">df</span><span class="o">=</span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"input.tsv"</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">everything</span><span class="p">(),</span><span class="s2">"k"</span><span class="p">,</span><span class="n">values_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"v"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">group_by</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">filter</span><span class="p">(</span><span class="n">n</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">ungroup</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">add_rownames</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">pivot_wider</span><span class="p">(</span><span class="n">names_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">values_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">select</span><span class="p">(</span><span class="o">-</span><span class="n">rowname</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>output would be:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># A tibble: 6 x 3
+  Skin     Ear     Nose   
+  &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;  
+1 "A4GALT" ""      ""     
+2 ""       "A4GNT" ""     
+3 ""       ""      "AABAD"
+4 ""       ""      "AAK1" 
+5 "AADAT"  ""      ""     
+6 ""       ""      "AAMDC"
+</code></pre></div></div>
+:ET

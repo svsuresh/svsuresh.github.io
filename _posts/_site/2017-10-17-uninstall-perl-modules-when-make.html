@@ -1,0 +1,46 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+<span style="font-family: inherit;"><span style="font-size: small;">Some times, source installation in GNU-linux is necessary. This could be perl modules i.e installation of perl modules by source. General way of installation is make&nbsp; and make install. However, make uninstall doesn't work the way it is explained <a href="https://github.com/ZoneMinder/ZoneMinder/issues/753" target="_blank">here</a>. Error would be:</span></span></div>
+<div style="text-align: justify;">
+<span style="font-family: inherit;"><span style="font-size: small;"><b>Uninstall is unsafe and deprecated, the uninstallation was not performed<code>.</code></b><code> </code></span></span>Log would have following text, followed by tons of unlink commands:</div>
+<div style="text-align: justify;">
+<b>Uninstall is unsafe and deprecated, the uninstallation was not performed. We will show what would have been done</b>.</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+To remove such perl modules, do following (works in ubuntu 16.04 (Xenial)/bash shell)</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<b>$ cd &lt;source directory (where make file is present)&gt;</b></div>
+<div style="text-align: justify;">
+<b>$ sudo make uninstall &gt; test.txt</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Now open the test.txt and delete&nbsp; first and last text warnings and keep all the lines that start with "unlink". Save the edited test.txt. Execute following command. This would execute all the unlink commands in test.txt (edited test.txt).&nbsp; </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<b>$ cat test.txt | while read CMD; do sudo $CMD; done</b><br /><br /></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /><br /><br /> <br /><br /> </div>
+</div>

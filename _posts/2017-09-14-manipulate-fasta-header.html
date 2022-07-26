@@ -1,0 +1,76 @@
+---
+layout: post
+title: Manipulate fasta header with sed, awk and R
+date: '2017-09-14T22:12:00.004+05:30'
+author: suresh
+tags:
+- Biostrings
+- fasta headers
+- awk
+- stringr
+- sed
+- cran-R
+- fasta
+modified_time: '2017-09-15T12:44:45.676+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-2930940069147104196
+blogger_orig_url: https://digibio.blogspot.com/2017/09/manipulate-fasta-header.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+There are times that fasta headers are too big and one would like to use certain part of fasta header. This is easy if it is between two words (strings) and what if it is between two wild charaters such as | and ,.<br />
+<br />
+Let us do it in sed,awk and R.Example fasta:<br />
+$ cat test.fa <br />
+<b>&gt;gi|3834|ref|NC_2356.3|test1, name1<br />ATCGT<br />&gt;gi|8356|ref|NC_713.3|test2, name2<br />GTCTGG</b><br />
+<br />
+What we want is to rename the fasta to:<br />
+<b>&gt;test1</b><br />
+<b>ATCGT<br />&gt;test2<br />GTCTGG</b><br />
+<br />
+<b>Sed Code:<br />$ sed -r '/&gt;/ s/.*\|(.*),.*/&gt;\1/' test2.fa</b><br />
+<br />
+What is happening here:<br />
+-r&nbsp; -- To make Sed to use extended expressions (works on FreeBSD and Linux) <br />
+/&gt;/ -- pattern &gt;. This means select lines with &gt;<br />
+s&nbsp;&nbsp; -- replace/substitute<br />
+.*\|(.*),.* -- a regular expression that denotes all characters before |, all characters between | and , and all characters after ,. Characters between | and , are put in brackets so that this pattern is marked 1.<br />
+&gt;\1 -- Pattern (1--characters (strings) between | and ,) to replace above regular expression (<b>.*\|(.*),.*</b>)&nbsp; <br />
+<b><br />Awk code:</b><b><code class=" language-bash"><span class="token function"><br />$ awk</span>  -F <span class="token string">'[/^&gt;|,]'</span> <span class="token string">'NF&gt;1{print "&gt;"<span class="token variable">$6</span>} {print <span class="token variable">$1</span>}'</span>  test1.fa <span class="token operator">|</span> <span class="token function">awk</span> NF</code></b><br />
+<br />
+What is happening here:<br />
+&nbsp;- use multiple delimiters:&nbsp; -F<br />
+<div style="text-align: left;">
+- delimiters: <code class=" language-bash"><span class="token string">/^&gt;|, (/^&gt; - line with &gt; at the start,<b> </b></span></code><b><code class=" language-bash"><span class="token string"></span></code></b><code class=" language-bash"><span class="token string">|, - field delimiters)</span></code></div>
+<div style="text-align: left;">
+<code class=" language-bash"><span class="token string">- NF &gt; 1 - select line with number of fields more than 1</span></code></div>
+<div style="text-align: left;">
+<code class=" language-bash"><span class="token string">- print 6 field, but append &gt;</span></code></div>
+<div style="text-align: left;">
+<code class=" language-bash"><span class="token string">- print 1 field</span></code></div>
+<div style="text-align: left;">
+<code class=" language-bash"><span class="token string">- NF - remove blank lines</span></code></div>
+<div style="text-align: left;">
+<code class=" language-bash"><span class="token string"><br /></span></code></div>
+<div style="text-align: left;">
+<code class=" language-bash"><span class="token string"><b>Rcode:</b></span></code><br />
+<b><br />$ library(Biostrings)&nbsp;</b></div>
+<div style="text-align: left;">
+<b>$ library(stringr)&nbsp;</b></div>
+<div style="text-align: left;">
+<b>$ fasta &lt;- readDNAStringSet(filepath = 'test.fa', format="fasta")&nbsp;</b></div>
+<div style="text-align: left;">
+<b>$ names(fasta)=str_split_fixed(str_split_fixed(names(fasta),"\\|",5)[,5],",",2)[,1] </b></div>
+<div style="text-align: left;">
+<b>$ writeXStringSet(fasta, filepath = 'test_edited.fa',format="fasta")</b></div>
+<div style="text-align: left;">
+<b><br />&nbsp;</b>What is happening here:</div>
+<div style="text-align: left;">
+- load libraries (biostrings and stringr)</div>
+<div style="text-align: left;">
+- read fasta file from hard disk<br />
+- names(fasta) are the fasta headers in original file</div>
+<div style="text-align: left;">
+- Function str_split_fixed is used twice. First time it is used to split fasta header by delimiter | and extract word/string (5th string). Second time it used on first time output (5th string) and split by delimiter , and extract first word. In short, a string/word is extracted first time and same word/string is split further to get the word/string of our interest.</div>
+<div style="text-align: left;">
+- Once headers are changed, now write to hard disk, in fasta format. </div>
+<b><span itemscope="" itemtype="http://schema.org/Answer"></span></b></div>

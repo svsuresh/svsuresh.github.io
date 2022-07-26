@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/python_pie_05102020">Oct 5, 2020 - Percentage pie chart with python 3</a></h1>
+            <div class="post-content">
+            <p>Here is the code on drawing pie chart with percentages with python and iris data set. Only Sepal
+length variable is used in this tutorial. Image is generated with pandas and matplotlib</p>
+
+<p>Load python libraries</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</code></pre></div></div>
+<p>Read iris data</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"iris.csv"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Draw the pie chart with pandas in-built pie chart</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">## Pie chart by pandas, lesser control
+</span><span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">"species"</span><span class="p">])[</span><span class="s">"sepal_length"</span><span class="p">].</span><span class="nb">sum</span><span class="p">().</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span><span class="s">'Total'</span><span class="p">).</span><span class="n">set_index</span><span class="p">(</span><span class="s">'species'</span><span class="p">).</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">'pie'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">''</span><span class="p">,</span> <span class="n">legend</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">'Total'</span><span class="p">,</span> <span class="n">autopct</span><span class="o">=</span><span class="s">'%.2f%%'</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,)</span>
+</code></pre></div></div>
+
+<p><img src="images/pandas_pie_05102020.png" width="960" /></p>
+
+<p>Draw the pie chart with  matplotlib</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">## Pie chart by matplot lib
+</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">"species"</span><span class="p">])[</span><span class="s">"sepal_length"</span><span class="p">].</span><span class="nb">sum</span><span class="p">().</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span><span class="s">'Total'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">pie</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">'Total'</span><span class="p">],</span><span class="n">labels</span><span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">'species'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="n">title</span><span class="p">(),</span> <span class="n">autopct</span><span class="o">=</span><span class="s">'%.2f%%'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">'% of Sepal Length in plants'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s">'font.size'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="images/plt_pie_05102020.png" width="960" /></p>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/format_fasta" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/ggplot_pie" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

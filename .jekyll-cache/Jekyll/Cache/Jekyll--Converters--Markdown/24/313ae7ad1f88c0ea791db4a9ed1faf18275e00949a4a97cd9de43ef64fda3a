@@ -1,0 +1,16 @@
+I"e<p>In earlier post, I posted tips to convert tab (tsv). In this note, let us convert the fasta to tab. Please note that for all the shell programs (AWK, sed, bash), sequences must be in single line, where as seqkit can handle multiline fasta</p>
+
+<p>Here is an example fasta for testing the code</p>
+<pre><code class="language-code">&gt;seq1
+ATgc
+&gt;seq2
+gccat
+&gt;seq3
+tagc
+</code></pre>
+<p>Here is the code to convert fasta to tab</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>seqkit fx2tab test.fa
+<span class="nv">$ </span><span class="nb">awk</span> <span class="nt">-v</span> <span class="nv">OFS</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span> <span class="nt">-v</span> <span class="nv">RS</span><span class="o">=</span><span class="s2">"&gt;"</span> <span class="s1">'NR &gt; 1 {print $1, $2}'</span> test.fa 
+<span class="nv">$ </span><span class="nb">paste</span> - - &lt; test.fa | <span class="nb">sed</span> <span class="s1">'s/^&gt;//'</span>
+</code></pre></div></div>
+:ET

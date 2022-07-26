@@ -1,0 +1,43 @@
+---
+layout: post
+title: 'Convert VCF #CHROM column from hgxx format to b3x format'
+date: '2015-09-07T13:01:00.004+05:30'
+author: suresh
+tags:
+- vcf
+- hgxx
+- sed
+- b3x
+modified_time: '2015-09-07T13:22:46.035+05:30'
+thumbnail: http://4.bp.blogspot.com/--0ftJWoq-68/Ve09LaSoUdI/AAAAAAAAAYQ/BZ78yrRRlA0/s72-c/before.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-4455186483037758802
+blogger_orig_url: https://digibio.blogspot.com/2015/09/convert-vcf-chrom-column-from-hgxx.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+In general, genome coordinates in VCF and reference fasta files will be in either hgxx (for eg hg19, hg38) or b3x (b32, b35) 
+format.<br />
+<br />
+<div style="text-align: justify;">
+hgxx format will have "chr" prefix to each chromosome number and Mitochondrial (chrM) chromosome will be at the start. b3x format will have no prefix for chromosome numbers and Mitochondrial chromosome will be at the last. If one has used hg19 reference (fasta from UCSC) in variant calling ( and prior steps in NGS analysis) and would like to annotate using clinvar/dbSNP, user has to append string "chr" to the first column "#CHROM" in VCF. To append string "chr" to chromosome numbers in #CHROM column, use the following command:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+command:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+sed 's/^\([1-9,X,Y,MT]\)/chr&amp;/g' clinvar_GRCh38_12jul2015.vcf &gt; clinvar_12jul2015_b38.vcf</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+One can download clinvar vcf file from ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b142_GRCh38/VCF/&nbsp; for GRCh 38.</div>
+<br />
+Before:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/--0ftJWoq-68/Ve09LaSoUdI/AAAAAAAAAYQ/BZ78yrRRlA0/s1600/before.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="316" src="http://4.bp.blogspot.com/--0ftJWoq-68/Ve09LaSoUdI/AAAAAAAAAYQ/BZ78yrRRlA0/s640/before.png" width="640" /></a></div>
+<br />
+After:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-DL1kbHnwdKw/Ve09S8piSEI/AAAAAAAAAYY/B9LCj8iD2fc/s1600/after.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="336" src="http://2.bp.blogspot.com/-DL1kbHnwdKw/Ve09S8piSEI/AAAAAAAAAYY/B9LCj8iD2fc/s640/after.png" width="640" /></a></div>
+<br /></div>

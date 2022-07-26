@@ -1,0 +1,18 @@
+---
+layout: post
+title: Remove named columns from several files
+date: '2020-09-03T17:30:00.003+05:30'
+author: suresh
+tags:
+- csv
+- tsv-utils
+- cut
+- named column
+- csvtk
+- tsv
+modified_time: '2020-09-03T17:42:37.928+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5687187096242875862
+blogger_orig_url: https://digibio.blogspot.com/2020/09/remove-named-columns-from-several-files.html
+---
+
+<p style="text-align: justify;">Let us say you have 100 files (csv/tsv) and you would like to remove a column named "event" from all the files. You can do it with <a href="https://www.gnu.org/software/parallel/">gnu-parallel </a>and&nbsp; with one of the two excellent tools: <a href="https://github.com/eBay/tsv-utils">tsv-utils</a> and <a href="https://github.com/shenwei356/csvtk">csvtk</a>. Following is code to remove named columns from several text files in parallel:</p><p style="text-align: justify;">with parallel and tsv-utils: <br /></p><p style="text-align: justify;">================================================================ <br /></p><p style="text-align: justify;">$ parallel 'tsv-select -H -d "," -e "event" {} &gt; output_directory/{.}_new.csv' ::: *.csv<br /></p><p style="text-align: justify;">-H - header</p><p style="text-align: justify;">-d - delimiter is comma</p><p style="text-align: justify;">-e - exclude</p><p style="text-align: justify;">"event" - column name to be excluded&nbsp;</p><p style="text-align: justify;">{.} - Removes the extension of the file<br /></p><p style="text-align: justify;">=================================================================</p><p style="text-align: justify;">with parallel and csvtk:<br /></p><p style="text-align: justify;">=================================================================</p><p style="text-align: justify;">$ parallel csvtk cut -f -event {} -o {.}_new.txt ::: *.txt</p><p style="text-align: justify;">-f - option to remove exact string (-F means you can use regex)<br /></p><p style="text-align: justify;">-event&nbsp; -remove event column and keep rest of the columns (if it is "event" instead of "-event", then program would retain only event column)<br /></p><p style="text-align: justify;">================================================================= <br /><br /><br /></p>

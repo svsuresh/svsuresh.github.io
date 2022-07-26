@@ -1,0 +1,35 @@
+I"I<p>One of the requests I have come across to de-duplicate fasta file. Example fasta file has multiple sequences are varying length with identical headers. I have checked several tools including datamash, tsv-utils, bedtools that do this kind of work. Most of them allow the user to select last, first, random sequence from duplicate sequences, but not the longest one. Example fasta is as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span>seq1
+atgc
+catg
+<span class="o">&gt;</span>seq1
+gtac
+cagtgacg
+<span class="o">&gt;</span>seq1
+atgcgctgacgacgagcg
+<span class="o">&gt;</span>seq11
+atgc
+<span class="o">&gt;</span>seq11
+gatc
+<span class="o">&gt;</span>seq3
+atgcgcgatcgatcccggggcc
+</code></pre></div></div>
+<p>you see that there are identical headers and also sequences are not in single line. Now we have to pick one sequence per a group of identical headers and that sequence must be longest within that group. Here is the solution:</p>
+
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$</span> <span class="nx">awk</span>  <span class="err">'</span><span class="p">{</span><span class="k">if</span><span class="p">(</span><span class="kc">NR</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span><span class="k">print</span> <span class="nv">$0</span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="k">if</span><span class="p">(</span><span class="nv">$0</span> <span class="o">~</span> <span class="sr">/^&gt;/</span><span class="p">)</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"\n"</span><span class="nv">$0</span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="k">printf</span> <span class="nv">$0</span><span class="p">}}}</span> <span class="kr">END</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"\r"</span><span class="p">}</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fa</span> <span class="o">|</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\t"</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">RS</span><span class="o">=</span><span class="s2">"&gt;"</span> <span class="err">'</span><span class="kc">NR</span><span class="o">&gt;</span><span class="mi">1</span> <span class="p">{</span><span class="k">print</span> <span class="nv">$1</span><span class="p">,</span><span class="nv">$2</span><span class="p">,</span> <span class="nb">length</span><span class="p">(</span><span class="nv">$2</span><span class="p">)}</span><span class="err">'</span> <span class="o">|</span> <span class="nx">datamash</span> <span class="o">-</span><span class="nx">sg1</span> <span class="nx">max</span> <span class="mi">3</span> <span class="o">-</span><span class="nx">f</span> <span class="o">|</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\n"</span> <span class="err">'</span><span class="p">{</span><span class="k">print</span> <span class="s2">"&gt;"</span><span class="nv">$1</span><span class="p">,</span><span class="nv">$2</span><span class="p">}</span><span class="err">'</span>
+
+<span class="o">&gt;</span><span class="nx">seq1</span>
+<span class="nx">atgcgctgacgacgagcg</span>
+<span class="o">&gt;</span><span class="nx">seq11</span>
+<span class="nx">gatc</span>
+
+</code></pre></div></div>
+
+<p>First part of the awk code (till <code class="language-plaintext highlighter-rouge">test.fa</code>) linearizes the fasta i.e makes all sequences single lined if there are spread across multiple lines within a fasta record. Next line prints length of the sequence in addition to original record, but in tab separate values. Datamash sorts the data and groups the values on 1st column (fasta heaers here), picks up max value from 3rd column. 3rd column contains length of the sequences (from previous awk command). Now pring the columns we want and output is separated by newlines.</p>
+
+<p>Same can be done with awk only in follwing way:</p>
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">awk</span>  <span class="err">'</span><span class="p">{</span><span class="k">if</span><span class="p">(</span><span class="kc">NR</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span><span class="k">print</span> <span class="nv">$0</span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="k">if</span><span class="p">(</span><span class="nv">$0</span> <span class="o">~</span> <span class="sr">/^&gt;/</span><span class="p">)</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"\n"</span><span class="nv">$0</span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="k">printf</span> <span class="nv">$0</span><span class="p">}}}</span> <span class="kr">END</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"\r"</span><span class="p">}</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fa</span><span class="o">|</span> <span class="nx">awk</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">OFS</span><span class="o">=</span><span class="s2">"\n"</span> <span class="o">-</span><span class="nx">v</span> <span class="kc">RS</span><span class="o">=</span><span class="s2">"&gt;"</span> <span class="err">'</span> <span class="kc">NR</span><span class="o">&gt;</span><span class="mi">1</span> <span class="p">{</span><span class="k">if</span> <span class="p">(</span><span class="nb">length</span><span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nv">$1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">length</span><span class="p">(</span><span class="nv">$2</span><span class="p">))</span><span class="nx">a</span><span class="p">[</span><span class="nv">$1</span><span class="p">]</span><span class="o">=</span><span class="nv">$2</span><span class="p">;}</span><span class="kr">END</span><span class="p">{</span><span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">in</span> <span class="nx">a</span><span class="p">){</span><span class="k">print</span> <span class="s2">"&gt;"</span><span class="nx">i</span><span class="p">,</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">];}}</span><span class="err">'</span>
+</code></pre></div></div>
+:ET

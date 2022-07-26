@@ -1,0 +1,71 @@
+---
+layout: post
+title: 'Multiline pattern search using R, grep, pcregrep and awk '
+date: '2018-09-01T14:02:00.001+05:30'
+author: suresh
+tags:
+- grep
+- pcregrep
+- awk
+- multiline pattern
+- cran-R
+modified_time: '2018-09-01T14:02:55.527+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5996529768977308489
+blogger_orig_url: https://digibio.blogspot.com/2018/09/multiline-pattern-search-using-r-grep.html
+---
+
+<br />
+<div style="text-align: justify;">
+Some times, we need to search for multiline patterns spanning several lines. In this note, we would do this for a pattern spanning two lines. Let us take an example.&nbsp;</div>
+<div style="text-align: justify;">
+This a text file with chromosome number, start and stop coordinates and strand information. User would like to extract every line with +, preceded by -, in 4th column.</div>
+<div style="text-align: justify;">
+By this, user wants to extract records on negative (-) strand, followed by positive (+) strand. </div>
+<br />
+<span itemscope="" itemtype="http://schema.org/Question"><span itemprop="text"><code>chr1&nbsp;&nbsp;&nbsp; 1275000 1284999 +<br />chr1&nbsp;&nbsp;&nbsp; 1285000 1294999 -<br />chr1&nbsp;&nbsp;&nbsp; 1295000 1304999 -<br />chr1&nbsp;&nbsp;&nbsp; 1385000 1394999 -<br />chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />chr1&nbsp;&nbsp;&nbsp; 1435000 1444999 +<br />chr1&nbsp;&nbsp;&nbsp; 1715000 1724999 +<br />chr1&nbsp;&nbsp;&nbsp; 1725000 1734999 -<br />chr1&nbsp;&nbsp;&nbsp; 1735000 1744999 -<br />chr1&nbsp;&nbsp;&nbsp; 1745000 1754999 -<br />chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />chr1&nbsp;&nbsp;&nbsp; 1815000 1824999 -<br />chr1&nbsp;&nbsp;&nbsp; 1865000 1874999 -</code></span></span><br />
+<span itemscope="" itemtype="http://schema.org/Question"><span itemprop="text"><code><br /></code></span></span>
+output should be:<br />
+chr1   1415000 1424999 -<br />
+chr1   1425000 1434999 +<br />
+chr1   1795000 1804999 -<br />
+chr1   1805000 1814999 +<br />
+<br />
+Now let us do this in easiest way using pcregrep in shell:<br />
+=================================== <br />
+$ pcregrep -M&nbsp; '\-$\n.*\+$' test1.txt<br />
+chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />
+chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />
+===================================<br />
+pcregrep allows user to grep multiline pattern using -M option.<br />
+Now let us do this using grep, in shell:<br />
+===================================<br />
+$&nbsp; grep&nbsp; -A 1&nbsp; "-" test.txt | grep --no-group-separator -B 1 "+"<br />
+chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />
+chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />
+=================================================<br />
+Now let us do this in R:<br />
+=================================================<br />
+&gt; df1=read.csv("test.txt", sep="\t", stringsAsFactors = F, strip.white = T, header = F)<br />
+&gt; df2=df1[grep("\\+", df1$V4,value = F)-1,]<br />
+&gt; df3=df2[grep("\\-", df2$V4,value = F),]<br />
+&gt; df1[sort(c(as.integer(row.names(df3)),as.integer(row.names(df3))+1)),]<br />
+&nbsp;&nbsp;&nbsp;&nbsp; V1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; V2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; V3 V4<br />
+5&nbsp; chr1 1415000 1424999&nbsp; -<br />
+6&nbsp; chr1 1425000 1434999&nbsp; +<br />
+12 chr1 1795000 1804999&nbsp; -<br />
+13 chr1 1805000 1814999&nbsp; +<br />
+==============================================<br />
+Now let us do this in awk:<br />
+===============================================<br />
+$ awk '/+/ {if(s == "-") {print $0}} {s = $4 }' test1.txt | grep --no-group-separator -f - -B 1 test1.txt <br />
+chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />
+chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />
+=============================================== <br />
+<br />
+<br />

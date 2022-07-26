@@ -1,0 +1,51 @@
+I"y <p>Most of the gene expression studies result in heatmaps for publications, presentations and posters. There are several tools for generating heatmaps. Most of the tools expect a matrix (also called an expression matrix). Matrix will have values (integers) for each gene in rows i.e genes are present in rows and corresponding expression values are presented against them row wise and corresponding sample name would be in columns. In summary, genes in rows, samples in columns and corresponding values against appropriate gene and sample. Think of it as point drawn against x, y coordinates.</p>
+
+<p>Now one of the easiest heatmap generating library in R is <a href="https://github.com/raivokolde/pheatmap">pheatmap</a>. However, once we get to heatmpap, we would need more functions and this where <a href="https://github.com/jokergoo/ComplexHeatmap">complexheatmap</a> shines. For quick heatmap, pheatmap shines and for complex heatmaps, complexheatmap shines. One of the user requirements to change the font color as per cutoff. In this case, user wants to highlight genes (row names) with color (green and red) indicating regulation (up and down). Let us do this.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Load libraries</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">pheatmap</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now let us simulate some expression data with 10 genes, 10 samples and store it as data frame</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">replicate</span><span class="p">(</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">rnorm</span><span class="p">(</span><span class="m">10</span><span class="p">))</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Gene_"</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"Sample"</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span><span class="w">
+</span><span class="n">data</span><span class="o">=</span><span class="n">data.frame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>In general, upregulation and downregulation is based on fold change values and they come after the analysis. Since this is a simulated data, let us add a column, with up and down statuses for the sake of simplicity. Now data frame has expression values and regulation status (up or down)</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">$</span><span class="n">status</span><span class="o">=</span><span class="nf">rep</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"up"</span><span class="p">,</span><span class="s2">"down"</span><span class="p">),</span><span class="w"> </span><span class="n">each</span><span class="o">=</span><span class="nf">dim</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="o">/</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now that we have created status, let us give conditional colors. If the regulation is up, it is represented by green color, and red color represents down regulation.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="o">$</span><span class="n">colors</span><span class="o">=</span><span class="n">ifelse</span><span class="p">(</span><span class="n">data</span><span class="o">$</span><span class="n">status</span><span class="o">==</span><span class="s2">"up"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">,</span><span class="s2">"red"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Remember the data is in first 10 columns (10 samples) only. So let us create heatmap from first 10 columns. Now that we have looked at heatmap, let us store the heatmap as an object</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">e</span><span class="o">=</span><span class="n">pheatmap</span><span class="p">(</span><span class="n">data</span><span class="p">[,</span><span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">])</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="/images/20201223_unnamed-chunk-5-1.png" alt="" /><!-- --></p>
+
+<p>Now we need to define the colors. Unfortunately, we can’t take the colors as such as there is grouping while drawing heatmap and grouping disturbs order of the data frame. Hence we need to take the genes and their order of appearance from heatmap object, rearrange the data frame as per heatmap and take colors from the rearranged data frame. Final object would be stored in cols, contains colors and exactly in the same order as genes in heatmap object. We need to identify the grob in which row names are located in heatmap object. In this case, it is located in grob 5. One can get it in gtable of the heatmap object.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cols</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">data</span><span class="p">),</span><span class="w"> </span><span class="n">e</span><span class="o">$</span><span class="n">gtable</span><span class="o">$</span><span class="n">grobs</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="o">$</span><span class="n">label</span><span class="p">)),</span><span class="w"> </span><span class="p">]</span><span class="o">$</span><span class="n">colors</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now let us assign the colors to graph object</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">e</span><span class="o">$</span><span class="n">gtable</span><span class="o">$</span><span class="n">grobs</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="o">$</span><span class="n">gp</span><span class="o">=</span><span class="n">gpar</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="n">cols</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now redraw the heatmap</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">e</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="/images/20201223_unnamed-chunk-8-1.png" alt="" /><!-- --></p>
+:ET

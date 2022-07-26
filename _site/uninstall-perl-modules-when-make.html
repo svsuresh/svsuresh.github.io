@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/uninstall-perl-modules-when-make">Oct 17, 2017 - Uninstall perl modules when make uninstall fails</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+<span style="font-family: inherit;"><span style="font-size: small;">Some times, source installation in GNU-linux is necessary. This could be perl modules i.e installation of perl modules by source. General way of installation is make&nbsp; and make install. However, make uninstall doesn't work the way it is explained <a href="https://github.com/ZoneMinder/ZoneMinder/issues/753" target="_blank">here</a>. Error would be:</span></span></div>
+<div style="text-align: justify;">
+<span style="font-family: inherit;"><span style="font-size: small;"><b>Uninstall is unsafe and deprecated, the uninstallation was not performed<code>.</code></b><code> </code></span></span>Log would have following text, followed by tons of unlink commands:</div>
+<div style="text-align: justify;">
+<b>Uninstall is unsafe and deprecated, the uninstallation was not performed. We will show what would have been done</b>.</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+To remove such perl modules, do following (works in ubuntu 16.04 (Xenial)/bash shell)</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<b>$ cd &lt;source directory (where make file is present)&gt;</b></div>
+<div style="text-align: justify;">
+<b>$ sudo make uninstall &gt; test.txt</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Now open the test.txt and delete&nbsp; first and last text warnings and keep all the lines that start with "unlink". Save the edited test.txt. Execute following command. This would execute all the unlink commands in test.txt (edited test.txt).&nbsp; </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<b>$ cat test.txt | while read CMD; do sudo $CMD; done</b><br /><br /></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /><br /><br /> <br /><br /> </div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/extract-kegg-pathways-and-pathway" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/replace-gene-ids-in-ucsc-gtf" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

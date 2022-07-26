@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/multiline-pattern-search-using-r-grep">Sep 1, 2018 - Multiline pattern search using R, grep, pcregrep and awk </a></h1>
+            <div class="post-content">
+            <br />
+<div style="text-align: justify;">
+Some times, we need to search for multiline patterns spanning several lines. In this note, we would do this for a pattern spanning two lines. Let us take an example.&nbsp;</div>
+<div style="text-align: justify;">
+This a text file with chromosome number, start and stop coordinates and strand information. User would like to extract every line with +, preceded by -, in 4th column.</div>
+<div style="text-align: justify;">
+By this, user wants to extract records on negative (-) strand, followed by positive (+) strand. </div>
+<br />
+<span itemscope="" itemtype="http://schema.org/Question"><span itemprop="text"><code>chr1&nbsp;&nbsp;&nbsp; 1275000 1284999 +<br />chr1&nbsp;&nbsp;&nbsp; 1285000 1294999 -<br />chr1&nbsp;&nbsp;&nbsp; 1295000 1304999 -<br />chr1&nbsp;&nbsp;&nbsp; 1385000 1394999 -<br />chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />chr1&nbsp;&nbsp;&nbsp; 1435000 1444999 +<br />chr1&nbsp;&nbsp;&nbsp; 1715000 1724999 +<br />chr1&nbsp;&nbsp;&nbsp; 1725000 1734999 -<br />chr1&nbsp;&nbsp;&nbsp; 1735000 1744999 -<br />chr1&nbsp;&nbsp;&nbsp; 1745000 1754999 -<br />chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />chr1&nbsp;&nbsp;&nbsp; 1815000 1824999 -<br />chr1&nbsp;&nbsp;&nbsp; 1865000 1874999 -</code></span></span><br />
+<span itemscope="" itemtype="http://schema.org/Question"><span itemprop="text"><code><br /></code></span></span>
+output should be:<br />
+chr1   1415000 1424999 -<br />
+chr1   1425000 1434999 +<br />
+chr1   1795000 1804999 -<br />
+chr1   1805000 1814999 +<br />
+<br />
+Now let us do this in easiest way using pcregrep in shell:<br />
+=================================== <br />
+$ pcregrep -M&nbsp; '\-$\n.*\+$' test1.txt<br />
+chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />
+chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />
+===================================<br />
+pcregrep allows user to grep multiline pattern using -M option.<br />
+Now let us do this using grep, in shell:<br />
+===================================<br />
+$&nbsp; grep&nbsp; -A 1&nbsp; "-" test.txt | grep --no-group-separator -B 1 "+"<br />
+chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />
+chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />
+=================================================<br />
+Now let us do this in R:<br />
+=================================================<br />
+&gt; df1=read.csv("test.txt", sep="\t", stringsAsFactors = F, strip.white = T, header = F)<br />
+&gt; df2=df1[grep("\\+", df1$V4,value = F)-1,]<br />
+&gt; df3=df2[grep("\\-", df2$V4,value = F),]<br />
+&gt; df1[sort(c(as.integer(row.names(df3)),as.integer(row.names(df3))+1)),]<br />
+&nbsp;&nbsp;&nbsp;&nbsp; V1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; V2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; V3 V4<br />
+5&nbsp; chr1 1415000 1424999&nbsp; -<br />
+6&nbsp; chr1 1425000 1434999&nbsp; +<br />
+12 chr1 1795000 1804999&nbsp; -<br />
+13 chr1 1805000 1814999&nbsp; +<br />
+==============================================<br />
+Now let us do this in awk:<br />
+===============================================<br />
+$ awk '/+/ {if(s == "-") {print $0}} {s = $4 }' test1.txt | grep --no-group-separator -f - -B 1 test1.txt <br />
+chr1&nbsp;&nbsp;&nbsp; 1415000 1424999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1425000 1434999 +<br />
+chr1&nbsp;&nbsp;&nbsp; 1795000 1804999 -<br />
+chr1&nbsp;&nbsp;&nbsp; 1805000 1814999 +<br />
+=============================================== <br />
+<br />
+<br />
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/extract-sequence-and-tags-from-sam-file" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/parse-pdf-data-in-r" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

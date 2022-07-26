@@ -1,0 +1,180 @@
+I"<I<p>One of the requests I got was to parse blast results to extract sequences from 3 hsps and make it fasta. It would be easier if sequences were contiguous. In addition, user wants to fill the gaps with Ns. Steps to do is:</p>
+
+<ol>
+  <li>Extract the sequences</li>
+  <li>Calculate difference between current coordinate, previous last coordinate</li>
+  <li>Fill the difference with Ns</li>
+  <li>Concatenate all the sequences</li>
+  <li>Remove the new line</li>
+  <li>Add header</li>
+</ol>
+
+<p>Folliwing is the input data:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+ Score <span class="o">=</span> 885 bits <span class="o">(</span>479<span class="o">)</span>,  Expect <span class="o">=</span> 0.0
+ Identities <span class="o">=</span> 613/676 <span class="o">(</span>91%<span class="o">)</span>, Gaps <span class="o">=</span> 16/676 <span class="o">(</span>2%<span class="o">)</span>
+ <span class="nv">Strand</span><span class="o">=</span>Plus/Minus
+
+
+
+   Query  1       ATGATAATTGATACGACAGAAGTACAAACTATCAATTCTTTTTCTATATTAGAATCCTTA  60
+                   <span class="o">||||||||||||||||||||||||||||||||</span> <span class="o">||||||||||||</span>  <span class="o">||||||||||||</span>|
+    Sbjct  116345  ATGATAATTGATACGACAGAAGTACAAACTATTAATTCTTTTTCTGGATTAGAATCCTTA  116286
+
+    Query  61      AAAGAAGTCTATGGACTCATATGGATTTTTGTCCCCATTTTCACCCTTGTCTTAGGAATC  120
+                   <span class="o">||||||||</span> <span class="o">||||||||||||||||||||||||||||||||</span> <span class="o">||||||||||||||||||</span>
+    Sbjct  116285  AAAGAAGTATATGGACTCATATGGATTTTTGTCCCCATTTTAACCCTTGTCTTAGGAATC  116226
+
+    Query  121     ACAATGGGGGTATTAGTAATTGTGTGGTTAGAAAGAAAAATATCCGCAGCAATACAACAA  180
+                   <span class="o">||||||||</span>| <span class="o">||||||</span>| <span class="o">||||||||</span> <span class="o">||||||||||||||||</span>| <span class="o">||</span>| <span class="o">||</span>| <span class="o">||||||</span>|
+    Sbjct  116225  ACAATGGGG-TATTAGTCATTGTGTGATTAGAAAGAAAAATATCTGCAACAACACAACAA  116167
+
+    Query  181     CGTATTGGACCTGAATATGCCGGCCCATTAGGAATTCTTCAAGCTTTAGCGGATGGGACC  240
+                    <span class="o">||||||||||||||||</span> <span class="o">||||||||||||||||||||||||||||||||||||||||</span>| 
+    Sbjct  116166  TGTATTGGACCTGAATAGGCCGGCCCATTAGGAATTCTTCAAGCTTTAGCGGATGGGACG  116107
+
+    Query  241     AAACTATTTTTGAAGGAGGATCTTCTTCCTTCTAGAGGGAATATTCGTTTGTTTAGCGTC  300
+                   <span class="o">||||||</span> <span class="o">||||||||||</span>| <span class="o">||</span> <span class="o">||||||</span>| <span class="o">||||||||</span> <span class="o">||||||||</span> <span class="o">||</span> <span class="o">||||</span>  <span class="o">||</span>|
+    Sbjct  116106  AAACTACTTTTGAAGGAGAATATTCTTCCGTCTAGAGGTAATATTCGCTTATTTAAGGTC  116047
+
+    Query  301     GGACCTTCTATAGGGGTTATATCAATTCTACTAAGTTATTTAGTAATTCCTTTTGGATAT  360
+                   <span class="o">||||</span>| <span class="o">||||||||</span>| <span class="o">||||||||||</span> <span class="o">||||||||||</span>          <span class="o">||||||||||||</span>|
+    Sbjct  116046  GGACCCTCTATAGGGTTTATATCAATCCTACTAAGTT----------TCCTTTTGGATAT  115997
+
+    Query  361     CACCTTGTTTTAGCTGATCTCAGTATAGGTGtttttttATGGATTGCCATTTCAAGTATT  420
+                   <span class="o">||||||||||||||||||</span> <span class="o">||||||||||||||||||||||||||||</span>| <span class="o">||||||||||</span>|
+    Sbjct  115996  CACCTTGTTTTAGCTGATTTCAGTATAGGTGTTTTTTTATGGATTGCCTTTTCAAGTATT  115937
+
+    Query  421     GTCCCCATTGGTCTTCTTATGTCAGGATATGGATCAAATAATAAGTATTCCTTTTCAGGC  480
+                   <span class="o">||||</span>| <span class="o">||||||||||||||||||||||||</span>| <span class="o">||||||||||||||||||||||||||||</span>
+    Sbjct  115936  GTCCCTATTGGTCTTCTTATGTCAGGATATGAATCAAATAATAAGTATTCCTTTTCAGGC  115877
+
+    Query  481     GGTCTACGAGCTGCAGCTCAATCGATTAGTTATGAAATACCATTAACTCTATGTGTGTTA  540
+                   <span class="o">||||||||||||</span>| <span class="o">||</span> <span class="o">||||</span>|  <span class="o">||||||||||||||||||||||||||||||||||||</span>
+    Sbjct  115876  GGTCTACGAGCTGTAGATCAATAAATTAGTTATGAAATACCATTAACTCTATGTGTGTTA  115817
+
+    Query  541     GCAATATCTCTACGTGCGATTCGTTTGAACATGAACtttttttCTCTATTTTCTAGAAAA  600
+                   <span class="o">||||||||||||||||</span> <span class="o">||||||||</span> <span class="o">||||||||||</span>| <span class="o">||||</span> <span class="o">||</span>|  <span class="o">||||||||||||</span>
+    Sbjct  115816  GCAATATCTCTACGTGTGATTCGTTAGAACATGAACTCTTTT-CTC--TTTTCTAGAAAA  115760
+
+    Query  601     GAgaaaagaaatgaattgaaatttcaatacaatataaatagaattcaatatgtaaatatg  660
+                   <span class="o">||||</span> <span class="o">||||||||||||</span> <span class="o">||||</span>  <span class="o">||||</span>| <span class="o">||||</span> | <span class="o">||</span>| <span class="o">||</span>| <span class="o">||||||||||||||</span>|
+    Sbjct  115759  GAGATAAGAAATGAATTTAAATA-CAATAAAATAGAGATATAATGCAATATGTAAATATG  115701
+
+    Query  661     aa-ataaaaaaaaaGA  675
+                   <span class="o">||</span> <span class="o">||</span> <span class="o">||</span>  <span class="o">||||||</span>
+    Sbjct  115700  AATATGAACGAAAAGA  115685
+
+
+     Score <span class="o">=</span> 845 bits <span class="o">(</span>457<span class="o">)</span>,  Expect <span class="o">=</span> 0.0
+     Identities <span class="o">=</span> 603/670 <span class="o">(</span>90%<span class="o">)</span>, Gaps <span class="o">=</span> 24/670 <span class="o">(</span>4%<span class="o">)</span>
+     <span class="nv">Strand</span><span class="o">=</span>Plus/Minus
+
+    Query  678     ttttttATTCAACATTTCAGTTCGATGAGTTAAACCAGATAGTTATATGAGTGAAA-CAA  736
+                   <span class="o">||||||||</span>| <span class="o">||</span> <span class="o">||||</span> <span class="o">||||||||||||||||||||</span>| <span class="o">||||||||||||||||</span>  <span class="o">||</span>
+    Sbjct  115566  TTTTTTATTAAAAATTTTAGTTCGATGAGTTAAACCAGAGAGTTATATGAGTGAAAAAAA  115507
+
+    Query  737     AACTGCTCCTCAATTTGCAGTAAAACAAGAAAAATCTCATTCCCTAGGTACAAGAATGAA  796
+                   <span class="o">||||||||||||||||||||||||||||</span> <span class="o">||||||||||||||||||||||||||</span>| <span class="o">||</span>|
+    Sbjct  115506  AACTGCTCCTCAATTTGCAGTAAAACAATAAAAATCTCATTCCCTAGGTACAAGAA-GAA  115448
+
+    Query  797     A-TTGAAGTAAACATAAGTTGTTTACCCCAAGATTGAGATTCTTTGATTAGTCGTCATAT  855
+                   | <span class="o">||||||||||||||||||||||||||||</span>| <span class="o">||||||||</span>| <span class="o">||</span>|  <span class="o">||||||||||||</span>|
+    Sbjct  115447  ATTTGAAGTAAACATAAGTTGTTTACCCCAATATTGAGATTATTTTCTTAGTCGTCATAT  115388
+
+    Query  856     CTTGAAGCGGATGCAAAAGATCAACTGTATTTATTACTATACTGGGGATCAATCAAAAAG  915
+                   <span class="o">||||||||||||||||||||||</span> <span class="o">||</span>| <span class="o">||||||||||||||||||</span> <span class="o">||||||||||||||</span>
+    Sbjct  115387  CTTGAAGCGGATGCAAAAGATCCACTTTATTTATTACTATACTGGAGATCAATCAAAAAG  115328
+
+    Query  916     AAGTGGGTAGTTAGGAACACCAAAGTACACAAAGGATGAGTAATGGAAATAATGTAAGGT  975
+                   <span class="o">||||</span>|   <span class="o">||||||||||||||||||||</span> <span class="o">||||||||||||||||</span> <span class="o">||||||||||||</span> |
+    Sbjct  115327  AAGTGAC-AGTTAGGAACACCAAAGTACGCAAAGGATGAGTAATGAAAATAATGTAAGAT  115269
+
+    Query  976     ATCaaa-a-aa-aGGG---GTT-TTTG--CATAAAACTTTGCATAAAACGAATCATAAT-  1025
+                   <span class="o">||||||</span> | <span class="o">||</span> |      <span class="o">||</span>| <span class="o">||</span>|   <span class="o">||||||||||</span>| <span class="o">||||||||||||</span>| <span class="o">||||</span> 
+    Sbjct  115268  ATCAAAGATAACAAAAAAAGTTATTTTTTCATAAAACTTTCCATAAAACGAATCCTAATT  115209
+
+    Query  1026    AAGGGCTTGAAGTTGGTAGAAATGATCAAGCAGTACTTCCCCACGATTCCAATCTAGAGT  1085
+                   <span class="o">||||||||</span>| | <span class="o">||||||||||||||||||||||||||</span> <span class="o">||||||||</span>| | <span class="o">||||||||</span>|
+    Sbjct  115208  AAGGGCTTGTAATTGGTAGAAATGATCAAGCAGTACTTTCCCACGATTACGATCTAGAGT  115149
+
+    Query  1086    ATGCTACTATTCGCTGATTAAAGAAATGACTATCAAGAACGAATTAATCCTTTATTTTAT  1145
+                   <span class="o">||||||||||||||||||||||</span> <span class="o">||||||||||||||||</span>| <span class="o">||</span>| <span class="o">||||||||||||</span>| |
+    Sbjct  115148  ATGCTACTATTCGCTGATTAAATAAATGACTATCAAGAACAAATGAATCCTTTATTTTCT  115089
+
+    Query  1146    TTCCtttttttttttAGTTTTCagaaagaagaacaggaacaagacaaatagaatgcaata  1205
+                   |  <span class="o">||||||||||||||||||||||</span>|  <span class="o">||||||||||||||||||||||||||||||||</span>
+    Sbjct  115088  TGACTTTTTTTTTTTAGTTTTCAGAAGAAAGAACAGGAACAAGACAAATAGAATGCAATA  115029
+
+    Query  1206    caataatagaataaaa--aagaataaaacgggaataataagaaaataTTTAGTTCTTCGT  1263
+                    <span class="o">||||||</span>| <span class="o">||||||</span>|  <span class="o">||||||||||||||||||||||||||||||||</span> <span class="o">||</span>| | | |
+    Sbjct  115028  TAATAATATAATAAAATAAAGAATAAAACGGGAATAATAAGAAAATATTT-GTT-T-C-T  114973
+
+    Query  1264    TTCTTCATACATATGCATATGGGAATTCTTATCATGATTCATTAACTAATGCCCAATTCT  1323
+                   |     <span class="o">||||||||||||||||</span> <span class="o">||||</span> <span class="o">||||||||||||||||||||||</span>| <span class="o">||||||||</span>
+    Sbjct  114972  TA----ATACATATGCATATGGAAATTTTTATCATGATTCATTAACTAATGTCCAATTCT  114917
+
+    Query  1324    TTTTATTTAT  1333
+                   <span class="o">||||||||||</span>
+    Sbjct  114916  TTTTATTTAT  114907
+
+
+     Score <span class="o">=</span> 721 bits <span class="o">(</span>390<span class="o">)</span>,  Expect <span class="o">=</span> 0.0
+     Identities <span class="o">=</span> 446/473 <span class="o">(</span>94%<span class="o">)</span>, Gaps <span class="o">=</span> 4/473 <span class="o">(</span>1%<span class="o">)</span>
+     <span class="nv">Strand</span><span class="o">=</span>Plus/Minus
+
+    Query  1737    GTGGCGTCAGCCCATAGGGTTTCTAGTTTTTCTAATGTCTTCTCTAGCAGAATGTGAAAG  1796
+                   <span class="o">||||||||</span>| <span class="o">||||||||||||||||||</span> <span class="o">||||||||||||||||||||||||||||</span> <span class="o">||</span>
+    Sbjct  114885  GTGGCGTCAACCCATAGGGTTTCTAGTTCTTCTAATGTCTTCTCTAGCAGAATGTGAGAG  114826
+
+    Query  1797    ATTACCCTTTGATTTACCGGAAGCAGAGGAGGAATTAGTAGCAGGTTATCAAACCGAATA  1856
+                   <span class="o">||||||</span> <span class="o">||</span>| <span class="o">||||||</span>| <span class="o">||||</span> <span class="o">||||||</span>|  <span class="o">||||||||||||||||||||||</span> <span class="o">||||</span>
+    Sbjct  114825  ATTACCTTTTAATTTACCAGAAGTAGAGGAGATATTAGTAGCAGGTTATCAAACCAAATA  114766
+
+    Query  1857    TTCAGGTATAAAATACGGGTTATTTTATCTTGCTTCTTACCTAAATCTATTAGTTTCTTC  1916
+                   <span class="o">||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||</span>
+    Sbjct  114765  TTCAGGTATAAAATACGGGTTATTTTATCTTGCTTCTTACCTAAATCTATTAGTTTCTTC  114706
+
+    Query  1917    ATT----ATTTGTAACAGTTCTTTACTTAGGTGGGTGGAATTTTTCTATTCCGTACATAT  1972
+                   <span class="o">||</span>|    <span class="o">||||||||||||||||||||||||</span>| <span class="o">||||||||||</span> <span class="o">||||||||||||||||</span>
+    Sbjct  114705  ATTCATTATTTGTAACAGTTCTTTACTTAGGTAGGTGGAATTTCTCTATTCCGTACATAT  114646
+
+    Query  1973    CTATTACTGAACTTTTTGGAATAAATAAAATGTTTAGAGTCTTTGTAATAGCAATTGGTA  2032
+                   <span class="o">||</span> <span class="o">||||||||||||||||||||||||||||||</span>| <span class="o">||||||||||||||||||||</span>|  <span class="o">||</span>
+    Sbjct  114645  CTCTTACTGAACTTTTTGGAATAAATAAAATGTTGAGAGTCTTTGTAATAGCAATTAATA  114586
+
+    Query  2033    TCTTTATTACATTAGCTAAAGCTTATTTGTTTCTGTTCATTCCTATCACAACAAGATGGA  2092
+                   <span class="o">||||||</span>| <span class="o">||||||||||||||||||||||||||||||||||||||</span> <span class="o">||||||||||||</span>|
+    Sbjct  114585  TCTTTATCACATTAGCTAAAGCTTATTTGTTTCTGTTCATTCCTATAACAACAAGATGGA  114526
+
+    Query  2093    CTTTACCTAGGATGAGAATGGATCAGTTATTAAATCTTGGATGGAAATTTCTTTTACCTA  2152
+                   <span class="o">||||||||||||||||||||||||</span>| <span class="o">||||||||||||||||</span>| <span class="o">||||||</span>| <span class="o">||||||||</span>
+    Sbjct  114525  CTTTACCTAGGATGAGAATGGATCAATTATTAAATCTTGGATGAAAATTTCCTTTACCTA  114466
+
+    Query  2153    TTTCTCTAGGTAATCTATTATTGACAACTTCTTCTCAACTTGTTTCACTATAA  2205
+                   <span class="o">||||||||||||||||||||||</span> <span class="o">||||||||||</span> <span class="o">||||||||||||||||||</span>|
+    Sbjct  114465  TTTCTCTAGGTAATCTATTATTAACAACTTCTTTTCAACTTGTTTCACTATAA  114413
+</code></pre></div></div>
+<p>There are 3 hsps and user wants to combine the subject sequences. But note that the sequences are on opposite (negative strand) and are not contiguous. Following is the solution:</p>
+<div class="language-awk highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span> <span class="nx">awk</span> <span class="err">'</span><span class="o">/</span><span class="nx">Sbjct</span><span class="o">/</span> <span class="p">{</span><span class="k">print</span> <span class="nv">$2</span><span class="p">,</span><span class="nv">$4</span><span class="p">,</span><span class="nv">$3</span><span class="p">}</span><span class="err">'</span> <span class="nx">test</span><span class="p">.</span><span class="nx">txt</span> <span class="o">|</span>  <span class="nx">awk</span>  <span class="err">'</span><span class="p">{</span><span class="k">print</span> <span class="nv">$1</span><span class="p">,</span> <span class="nv">$2</span><span class="p">,</span> <span class="nv">$3</span><span class="p">,</span> <span class="p">(</span><span class="kc">NR</span><span class="o">&gt;</span><span class="mi">1</span>  <span class="p">?</span> <span class="p">(</span><span class="nv">$1</span><span class="o">-</span><span class="nx">p</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*-</span><span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span><span class="p">);</span> <span class="nx">p</span><span class="o">=</span><span class="nv">$2</span><span class="p">}</span><span class="err">'</span> <span class="o">|</span> <span class="nx">awk</span> <span class="err">'</span><span class="p">{</span><span class="k">printf</span> <span class="s2">"%*s\n"</span><span class="p">,</span> <span class="nb">length</span><span class="p">(</span><span class="nv">$3</span><span class="p">)</span><span class="o">+</span><span class="nv">$4</span> <span class="p">,</span><span class="nv">$3</span> <span class="p">}</span><span class="err">'</span>  <span class="o">|</span> <span class="nx">awk</span> <span class="err">'</span><span class="p">{</span><span class="nb">gsub</span> <span class="p">(</span><span class="s2">" "</span><span class="p">,</span><span class="s2">"N"</span><span class="p">)}</span><span class="mi">1</span><span class="err">'</span> <span class="o">|</span> <span class="nx">tr</span> <span class="o">-</span><span class="nx">d</span> <span class="s2">"\n"</span> <span class="o">|</span> <span class="nx">awk</span> <span class="err">'</span><span class="kc">NR</span><span class="o">==</span><span class="mi">1</span> <span class="p">{</span><span class="k">print</span> <span class="s2">"&gt;seq1"</span><span class="p">}</span><span class="mi">1</span><span class="err">'</span>
+
+<span class="o">&gt;</span><span class="nx">seq1</span>
+<span class="nx">ATGATAATTGATACGACAGAAGTACAAACTATTAATTCTTTTTCTGGATTAGAATCCTTAAAAGAAGTATATGGACTCATATGGATTTTTGTCCCCATTTTAACCCTTGTCTTAGGAATCACAATGGGG</span><span class="o">-</span><span class="nx">TATTAGTCATTGTGTGATTAGAAAGAAAAATATCTGCAACAACACAACAATGTATTGGACCTGAATAGGCCGGCCCATTAGGAATTCTTCAAGCTTTAGCGGATGGGACGAAACTACTTTTGAAGGAGAATATTCTTCCGTCTAGAGGTAATATTCGCTTATTTAAGGTCGGACCCTCTATAGGGTTTATATCAATCCTACTAAGTT</span><span class="o">----------</span><span class="nx">TCCTTTTGGATATCACCTTGTTTTAGCTGATTTCAGTATAGGTGTTTTTTTATGGATTGCCTTTTCAAGTATTGTCCCTATTGGTCTTCTTATGTCAGGATATGAATCAAATAATAAGTATTCCTTTTCAGGCGGTCTACGAGCTGTAGATCAATAAATTAGTTATGAAATACCATTAACTCTATGTGTGTTAGCAATATCTCTACGTGTGATTCGTTAGAACATGAACTCTTTT</span><span class="o">-</span><span class="nx">CTC</span><span class="o">--</span><span class="nx">TTTTCTAGAAAAGAGATAAGAAATGAATTTAAATA</span><span class="o">-</span><span class="nx">CAATAAAATAGAGATATAATGCAATATGTAAATATGAATATGAACGAAAAGANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNTTTTTTATTAAAAATTTTAGTTCGATGAGTTAAACCAGAGAGTTATATGAGTGAAAAAAAAACTGCTCCTCAATTTGCAGTAAAACAATAAAAATCTCATTCCCTAGGTACAAGAA</span><span class="o">-</span><span class="nx">GAAATTTGAAGTAAACATAAGTTGTTTACCCCAATATTGAGATTATTTTCTTAGTCGTCATATCTTGAAGCGGATGCAAAAGATCCACTTTATTTATTACTATACTGGAGATCAATCAAAAAGAAGTGAC</span><span class="o">-</span><span class="nx">AGTTAGGAACACCAAAGTACGCAAAGGATGAGTAATGAAAATAATGTAAGATATCAAAGATAACAAAAAAAGTTATTTTTTCATAAAACTTTCCATAAAACGAATCCTAATTAAGGGCTTGTAATTGGTAGAAATGATCAAGCAGTACTTTCCCACGATTACGATCTAGAGTATGCTACTATTCGCTGATTAAATAAATGACTATCAAGAACAAATGAATCCTTTATTTTCTTGACTTTTTTTTTTTAGTTTTCAGAAGAAAGAACAGGAACAAGACAAATAGAATGCAATATAATAATATAATAAAATAAAGAATAAAACGGGAATAATAAGAAAATATTT</span><span class="o">-</span><span class="nx">GTT</span><span class="o">-</span><span class="nx">T</span><span class="o">-</span><span class="nx">C</span><span class="o">-</span><span class="nx">TTA</span><span class="o">----</span><span class="nx">ATACATATGCATATGGAAATTTTTATCATGATTCATTAACTAATGTCCAATTCTTTTTATTTATNNNNNNNNNNNNNNNNNNNNNGTGGCGTCAACCCATAGGGTTTCTAGTTCTTCTAATGTCTTCTCTAGCAGAATGTGAGAGATTACCTTTTAATTTACCAGAAGTAGAGGAGATATTAGTAGCAGGTTATCAAACCAAATATTCAGGTATAAAATACGGGTTATTTTATCTTGCTTCTTACCTAAATCTATTAGTTTCTTCATTCATTATTTGTAACAGTTCTTTACTTAGGTAGGTGGAATTTCTCTATTCCGTACATATCTCTTACTGAACTTTTTGGAATAAATAAAATGTTGAGAGTCTTTGTAATAGCAATTAATATCTTTATCACATTAGCTAAAGCTTATTTGTTTCTGTTCATTCCTATAACAACAAGATGGACTTTACCTAGGATGAGAATGGATCAATTATTAAATCTTGGATGAAAATTTCCTTTACCTATTTCTCTAGGTAATCTATTATTAACAACTTCTTTTCAACTTGTTTCACTATAA</span>
+
+</code></pre></div></div>
+
+<p>What is happening here:</p>
+
+<p>step 1. Print lines starting with “Sbjct”, but only columns 2 (start coordinate), 4 (end coordinate), 3 (Sequence)</p>
+
+<p>step 2. Print column start, stop, sequence and print the difference between current start line and previous stop line</p>
+
+<p>step 3. Pad the sequence length by the difference calculated before step (by empty spaces)</p>
+
+<p>step 4. Replace the empty spaces with N</p>
+
+<p>step 5. Remove spaces between lines</p>
+
+<p>step 6. Add header as first line and then print every thing else from previous step</p>
+:ET

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/exporting-ideogram-information-from">Jun 6, 2015 - Exporting Ideogram information from UCSC table browser</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+Some times, we may need ideogram information for the organism of our interest. Let us assume that UCSC (genome browser) supports that. To export ideogram information from UCSC, follow the instructions given below. Please note that the ideogram information can be exported as text (displayed within your browser of choice) or as gzipped file.<br />
+<br />
+1) Navigate to table browser page hosted on UCSC<br />
+<br />
+URL: https://genome.ucsc.edu/cgi-bin/hgTables<br />
+<br />
+2) Page would look like this:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-nn0KP-6bIpI/VXJ-ewBSUiI/AAAAAAAAAPQ/PSGgTJBK7DA/s1600/export_table.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="338" src="http://3.bp.blogspot.com/-nn0KP-6bIpI/VXJ-ewBSUiI/AAAAAAAAAPQ/PSGgTJBK7DA/s640/export_table.png" width="640" /></a></div>
+<br />
+<br />
+3) Select following fields to export ideogram information (from drop down menu for each filed):<br />
+<ol>
+<li>Genome: Organism of interest (for eg. mouse)</li>
+<li>Assembly: Genome assembly for that organism (for eg. GRCm38/mm10) for mouse</li>
+<li>Group: Mapping and Sequencing</li>
+<li>Track: Chromosome Band (Ideogram)&nbsp; </li>
+<li>Region: choose radio button again genome (by default it would stay selected)</li>
+<li>At the end, select&nbsp; one of the formats you would like to download by selecting against field "file type returned".&nbsp;</li>
+<li>Click on&nbsp; "get output" button.</li>
+<li>If you select, "plain text", your results would be displayed in the browser it self which can be saved as text. If you choose "gzip compressed", you are asked download gzipped file. Download the file and gunzip it in linux or in windows, any modern unzip utilities will be&nbsp; able to gunzip the file.</li>
+</ol>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-kaRO4Te6qp0/VXJ-e31nbQI/AAAAAAAAAPM/iGtIEPnEXAk/s1600/default_page.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="334" src="http://2.bp.blogspot.com/-kaRO4Te6qp0/VXJ-e31nbQI/AAAAAAAAAPM/iGtIEPnEXAk/s640/default_page.png" width="640" /></a></div>
+<br />
+<br />
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/use-mouse4302db-object-in-bioconductor" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/natural-sort-chromosome-number-in-r" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

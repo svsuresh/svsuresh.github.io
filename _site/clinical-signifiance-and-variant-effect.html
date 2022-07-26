@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/clinical-signifiance-and-variant-effect">Nov 23, 2017 - Extract clinical signifiance and variant effect of dbSNP variants using biomart </a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+There are times that one needs to get coordinates, variant effect and clinical significance of rsIDs from dbSNP. This is useful because post annotation of sample variants, user gets matching rsIDs. User wants to know the effect of variation and it's clinical significance. However, please remember that tools that match sample variants with dbSNP variants also provide clinical significance and other relevant information as well.<br />
+<br />
+Let us start with rs IDs 123 and 150. We would like to know their coordinates from dbSNP, their location and clinical significance. We will be using biomaRt package in R to do this. Following is the code:<br />
+============================================<br />
+rsid=c("rs123","rs150")<br />
+library(biomaRt)<br />
+ensembl_snp=useMart("ENSEMBL_MART_SNP", dataset="hsapiens_snp")<br />
+<br />
+getBM(attributes=c("refsnp_source",'refsnp_id','chr_name','chrom_start','chrom_end',"consequence_type_tv", "clinical_significance"), filters = 'snp_filter', values = rsid,mart = ensembl_snp)<br />
+============================================================<br />
+<br />
+1) first line is list of the rsIDs which we will be using for query<br />
+2) Second line loads package biomaRt in R<br />
+3) Third line stores the meta information. We are instructing the program to use ENSEMBL_MART_SNP and dataset "hsapiens_snp" in the mart. Each mart can have multiple data set. For biomaRt to work, we need to choose a mart and a dataset within that mart and we are storing that information in an object called "ensembl_snp"<br />
+4) In fourth line, we are extracting, SNP source (i.e dbSNP), chromosome, start and end of the variants, consequence i.e location of the variant, and it's clinical significance. What we want to extract are called attributes.&nbsp; The query variations are stored in an object called "rsid" and they are passed to values. The nature of values is passed as filters i.e what the values are. 'snp_filter' is the internal reference to rs IDs (rs 123, rs 153 etc). Following example would make it clear: values = c("John", "Jane", "Bob") and filters="name". John, Jane and Bob are names. Like wise, we are telling the program rsIDs are snp_filter (internal name)<br />
+<br />
+output is:<br />
+<br />
+==============================<br />
+&gt;getBM(attributes=c("refsnp_source",'refsnp_id','chr_name','chrom_start','chrom_end',"consequence_type_tv", "clinical_significance"), filters = 'snp_filter', values = rsid,mart = ensembl_snp)<br />
+&nbsp; refsnp_source refsnp_id chr_name chrom_start chrom_end consequence_type_tv<br />
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dbSNP&nbsp;&nbsp;&nbsp;&nbsp; rs123&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp; 24926827&nbsp; 24926827&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intron_variant<br />
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dbSNP&nbsp;&nbsp;&nbsp;&nbsp; rs150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp; 24971033&nbsp; 24971033&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intron_variant<br />
+&nbsp; clinical_significance<br />
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA<br />
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA <br />
+==============================</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/rna-seq-analysis-hisat2-featurecounts" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/parse-kegg-output-with-miller" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

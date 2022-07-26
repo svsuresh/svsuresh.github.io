@@ -1,0 +1,71 @@
+---
+layout: post
+title: Manipulate fasta headers and GTF sequence IDs with awk
+date: '2018-05-09T13:06:00.004+05:30'
+author: suresh
+tags:
+- fasta headers
+- awk
+- gtf
+- sed
+- fasta
+modified_time: '2018-05-09T13:06:49.497+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5769602454422452809
+blogger_orig_url: https://digibio.blogspot.com/2018/05/manipulate-fasta-headers-and-gtf.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Recently, I saw a post where user has a problem with mismatch between fasta headers (in reference file) and the gtf file. User wants all of them being changed to same kind: chr1, chr2, chr3 etc.<br />
+Example gtf file:<br />
+<pre class="pre language-bash" style="background: rgb(245, 242, 240); border-radius: 4px; border: 1px solid rgb(204, 204, 204); box-sizing: border-box; font-family: Consolas, Monaco, &quot;Andale Mono&quot;, &quot;Ubuntu Mono&quot;, monospace; font-size: 13px; hyphens: none; line-height: 1.5; margin-bottom: 0.5em; margin-top: 0.5em; overflow: auto; padding: 1em; tab-size: 4; text-shadow: white 0px 1px; word-break: normal; word-wrap: normal;"><code class=" language-bash" style="background: none; border-radius: 0px; box-sizing: border-box; font-family: Consolas, Monaco, &quot;Andale Mono&quot;, &quot;Ubuntu Mono&quot;, monospace; font-size: inherit; hyphens: none; line-height: 1.5; padding: 0px; tab-size: 4; text-shadow: white 0px 1px; word-break: normal; word-spacing: normal; word-wrap: normal;"><span class="token comment" spellcheck="true" style="box-sizing: border-box; clear: left; color: slategrey;">##gff-version null</span>
+CA_chr4_BGI-A2_v1.0     GLEAN   mRNA    123284514       123288477       0.999991-       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>       ID<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0<span class="token punctuation" style="box-sizing: border-box; color: #999999;">;</span>Name<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927<span class="token punctuation" style="box-sizing: border-box; color: #999999;">;</span>source_id<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>CottonA_GLEAN_10022228<span class="token punctuation" style="box-sizing: border-box; color: #999999;">;</span>identical_support_id<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>CUFF67.1103.1<span class="token punctuation" style="box-sizing: border-box; color: #999999;">;</span>evid_id<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cot030308.1
+CA_chr4_BGI-A2_v1.0     GLEAN   CDS     123288376       123288477       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>      -0       Parent<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0
+CA_chr4_BGI-A2_v1.0     GLEAN   CDS     123287662       123287826       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>      -0       Parent<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0
+CA_chr4_BGI-A2_v1.0     GLEAN   CDS     123287427       123287536       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>      -0       Parent<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0
+CA_chr4_BGI-A2_v1.0     GLEAN   CDS     123287129       123287237       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>      -1       Parent<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0
+CA_chr4_BGI-A2_v1.0     GLEAN   CDS     123286939       123287051       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>      -0       Parent<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0
+CA_chr4_BGI-A2_v1.0     GLEAN   CDS     123286180       123286330       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>      -1       Parent<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0
+CA_chr4_BGI-A2_v1.0     GLEAN   CDS     123284514       123285671       <span class="token keyword" style="box-sizing: border-box; color: #0077aa;">.</span>      -0       Parent<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_18927_BGI-A2_v1.0
+CA_chr9_BGI-A2_v1.0     GLEAN   mRNA    17802711        17803334        1      +.       ID<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_16149_BGI-A2_v1.0<span class="token punctuation" style="box-sizing: border-box; color: #999999;">;</span>Name<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cotton_A_16149<span class="token punctuation" style="box-sizing: border-box; color: #999999;">;</span>source_id<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>CottonA_GLEAN_10030787<span class="token punctuation" style="box-sizing: border-box; color: #999999;">;</span>evid_id<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">=</span>Cot023903.1</code></pre>
+Example fasta file<br />
+<pre class="pre language-bash" style="background: rgb(245, 242, 240); border-radius: 4px; border: 1px solid rgb(204, 204, 204); box-sizing: border-box; font-family: Consolas, Monaco, &quot;Andale Mono&quot;, &quot;Ubuntu Mono&quot;, monospace; font-size: 13px; hyphens: none; line-height: 1.5; margin-bottom: 0.5em; margin-top: 0.5em; overflow: auto; padding: 1em; tab-size: 4; text-shadow: white 0px 1px; word-break: normal; word-wrap: normal;"><code class=" language-bash" style="background: none; border-radius: 0px; box-sizing: border-box; font-family: Consolas, Monaco, &quot;Andale Mono&quot;, &quot;Ubuntu Mono&quot;, monospace; font-size: inherit; hyphens: none; line-height: 1.5; padding: 0px; tab-size: 4; text-shadow: white 0px 1px; word-break: normal; word-spacing: normal; word-wrap: normal;">$ <span class="token function" style="box-sizing: border-box; color: #dd4a68;">cat</span> test.fa 
+<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">&gt;</span>gnl<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>BGIA2<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>CA_chr1
+atgc
+<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">&gt;</span>gnl<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>BGIA2<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>CA_chr22
+atgc
+<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">&gt;</span>gnl<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>BGIA2<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>CA_chr10
+atgc
+<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">&gt;</span>gnl<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>BGIA2<span class="token operator" style="background: rgba(255, 255, 255, 0.5); box-sizing: border-box; color: #a67f59;">|</span>CA_chr13
+atgc</code></pre>
+I first used sed to address this issue in the lines of<br />
+<div>
+<br /></div>
+<div>
+$ sed '/&gt;/ s/.*_\(chr[0-9]\+\)/&gt;\1/g' test.fa<br /></div>
+<div>
+In this code, I made chromosome names (chr[0-9]+)&nbsp; as pattern in sed and asked the command to print. I did similar way to extract chromosomes from gtf as well assuming that second column always contain string "GLEAN", in following lines:</div>
+<div>
+<br /></div>
+$ sed '/#/! s/.*_\(chr[0-9]\+\).*\(\tGL*\)/\1\2/g' test.gtf&nbsp;<div>
+<br />However, the problem is that strings in second column vary. For eg it could be BGI or Genewise. (string and string lengths both vary). So I proposed an awk solution:<div>
+<br /></div>
+<div>
+$ awk '!/#/ {split($1, a, "_"); $1=a[2]}1' OFS='\t' test.gtf&nbsp;</div>
+<div>
+&nbsp; <br />What this does it filters all the headers in gtf i.e gets lines that doesn't start with #.&nbsp; Then split the first column by delimiter "_" and stores in an array by name "a". Then second element in array is now made column one and print the output with tab as separator.&nbsp; If you split string&nbsp;"CA_chr4_BGI-A2_v1.0" with "_" as delimiter, second element catches chr string.&nbsp;</div>
+<div>
+<br /></div>
+<div>
+Now I did the same thing with fasta as well.&nbsp;</div>
+<div>
+<br /></div>
+$ awk '/&gt;/ {split($1,a,"_"); $1="&gt;"a[2]}1' test.fa</div>
+<div>
+<br /></div>
+<div>
+Now I am splitting the fasta header with "_" delimiter and taking 2nd element and append "&gt;" before the element so that headers are restored.</div>
+<div>
+<br /></div>
+<div>
+Now both the files (gff and fasta) have same chromosome ids.</div>
+</div>

@@ -1,0 +1,203 @@
+<div dir="ltr" style="text-align: left;" trbidi="on" zoompage-fontsize="16">
+<div style="text-align: justify;" zoompage-fontsize="16">
+<div zoompage-fontsize="16">
+One of the most popular work flows in RNAseq data analysis is Tuxedo work flow 1 where aligner is Tophat, transcript assembler and quantifier is cufflinks and downstream analysis in R is cummeRbund. Later on same group released Tuxedo work flow 2 which has HISAT2 as aligner, StringTie as transcript assembler and quantifier and Ballgown is downstream analysis package in R.&nbsp;</div>
+</div>
+<div style="text-align: justify;" zoompage-fontsize="16">
+<div zoompage-fontsize="16">
+<br /></div>
+</div>
+<div style="text-align: justify;" zoompage-fontsize="16">
+<div zoompage-fontsize="16">
+There are many people who pursued alternative workflows. One of the most popular alternative work flows is Tophat-HTseq-DESeq2/edgeR/other packages in R. One such work flow involving Tophat-HTseq-DESeq2 is documented <a href="https://digibio.blogspot.in/2015/08/rna-seq-data-analysis-tophat-htseq-and.html" target="_blank" zoompage-fontsize="16">here</a> in my blog. There are several changes in recent times esp in assembly based RNAseq data analysis. HISAT2 replaced Tophat and Featurecounts is faster than HTSeq. So let us construct a work flow that involves hisat2, featurecounts and DEseq2. </div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+Working with HISAT2 is documented in <a href="https://digibio.blogspot.in/2017/10/rnaseq-data-analysis-tuxedo-new-protocol.html" target="_blank" zoompage-fontsize="16">here</a> in my earlier blog. Using the work flow in the blog, work till "<b zoompage-fontsize="16">Bam file statistics"</b> section. Once you reached that point, you will have 6 bam files (3 bam files for normal and 3 bam files for tumor). Link to example files and scripts are furnished in the same blog. </div>
+</div>
+<div style="text-align: justify;" zoompage-fontsize="16">
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16"></b></div>
+</div>
+<div style="text-align: justify;" zoompage-fontsize="16">
+<div zoompage-fontsize="16">
+Now let us move on to featurecounts. Featurecounts outputs raw counts for each feature, provided in the work flow.</div>
+</div>
+<div align="justify" style="line-height: 100%; margin-bottom: 0in;" zoompage-fontsize="16">
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">$ 
+featureCounts -T 6 -p -t exon -g gene_id -a
+~/reference/hg38/hg38_ucsc_refseq_chr22.gtf -s 2  --donotsort -o
+counts2.txt -M ../hisat2/*cut*.bam&nbsp;</b></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16"><br /></b>
+Remember this work can be parallelized as each counts is independent of the others. However, featurecounts is wicked fast for small number of files. Hence I didn't parallelize it like other steps.</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+-T is threads (6 threads here)</div>
+<div zoompage-fontsize="16">
+-p is to say the bam is paired end bam and count fragments instead of reads</div>
+<div zoompage-fontsize="16">
+-t&nbsp; feature is exon i.e read count by exon</div>
+<div zoompage-fontsize="16">
+-g group features (exons here) by gene_id</div>
+<div zoompage-fontsize="16">
+-a reference gtf</div>
+<div zoompage-fontsize="16">
+-s&nbsp; strandedness. Here it is reverse stranded (2). This you would get it from library preperation.</div>
+<div zoompage-fontsize="16">
+-o output</div>
+<div zoompage-fontsize="16">
+-M since it is a RNAseq, a read can overlap with multiple transcripts. 
+Hence we instruct the program to map read to multiple features.Summary of the output will be saved as counts2.txt.summary.</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+Some scholars would say not to count multimapping reads. But there are instances where you would need such a count. There are tools to count the mutlimapping reads in RNAseq (eg. <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1816-4" zoompage-fontsize="16">mmquant: how to count multi-mapping reads?</a>). User may choose this option as it suits the analysis.</div>
+<div zoompage-fontsize="16">
+</div>
+<div zoompage-fontsize="16">
+Now that we got raw counts for each exon and grouped by gene, let us move onto differential expression. My assumption is that user has R and DESeq2 library is installed on the machine that would be used for analysis.</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+Below is the DESeq2 analysis. Please note that DESeq2 workflow is fairly well documented and i would cover only data import, meta data creation and making DESeq2 object. After that user can follow DESeq2 work flow document <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html" target="_blank" zoompage-fontsize="16">here</a>. Follow from Differential expression analysis section onwards. This script partially overlaps with the bioconductor workflow so that user will find it easy to follow further.</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+=========================================================</div>
+<div zoompage-fontsize="16">
+## Load DESeq2, stringr and ggplot2 libraries </div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; library(DESeq2)</b></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; library(stringr)</b></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; library(ggplot2)</b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## Read the output from featurecounts. First set the working directory, then read the output from featurecounts (counts2.txt here) and&nbsp; save the object. </div>
+<div zoompage-fontsize="16">
+<br />
+<b zoompage-fontsize="16">&gt; setwd("~/example_data/practice_rnaseq_data/featurecounts/")</b></div>
+<div zoompage-fontsize="16">
+<br />
+## Load the file and use GeneId column as row names<b zoompage-fontsize="16"><br /></b></div><div zoompage-fontsize="16"><b zoompage-fontsize="16"><br />counts=read.csv("counts2.txt", sep="", head=T, skip=1, row.names = "Geneid")</b>
+</div><div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## Print the names of columns from 6 to 11. Please note that the column names are like "...hisat2.hcc1395_normal_rep1.cutadapt.bam"</div>
+<div zoompage-fontsize="16">
+<br />
+<b zoompage-fontsize="16">&gt; colnames(counts)[6:11]</b><br />
+<br />
+## Let us edit (rename) the column names to reflect sample names. This would be done by splitting column names (i.e from "...hisat2.hcc1395_normal_rep1.cutadapt.bam" to "hcc1395_normal_rep1"), using str_split_fixed function. Split the column names using dot (.) as delimiter, into 6 values and printing the the fifth value. Fifth value contains the sample name.<br />
+<br />
+<b zoompage-fontsize="16"></b></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; colnames(counts)[6:11]=str_split_fixed(colnames(counts)[6:11],"\\.",6)[,5]</b><br />
+<br />
+##Now make sure that column names are changed<br />
+<br />
+<b zoompage-fontsize="16"> &gt; colnames(counts)[6:11]</b><br />
+<br />
+## Create a sample data frame with sample names as row names and sample types as condition column<br />
+<br />
+<b zoompage-fontsize="16"> </b></div>
+<div zoompage-fontsize="16"><b zoompage-fontsize="16">&gt; samples = data.frame (row.names = colnames (counts) [6:11], condition = str_split_fixed (colnames(counts) [6:11],"_",3)[,2])<br /></b></div><b zoompage-fontsize="16">
+</b><div zoompage-fontsize="16"><b zoompage-fontsize="16">
+</b><br />
+## Check if sample names created match with the column names of featurecounts. both should match ( TRUE)</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; all (rownames(samples) %in% colnames(counts))</b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## create DESeq2 object</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; dds=DESeqDataSetFromMatrix (countData = counts[,6:11], colData = samples, design = ~ condition)</b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## Let us say we want to see how the groups come together, we can use PCA plot on</div>
+<div zoompage-fontsize="16">
+## DESeq2 object. You would observe that PCA 1 it self&nbsp; separates data into two groups.</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; plotPCA(rlog(dds), intgroup="condition") + theme_bw() </b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## DESeq function is a wrapper for standard differential expression analysis steps. Hence ## let us run the script on DESeq2 object created above (dds) <i zoompage-fontsize="16"></i></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; ddds=DESeq(dds)</b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## Let us extract results and store it in a different object </div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; res_ddds=results(ddds)</b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+##  <i zoompage-fontsize="16">lfcShrink</i> outputs shrunken log2 fold changes. One can provide either coefficient or the&nbsp; condition. Below example has both. User can take either one.</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; lfcshrink_res_ddds &lt;- lfcShrink(ddds, coef=2, res=res_ddds)</b></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; lfcshrink_res_ddds1 &lt;- lfcShrink(ddds, contrast=c("condition", "tumor","normal"), res=res_ddds)</b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## Sort the fold changes by adjusted p-value </div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; lfcshrink_res_ddds_ordered=lfcshrink_res_ddds[order(lfcshrink_res_ddds$padj),]</b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## Now plot the fold changes.&nbsp; </div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; plotMA(lfcshrink_res_ddds_ordered) </b></div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+## We can plot counts of gene of lowest adjusted p-value i.e gene with highest statistical ## significance between the two groups.</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">&gt; plotCounts(ddds, gene=which.min(res_ddds$padj), intgroup="condition", pch=2, col=ddds$condition, cex=3, transform = T)</b></div>
+<div zoompage-fontsize="16">
+=========================================================</div>
+<div zoompage-fontsize="16">
+<br /></div>
+<div zoompage-fontsize="16">
+User can follow further work flow from <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html" target="_blank" zoompage-fontsize="16">here</a>.(link to bioconductor DESeq2 worklow).<br />
+</div>
+</div>
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16">
+
+</b></div>
+<div style="text-align: justify;" zoompage-fontsize="16">
+<div zoompage-fontsize="16">
+<b zoompage-fontsize="16"></b></div>
+</div>
+</div>

@@ -1,0 +1,94 @@
+---
+layout: post
+title: Pandas multijoin dataframes with dots in column names
+date: '2018-05-19T12:16:00.002+05:30'
+author: ssv
+tags:
+- merge
+- columns
+- pandas
+- pandasql
+- sql
+- pd.merge
+- python3
+modified_time: '2018-05-26T17:17:53.946+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-1578458525839086155
+blogger_orig_url: https://digibio.blogspot.com/2018/05/sql-join-3-data-frames-with-dots-in.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Pandas is a data analysis library available in python. There are several operations that are same between R and Pandas esp data frame operations. However, Pandas inherits object based operations from python which makes operations easy on data frames. In this note, we will merge 3 data frames and extract common ones. One can use sql libraries available in python or use pandas it self to get the result.<br />
+<br />
+Following is the issue:<br />
+User has 3 data frames (df) as follows:<br />
+<br />
+df1:<br />
+Seq1.id&nbsp;&nbsp;&nbsp; Seq2.id<br />
+seq1.01&nbsp;&nbsp;&nbsp; seq5.02<br />
+seq2.01&nbsp;&nbsp;&nbsp; Seq6.02<br />
+seq3.01&nbsp;&nbsp;&nbsp; Seq7.02<br />
+seq4.01&nbsp;&nbsp;&nbsp; Seq8.02<br />
+<br />
+df2:<br />
+Seq.1.id<br />
+seq1.01<br />
+seq2.01<br />
+seq4.01<br />
+<br />
+df3:<br />
+Seq.2.id<br />
+seq5.02<br />
+Seq6.02<br />
+Seq7.02<br />
+<br />
+Now 2 and 3 are single column data frames. They both share single column each, with data frame1. User wants to common values between three data frames.<br />
+<br />
+I wanted to join the dataframes by SQL. However it is tricky because SQL separates the columns from data frames by ".". If column name has . in it, SQL join will have two ".". Let us see how pandas handles this. We will use pandasql library for SQL join and "merge" function in pandas. <br />
+<br />
+code: (with pandasql)<br />
+===============<br />
+&gt; import pandas as pd<br />
+&gt; from pandasql import sqldf as psql<br />
+<br />
+&gt; df1=pd.read_csv("df1", sep="\t")<br />
+&gt; df2=pd.read_csv("df2", sep="\t")<br />
+&gt; df3=pd.read_csv("df3", sep="\t")<br />
+<br />
+&gt; print(df1)<br />
+&gt; print(df2)<br />
+&gt; print(df3) <br />
+<br />
+Seq1.id&nbsp; Seq2.id<br />
+0&nbsp; seq1.01&nbsp; seq5.02<br />
+1&nbsp; seq2.01&nbsp; Seq6.02<br />
+2&nbsp; seq3.01&nbsp; Seq7.02<br />
+3&nbsp; seq4.01&nbsp; Seq8.02 <br />
+<br />
+&nbsp; Seq.1.id<br />
+0&nbsp; seq1.01<br />
+1&nbsp; seq2.01<br />
+2&nbsp; seq4.01 <br />
+<br />
+&nbsp; Seq.2.id<br />
+0&nbsp; seq5.02<br />
+1&nbsp; Seq6.02<br />
+2&nbsp; Seq7.02<br />
+<br />
+&gt; psql('select [Seq1.id],[Seq2.id] from df1 inner join df2 on df1.[Seq1.id]=df2.[Seq.1.id] inner join df3 on df1.[Seq2.id]=df3.[Seq.2.id]')<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Seq1.id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Seq2.id<br />
+0 &nbsp;&nbsp;&nbsp; seq1.01 &nbsp;&nbsp;&nbsp; seq5.02<br />
+1 &nbsp;&nbsp;&nbsp; seq2.01 &nbsp;&nbsp;&nbsp; Seq6.02<br />
+===================================<br />
+<br />
+Now, let us do the same with pd.merge function. Load all the data frames like above and execute following command:<br />
+===============<br />
+&gt; df1.merge(df2, left_on='Seq1.id', right_on='Seq.1.id', sort=True, how='inner').merge(df3,left_on='Seq2.id', right_on='Seq.2.id',sort=True, how="inner").loc[:,"Seq1.id":"Seq2.id"]<br />
+<br />
+&nbsp;&nbsp;&nbsp; Seq1.id &nbsp;&nbsp;&nbsp; Seq2.id<br />
+0 &nbsp;&nbsp;&nbsp; seq2.01 &nbsp;&nbsp;&nbsp; Seq6.02<br />
+1 &nbsp;&nbsp;&nbsp; seq1.01 &nbsp;&nbsp;&nbsp; seq5.02<br />
+================<br />
+<br />
+<br />
+<br />
+<br /></div>

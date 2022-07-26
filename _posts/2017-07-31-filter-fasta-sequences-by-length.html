@@ -1,0 +1,29 @@
+---
+layout: post
+title: Filter fasta sequences  by length
+date: '2017-07-31T12:13:00.002+05:30'
+author: suresh
+tags:
+- seqkit
+- length
+- fasta
+modified_time: '2017-07-31T12:13:34.230+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-6217496723888175532
+blogger_orig_url: https://digibio.blogspot.com/2017/07/filter-fasta-sequences-by-length.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Let us assume that you would like to filter a file with multiple fasta sequences with a defined sequence length. For eg. in a file with 2000 sequences (in fasta format), you would like to extract all sequences with 100 nt length.<br />
+<span itemscope="" itemtype="http://schema.org/Answer"><span itemprop="text"></span></span><br />
+<pre class="pre language-bash"><code class=" language-bash">&nbsp;</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">Code: <b>seqkit <span class="token function">seq</span> -M 100  test.fa</b>-M option for maximum length</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">
+</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">Now, let us assume that you are looking for all the 100 nt sequences with a G at
+position 3 and C at position 12.</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">
+</code></pre>
+<pre class="pre language-bash"><code class=" language-bash">Code:</code></pre>
+<pre class="pre language-bash"><b><span itemscope="" itemtype="http://schema.org/Answer"><span itemprop="text"><pre class="pre language-bash"><code class=" language-bash">seqkit <span class="token function">seq</span> -M 100  test.fa <span class="token operator">|</span> seqkit <span class="token function">grep</span> -s  -R 3:3 -p G <span class="token operator">|</span> seqkit <span class="token function">grep</span> -s -R 12:12 -p C</code></pre>
+</span></span></b></pre>
+</div>

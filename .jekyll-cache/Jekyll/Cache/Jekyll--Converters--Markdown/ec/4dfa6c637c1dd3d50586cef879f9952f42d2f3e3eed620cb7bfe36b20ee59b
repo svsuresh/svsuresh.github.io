@@ -1,0 +1,43 @@
+I"�<p>One of the requests I got was to check if there is a base “A” at the start position given list of sequences. Sequence list follows as below</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sequences <span class="o">=</span> <span class="o">[</span><span class="s2">"GAGGTAAACTCTG"</span>, <span class="s2">"TCCGTAAGTTTTC"</span>, <span class="s2">"CAGGTTGGAACTC"</span>,<span class="s2">"ACAGTCAGTTCAC"</span>, <span class="s2">"TAGGTCATTACAG"</span>, <span class="s2">"TAGGTACTGATGC"</span><span class="o">]</span>
+
+</code></pre></div></div>
+<p>Now user wants to check if “A” is present at the start of each sequence and then count all such instances. Following are the ways to check if “A” is present at the start</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">count</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"A"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">]</span>
+<span class="c1"># print(count)
+</span>
+<span class="n">count</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">:</span>
+    <span class="n">count</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"A"</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+<span class="c1"># print(count)
+</span>
+<span class="n">count</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">:</span>
+    <span class="n">count</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"A"</span><span class="p">])</span>
+<span class="c1"># print(count)
+</span></code></pre></div></div>
+<p>But we would use only one for defining our function</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+</span>
+<span class="n">sequences</span> <span class="o">=</span> <span class="p">[</span><span class="s">"GAGGTAAACTCTG"</span><span class="p">,</span> <span class="s">"TCCGTAAGTTTTC"</span><span class="p">,</span> <span class="s">"CAGGTTGGAACTC"</span><span class="p">,</span>
+             <span class="s">"ACAGTCAGTTCAC"</span><span class="p">,</span> <span class="s">"TAGGTCATTACAG"</span><span class="p">,</span> <span class="s">"TAGGTACTGATGC"</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">count_first_base</span><span class="p">(</span><span class="n">sequences</span><span class="o">=</span><span class="n">sequences</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="s">"A"</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">==</span> <span class="n">base</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">base</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">count</span><span class="p">)]</span>
+
+
+<span class="k">print</span><span class="p">(</span><span class="o">*</span><span class="n">count_first_base</span><span class="p">(),</span> <span class="n">sep</span><span class="o">=</span><span class="s">"</span><span class="se">\t</span><span class="s">"</span><span class="p">)</span>    
+<span class="k">print</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="o">*</span><span class="n">count_first_base</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s">"G"</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s">"</span><span class="se">\t</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>output is:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>A       <span class="o">[</span>0, 0, 0, 1, 0, 0]      1
+G       <span class="o">[</span>1, 0, 1, 0, 1, 1]      4
+
+</code></pre></div></div>
+:ET

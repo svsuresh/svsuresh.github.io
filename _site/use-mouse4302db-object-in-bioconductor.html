@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/use-mouse4302db-object-in-bioconductor">Jun 6, 2015 - Use mouse4302.db object in Bioconductor</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+some of the annotation data is presented as .db objects in bioconductor. For eg. mouse4302.db, org.Hs.eg.db etc. Some times, it is better to know what is inside and how each db works. Please note that all the elements inside db (i.e information inside db packages) is available using sql statements with slight modifications (for eg. joints, select etc). Following points are written keeping mouse4302.db in point.<br />
+<br />
+Logic of extracting information from mouse4302.db is as follows:<br />
+<br />
+1) Select (Bioconductor database, what you have, what you want and data type of what you have)<br />
+<br />
+2) In bioconductor parlance,<br />
+<br />
+Select ( db package, keys, columns in the database, key type) <br />
+<br />
+db package= mouse4302.db = provided by bioconductor<br />
+keys= what you have = Affymetrix probe ids (here) for eg. 1425683_at, 1425684_at<br />
+columns = what you want from the database<br />
+keytype= type of data you have = PROBEID (type of probesets)<br />
+<br />
+3) Code:<br />
+<br />
+a) select(mouse4302.db, keys=ids, columns=c("SYMBOL"), keytype = "PROBEID")<br />
+<br />
+ids = list of affymetrix probe ids from mouse4302 chip<br />
+<br />
+In this command, we are supplying list of affymetrix probe IDs (keys=ids), requesting for corresponding Gene symbol (columns=c("SYMBOL")) and informing the program that we supplied PROBEIDs (keytype="PROBEID").<br />
+<br />
+Output will have probe set IDs and corresponding Gene symbol.<br />
+<br />
+b)&nbsp; select(mouse4302.db, keys=c("1425683_at", "1425684_at"), columns=c("SYMBOL"), keytype = "PROBEID")<br />
+<br />
+In
+ this command, we are supplying two affymetrix probe IDs ( keys=c("1425683_at", "1425684_at")),
+ requesting for corresponding Gene symbol (columns=c("SYMBOL")) and 
+informing the program that we supplied PROBEIDs (keytype="PROBEID").<br />
+Output will have probe set IDs and corresponding Gene symbol as displayed below.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-b8V-_GdujnU/VXK0L76QYeI/AAAAAAAAAPk/WkE6P9bu150/s1600/ps.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="136" src="http://4.bp.blogspot.com/-b8V-_GdujnU/VXK0L76QYeI/AAAAAAAAAPk/WkE6P9bu150/s640/ps.png" width="640" /></a></div>
+<br />
+we would like to know what kind of information does the program take i.e key types.&nbsp; <br />
+<br />
+corresponding command would be:&nbsp; keytypes(mouse4302.db)<br />
+Keytypes would be displayed which can be used to probe mouse4302.db. Remember these are the only keytypes that are allowed in this package. In the above example we have used "PROBEID" keytype as we wanted to know gene symbol for the affymetrix probes we had. <br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-GyJD9o-UNpc/VXK01t4QQUI/AAAAAAAAAPs/sgqiarPFKSE/s1600/kt.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="180" src="http://1.bp.blogspot.com/-GyJD9o-UNpc/VXK01t4QQUI/AAAAAAAAAPs/sgqiarPFKSE/s640/kt.png" width="640" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: left;">
+Now, we would like to know what kind of information we can get from this db. Available information we can from the database can be known from the following command:&nbsp;</div>
+<div class="separator" style="clear: both; text-align: left;">
+command:&nbsp; columns(mouse4302.db)</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Running the above command will tell us following information is within mouse4302.db and can be extracted using appropriate keytype. </div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-nMwRACd3n9w/VXK2Po4ed2I/AAAAAAAAAP0/QKues8wCZlo/s1600/ct.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="186" src="http://2.bp.blogspot.com/-nMwRACd3n9w/VXK2Po4ed2I/AAAAAAAAAP0/QKues8wCZlo/s640/ct.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+&nbsp;Let us extract mouse probe ID and Gene ontology (GO and ONTOLOGY) s for the gene symbol Akr1b10.&nbsp; Please remember that list would be huge.</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+command: select(mouse4302.db, keys=c("Akr1b10"), columns=c("PROBEID", "GO", "ONTOLOGY"), keytype = "SYMBOL")</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Please note that key is gene symbol and key type is symbol. we wanted to extract affymetrix probes for that gene in mouse4302 chip, Gene ontology ID&nbsp; and GO component (Molecular Function, Cellular component and Biological process). Mouse 4302.db&nbsp; presents evidence in Ontology components by default.</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-WuRAgcdY6Ag/VXK4Je8i7sI/AAAAAAAAAQA/SVk7bag8KSA/s1600/kt2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="524" src="http://1.bp.blogspot.com/-WuRAgcdY6Ag/VXK4Je8i7sI/AAAAAAAAAQA/SVk7bag8KSA/s640/kt2.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+&nbsp;</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/generate-random-nucleotide-and-amino" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/exporting-ideogram-information-from" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

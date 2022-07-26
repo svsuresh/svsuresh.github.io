@@ -1,0 +1,175 @@
+---
+layout: post
+title: Faceting gene expression per variable  and connecting by means using ggplot
+date: '2018-06-09T20:39:00.001+05:30'
+author: suresh
+tags:
+- mean
+- time series
+- violin plot
+- ggplot2
+- gene expression
+modified_time: '2018-07-12T19:09:56.006+05:30'
+thumbnail: https://2.bp.blogspot.com/-_bmlBdr-1Gc/Wx_rC0qnLfI/AAAAAAAABG4/h4_78U5MilM5zaO1KfuzQsc-z_4YV8oYgCLcBGAs/s72-c/Rplot01.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-1561118146651526812
+blogger_orig_url: https://digibio.blogspot.com/2018/06/plotting-per-group-level-mean.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+<br /></div>
+<div dir="ltr" style="text-align: justify;" trbidi="on">
+Post data analysis, scientists end up with list of genes (or biological molecules) and their expression values per sample at each time point. Now the requirement is to plot the data. Let us look a scenario where biologist wants to have a overall view of expression for all the genes, for all the time points and for all the samples. Biologist may also want to highlight the average (mean) expression value per sample or for a gene. Let us assume that there are 10 genes, 12 samples, 4 time points.&nbsp; User wants create an image where all above data is represented along with their mean.<br />
+Final figure would look like this:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-_bmlBdr-1Gc/Wx_rC0qnLfI/AAAAAAAABG4/h4_78U5MilM5zaO1KfuzQsc-z_4YV8oYgCLcBGAs/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1478" data-original-width="1600" height="590" src="https://2.bp.blogspot.com/-_bmlBdr-1Gc/Wx_rC0qnLfI/AAAAAAAABG4/h4_78U5MilM5zaO1KfuzQsc-z_4YV8oYgCLcBGAs/s640/Rplot01.png" width="640" /></a></div>
+<h4>
+Let us simulate the data</h4>
+Data will have expression values for 10 genes for 12 samples at 4 times points. We will do plot following information using ggplot2 package. We will plot gene specific expression for each time point highlighting expression and mean (and standard error of mean). In addition, we will highlight expression values above and below mean.</div>
+<div dir="ltr" style="text-align: justify;" trbidi="on">
+$ df1=data.frame(genes = paste0("DDB_G0267",sample(c(178:200), 10, replace = F)),matrix(sample(round(rnorm( 120, 4, 4), 2)), 10, 12))</div>
+<div>
+$ colnames(df1)[-1] = paste0("sample", seq(1, 12))</div>
+<div>
+Let us have a look at df1:</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/--nzNM2sBgcU/Wx_mglQbwPI/AAAAAAAABGk/8KB95ycOv1MLT8VLSmHRr32msCHl30KzgCLcBGAs/s1600/s1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="346" data-original-width="1498" height="146" src="https://4.bp.blogspot.com/--nzNM2sBgcU/Wx_mglQbwPI/AAAAAAAABGk/8KB95ycOv1MLT8VLSmHRr32msCHl30KzgCLcBGAs/s640/s1.png" width="640" /></a></div>
+<div>
+<h4 style="text-align: left;">
+Let us simulate the meta data with time points, h10, h12, h14 and h16. 3 samples for each time point </h4>
+<div style="text-align: left;">
+$ pheno= data.frame(samples = paste0("sample", seq(1, 12)),time = rep(c("h10","h12","h14","h16"), each = 3))</div>
+</div>
+<div style="text-align: left;">
+<h4>
+Let us calculate the means of samples (columns) and genes (rows), separately.</h4>
+<div style="text-align: left;">
+Sample means can be appended sample meta data as sample numbers are same for both. </div>
+$ samples=data.frame(samples=colnames(df1[-1]),&nbsp; sample_means=colMeans(df1[-1]), stringsAsFactors = F, time=pheno$time)<br />
+geno=data.frame(genes=df1[1],gene_means=rowMeans(df1[-1]), stringsAsFactors = F)<br />
+<h4 style="text-align: left;">
+Let us convert the long format to wide format </h4>
+$ library(tidyr)<br />
+$ df2=gather(df1,"samples","expression",-"genes")<br />
+<h4 style="text-align: left;">
+Let us merge the data with meta data. We create gene expression means for samples and times separately to merge with main data. </h4>
+$ library(dplyr)<br />
+$ df3=merge(df2,samples, by="samples")<br />
+$ df4=merge(df3,geno, by="genes")<br />
+$ df5=df4 %&gt;% group_by(genes,time) %&gt;% mutate(gene_time_mean=mean(expression))<br />
+<h4 style="text-align: left;">
+Let us plot the data, metadata now. First sample sample specific data, then gene specific data. </h4>
+What we will do is store the plot objects and then draw them together with gridextra.&nbsp;</div>
+<div style="text-align: left;">
+<h4 style="text-align: left;">
+Let us plot for samples first. </h4>
+There are 3 graph objects for samples. First one would be cumulative (for all 10 genes) expression values per sample per time point with mean only, Second one would be cumulative gene expression values per sample with mean only and last one would be cumulative gene expression values per sample with mean and standard error only. <br />
+<br />
+$ library(ggplot2)<br />
+$ s1=ggplot(df3, aes(samples, expression))+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_violin()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_jitter(aes(color=expression&gt;sample_means), width = 0.2)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale_colour_manual(values=c("darkgreen", "red"))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", aes(group=1), size=1)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(color="black", geom = "line", aes(group=1))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp; facet_grid(~time, scales = "free")+<br />
+&nbsp;&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.text.x = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.background = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 14, angle=90),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_blank()<br />
+&nbsp;&nbsp;&nbsp;&nbsp; )<br />
+​<br />
+s2=ggplot(df3, aes(samples, expression))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_violin()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_jitter(aes(color=expression&gt;sample_means), width = 0.2)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale_colour_manual(values=c("darkgreen", "red"))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", aes(group=1), size=1)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(color="black", geom = "line", aes(group=1))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",</div>
+<div style="text-align: left;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 14, angle=90),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_blank()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br />
+​<br />
+s3=ggplot(df3, aes(samples, expression))+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_violin()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_jitter(aes(color=expression&gt;sample_means), width = 0.2)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale_colour_manual(values=c("darkgreen", "red"))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", aes(group=1), size=1)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(color="black", geom = "smooth", aes(group=1))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 14, angle=90),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_blank()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br />
+<h4 style="text-align: left;">
+Let us plot for genes next.</h4>
+<div style="text-align: justify;">
+There are 3 graph objects for genes. First one would be cumulative (for all 12 samples) expression values per gene per time point with mean only, Second one would be cumulative sample expression values per gene with mean only and last one would be cumulative sample expression values per gene with mean and standard error only. </div>
+</div>
+<div style="text-align: left;">
+<br />
+$ g1=ggplot(df5, aes(genes, expression))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_violin()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  geom_jitter(width = 0.2, aes(color=expression&gt;gene_time_mean))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale_colour_manual(values=c("darkgreen", "red"))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", aes(group=1), size=1)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(color="steelblue", geom = "line", aes(group=1), size=1.2)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.text.x = element_text(size = 14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.background = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 14, angle=90),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_blank()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; facet_grid(~time)<br />
+​<br />
+g2=ggplot(df5, aes(genes, expression))+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_violin()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_jitter(width = 0.2, aes(color=expression&gt;gene_means))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale_colour_manual(values=c("darkgreen", "red"))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", aes(group=1), size=1)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(color="steelblue", geom = "line", aes(group=1), size=1.2)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; axis.text.x = element_text(size = 14, angle=90),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; axis.text.y = element_text(size = 14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; axis.title.y = element_blank()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br />
+​<br />
+g3=ggplot(df5, aes(genes, expression))+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_violin()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_jitter(width = 0.2, aes(color=expression&gt;gene_means))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale_colour_manual(values=c("darkgreen", "red"))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", aes(group=1), size=1)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stat_summary(color="steelblue", geom = "smooth", aes(group=1), &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size=1.2)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 14, angle=90),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_blank()<br />
+)<br />
+<h4 style="text-align: left;">
+Let us plot altogether </h4>
+$ library(gridExtra)<br />
+$ grid.arrange(s1,s2,s3,g1,g2,g3, nrow = 2, ncol=3)</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-_bmlBdr-1Gc/Wx_rC0qnLfI/AAAAAAAABG4/fg1tYHNqvbEuY7C-sD9VkJUj0vvGJi9pwCEwYBhgL/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1478" data-original-width="1600" height="590" src="https://4.bp.blogspot.com/-_bmlBdr-1Gc/Wx_rC0qnLfI/AAAAAAAABG4/fg1tYHNqvbEuY7C-sD9VkJUj0vvGJi9pwCEwYBhgL/s640/Rplot01.png" width="640" /></a></div>
+<div style="text-align: left;">
+<br /></div>
+</div>

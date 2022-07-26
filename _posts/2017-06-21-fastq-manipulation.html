@@ -1,0 +1,54 @@
+---
+layout: post
+title: Fastq manipulation
+date: '2017-06-21T09:48:00.001+05:30'
+author: ssv
+tags:
+- seqkit
+- fastq
+modified_time: '2017-08-29T13:44:32.637+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-2739151063904767555
+blogger_orig_url: https://digibio.blogspot.com/2017/06/fastq-manipulation.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Generic format to store the sequences (read sequences) post sequencing is .fastq. There are several tools to parse fastq files. One of them is seqtk. Fastq formatted files store lots of useful information like sequencing machine, lane, flowcell, index sequence, quality&nbsp; filter, sequence, sequence quality etc. Hence before starting analysis, it is better to have a look at the fastq file. Download the example rnaseq files from <a href="https://github.com/griffithlab/rnaseq_tutorial/wiki/RNAseq-Data" target="_blank">here</a>.&nbsp; Description about these files are provided in the same page. Please go through it to understand the source of the samples.<br />
+<br />
+<br />
+Print first 4 lines of fastq.gz<br />
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz | head -4</li>
+</ul>
+&nbsp;Print stats of a fastq file <br />
+<ul style="text-align: left;">
+<li>&nbsp;$ seqkit stats hcc1395_normal_rep1_r1.fastq.gz</li>
+</ul>
+Print all the reads in a fastq<br />
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -n</li>
+</ul>
+Count the number of reads<br />
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -n | wc -l&nbsp;</li>
+</ul>
+&nbsp;Print the reads in each file for all 12 files (works in bash shell). If you do not want to use seqkit, you can use zgrep program. Assumption here is that all reads come from same machine.<br /><div>
+<ul style="text-align: left;">
+<li>$ for i in *.gz; do echo $i;&nbsp; seqkit seq $i -n | wc -l; done | paste - -&nbsp;</li>
+<li>$ for i in *.gz; do echo $i;&nbsp; zgrep -P "^\@K00193" $i&nbsp; | wc -l; done | paste - -&nbsp;</li>
+</ul>
+Base frequency in any given read (for each nucleotide):</div>
+<div>
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -s&nbsp; | head -1 | | fold -w1 | sort | uniq -c</li>
+</ul>
+</div>
+<div>
+&nbsp;Count frequency of bases in a fastq file: </div>
+<div>
+<ul style="text-align: left;">
+<li>&nbsp; $ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -s&nbsp;&nbsp; | fold -w1 | sort | uniq -c</li>
+</ul>
+&nbsp;This code will print frequency per base<br /><ul style="text-align: left;">
+</ul>
+</div>
+</div>

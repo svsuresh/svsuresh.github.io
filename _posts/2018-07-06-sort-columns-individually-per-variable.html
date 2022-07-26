@@ -1,0 +1,35 @@
+---
+layout: post
+title: 'Sort columns individually per variable '
+date: '2018-07-06T20:47:00.001+05:30'
+author: suresh
+tags:
+- sort
+- dplyr
+modified_time: '2018-07-06T20:47:58.017+05:30'
+thumbnail: https://2.bp.blogspot.com/-1QK7VymkJlw/Wz-FfO9tMMI/AAAAAAAABJU/86nXRaw1EBIl3J0gIhtMwXqg9DhhoazTgCLcBGAs/s72-c/sort.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-4316392085342544369
+blogger_orig_url: https://digibio.blogspot.com/2018/07/sort-columns-individually-per-variable.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+This is a simple task, but some how I got confused. Requirement is that sort columns independent of each other. Most of us, who used to excel know that independent sorting of columns is not possible without coding. One can sort manually, but it is cumbersome when you have tons of columns. Let us look at the data what we have, then we can get onto the code.</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-1QK7VymkJlw/Wz-FfO9tMMI/AAAAAAAABJU/86nXRaw1EBIl3J0gIhtMwXqg9DhhoazTgCLcBGAs/s1600/sort.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="293" data-original-width="1175" height="158" src="https://2.bp.blogspot.com/-1QK7VymkJlw/Wz-FfO9tMMI/AAAAAAAABJU/86nXRaw1EBIl3J0gIhtMwXqg9DhhoazTgCLcBGAs/s640/sort.png" width="640" /></a></div>
+Data has 10 samples and arbitrary number of pathways found in each sample at that time. Requirement is that at each time point, which sample has highest number of pathways. Data can be downloaded from <a href="https://drive.google.com/open?id=1eVRuP7jEZPI6FV40AnaeGYcGPCjwOYObrIPop7ShfQo">here</a>.<br />
+====================================<br />
+$ df1=read.csv("sort_independent.txt", sep="\t", stringsAsFactors = F, strip.white = T)<br />$ df1 %&gt;% gather(time,v, -sample) %&gt;% arrange(time,desc(v)) %&gt;% select (time, sample, v)<br />
+=====================================<br />
+&nbsp;output:<br />
+======================================<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; time&nbsp;&nbsp;&nbsp; sample&nbsp;&nbsp;&nbsp; v<br />1&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_2 1080<br />2&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_3 1032<br />3&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_1&nbsp; 883<br />4&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_5&nbsp; 751<br />5&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_8&nbsp; 731<br />6&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_6&nbsp; 493<br />7&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_9&nbsp; 360<br />8&nbsp;&nbsp;&nbsp; Time1 sample_10&nbsp; 334<br />9&nbsp;&nbsp;&nbsp; Time1&nbsp; sample_7&nbsp; 214<br />10&nbsp;&nbsp; Time1&nbsp; sample_4&nbsp;&nbsp; 60<br />11&nbsp; Time10&nbsp; sample_4 1190<br />12&nbsp; Time10&nbsp; sample_2 1127<br />13&nbsp; Time10&nbsp; sample_5 1092<br />14&nbsp; Time10&nbsp; sample_7 1008<br />15&nbsp; Time10&nbsp; sample_8&nbsp; 612<br />16&nbsp; Time10&nbsp; sample_9&nbsp; 583<br />17&nbsp; Time10&nbsp; sample_3&nbsp; 260<br />18&nbsp; Time10 sample_10&nbsp;&nbsp; 78<br />19&nbsp; Time10&nbsp; sample_1&nbsp;&nbsp; 20<br />20&nbsp; Time10&nbsp; sample_6&nbsp;&nbsp; 16<br />
+===================================<br />
+This is pretty simple. However, let us this do this in a complex way so that we will have a list of data frames, one data frame for Time point and sort samples within each data frame (time point)<br />
+code:<br />
+===================================<br />
+$ df1 %&gt;% gather(.,time,v,-sample) %&gt;% split(.$time) %&gt;% map(~select(.,c(1,3)) %&gt;% arrange(desc(v)))<br />
+===================================<br />
+output:<br />
+====================================<br />
+$Time1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sample&nbsp;&nbsp;&nbsp; v<br />1&nbsp;&nbsp; sample_2 1080<br />2&nbsp;&nbsp; sample_3 1032<br />3&nbsp;&nbsp; sample_1&nbsp; 883<br />4&nbsp;&nbsp; sample_5&nbsp; 751<br />5&nbsp;&nbsp; sample_8&nbsp; 731<br />6&nbsp;&nbsp; sample_6&nbsp; 493<br />7&nbsp;&nbsp; sample_9&nbsp; 360<br />8&nbsp; sample_10&nbsp; 334<br />9&nbsp;&nbsp; sample_7&nbsp; 214<br />10&nbsp; sample_4&nbsp;&nbsp; 60<br /><br />$Time10<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sample&nbsp;&nbsp;&nbsp; v<br />1&nbsp;&nbsp; sample_4 1190<br />2&nbsp;&nbsp; sample_2 1127<br />3&nbsp;&nbsp; sample_5 1092<br />4&nbsp;&nbsp; sample_7 1008<br />5&nbsp;&nbsp; sample_8&nbsp; 612<br />6&nbsp;&nbsp; sample_9&nbsp; 583<br />7&nbsp;&nbsp; sample_3&nbsp; 260<br />8&nbsp; sample_10&nbsp;&nbsp; 78<br />9&nbsp;&nbsp; sample_1&nbsp;&nbsp; 20<br />10&nbsp; sample_6&nbsp;&nbsp; 16<br />=====================================</div>

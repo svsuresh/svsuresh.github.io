@@ -1,0 +1,166 @@
+---
+layout: post
+title: natural sort chromosome number in R - method 1
+date: '2015-06-05T12:01:00.001+05:30'
+author: suresh
+tags:
+- natural sort
+- human sort
+- ucsc chrom
+modified_time: '2016-04-29T20:23:46.418+05:30'
+thumbnail: https://4.bp.blogspot.com/-xj0yFijXyFE/VXE08O2KPeI/AAAAAAAAAN8/XaNxCCVCqhg/s72-c/orig_chr.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-2136180740292512414
+blogger_orig_url: https://digibio.blogspot.com/2015/06/natural-sort-chromosome-number-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Some times, trivial issues bother. Here is a small tip to sort a chromosomes (values in a column) in human readable chronological order. This sorting is also called alpha, numeric sort. Following note, gives a general example to sort a data frame in natural order based on any user mentioned column.<br />
+<br />
+Requirements:<br />
+package "naturalsort" in R<br />
+<br />
+Commands:<br />
+<br />
+1. data.frame[naturalorder(vector in dataframe), ] (by default, the values are sorted ascending order)<br />
+Note: This would sort the data frame in natural sort as per the values in mentioned vector in data frame, in ascending order.<br />
+<br />
+2. data.frame[naturalorder((vector in dataframe), decreasing=TRUE), ]<br />
+(by default, the values are sorted ascending order) <br />
+<br />
+Note: This would sort the data frame in natural sort as per the values in metioned vector in data frame, in descending order.<br />
+<br />
+Example:<br />
+<br />
+1. chr.hg19[naturalorder(chr.hg19$V1),]<br />
+This would sort chrosomes from chromosome 1 to chromsome XY. <br />
+<br />
+2.&nbsp; chr.hg19[naturalorder((chr.hg19$V1),decreasing=TRUE),]<br />
+This would sort chrosomes from chromosome XY to chromsome 1. <br />
+Note: chr.hg19 is data frame created from http://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes and taking only chromosomes. <br />
+<br />
+Case study:<br />
+1) Import chromosome sizes from UCSC<br />
+2) Sort the chromosomes in human readable order. <br />
+<br />
+Method: <br />
+<br />
+1)&nbsp; Load library "naturalsort" in R.<br />
+<br />
+2) Download the data and store it as object in R. <br />
+command: chr.hg19=read.delim(url("http://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes"),&nbsp; <br />
+<br />
+3) Print chr.hg19<br />
+command: dim(chr.hg19)<br />
+<br />
+This would display tha there are 93 rows and with 2 columns. First colum contains chromosomes, other artefacts. Column two contains lengths of the chromosomes in columns in bp.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-xj0yFijXyFE/VXE08O2KPeI/AAAAAAAAAN8/XaNxCCVCqhg/s1600/orig_chr.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="https://4.bp.blogspot.com/-xj0yFijXyFE/VXE08O2KPeI/AAAAAAAAAN8/XaNxCCVCqhg/s640/orig_chr.png" width="377" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+3) Since we deal with chromosomes only, we need to extract only chromosomes and their coordinates. We know that chromosomes are 24 (22 autosomes + XY). </div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+Command: chr29=chr.hg19[1:24,] </div>
+<div class="separator" style="clear: both; text-align: left;">
+This would save first 24 entries/chromosomes as a data.frame. Please note that chromosomes are sorted numerically (column V1).</div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+&nbsp;<a href="http://2.bp.blogspot.com/-bo07SJ-QVpQ/VXE07SfqgWI/AAAAAAAAANw/5wCIVnJFerY/s1600/chrom1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="https://2.bp.blogspot.com/-bo07SJ-QVpQ/VXE07SfqgWI/AAAAAAAAANw/5wCIVnJFerY/s640/chrom1.png" width="280" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: left;">
+4) Sort chromosomes in human/alpha numeric order, in descending order i.e from chr1 to chrx and y.&nbsp;</div>
+command:&nbsp; chr.hg19.asc=chr.hg19[naturalorder(chr.hg19$V1),]<br />
+<div class="separator" style="clear: both; text-align: left;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-6n0aiYyWVX0/VXE07flY55I/AAAAAAAAAN4/5SPThIpMoQc/s1600/chr1_inc.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="https://3.bp.blogspot.com/-6n0aiYyWVX0/VXE07flY55I/AAAAAAAAAN4/5SPThIpMoQc/s640/chr1_inc.png" width="499" /></a></div>
+<br />
+5) Now, for some reason, if you need to sort in reverse order (ie. descending fashion), following is the command:<br />
+<br />
+&nbsp;command: chr.hg19[naturalorder((chr.hg19$V1),decreasing=TRUE),]<br />
+&nbsp; <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-aHrSL003uBQ/VXE07e4G2sI/AAAAAAAAAN0/bE5aWNHtBAk/s1600/chr_dec.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="554" src="https://1.bp.blogspot.com/-aHrSL003uBQ/VXE07e4G2sI/AAAAAAAAAN0/bE5aWNHtBAk/s640/chr_dec.png" width="640" /></a></div>
+<br />
+All commands:<br />
+<br />
+library(naturalsort) ## loads the library naturalsort<br />
+chr.hg19=read.delim(url("http://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes"), header=FALSE) ## downloads the chromomosome sizes and stores it as object "chr.hg19"<br />
+chr.hg19=chr.hg19[1:24,] # extracts first 24 lines (chromosomes)<br />
+chr.hg19.asc=chr.hg19[naturalorder(chr.hg19$V1),] ## sorts the chromosomes in natural order in ascending fashion<br />
+chr.hg19.desc=chr.hg19[naturalorder((chr.hg19$V1), decreasing=TRUE),] ##&nbsp; sorts the chromosomes in natural order in descending fashion.<br />
+<br />
+<br />
+<br />
+<br /></div>

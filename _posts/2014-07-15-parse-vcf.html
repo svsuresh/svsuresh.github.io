@@ -1,0 +1,117 @@
+---
+layout: post
+title: Parse VCF 1
+date: '2014-07-15T12:56:00.000+05:30'
+author: suresh
+tags:
+- tabix
+- vcf
+- bcf tools
+- igvtools
+- indexing
+modified_time: '2015-05-30T02:50:36.828+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-851357444712486977
+blogger_orig_url: https://digibio.blogspot.com/2014/07/parse-vcf.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div dir="ltr" style="text-align: left;" trbidi="on">
+VCF is variant call format i.e it is a format defined to store variants. Though this format is meant to store variants, currently, it is being used to store entire genomic information (i.e all the genomic coordinates). In that case, it is called gVCF (g stands for genomic). VCF file being such a central point in annotation of NGS analysis.<br />
+<br />
+How to index VCF?<br />
+<br />
+There are several tools index vcf. IGV tools, Tabix etc. Indexing would help user extract variants and their properties (in INFO and FORMAT columns).<br />
+<br />
+<b>Indexing with IGVtools:</b><br />
+<br />
+Requirements:<br />
+<br />
+1) IGV tools (can be downloaded from downloads section in <br />
+http://www.broadinstitute.org/software/igv/log-in. This needs one time registration)<br />
+2) Any of the GNU-linux distributions (rpm based, deb based, source based)<br />
+3) vcf file<br />
+<br />
+Please note that IGVtools is a stickler to VCF standards. VCF standards can be understood from http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41.&nbsp; If there is non-standard entry, IGVtools refuse to index it. For eg. INFO field should not have entries with space between them. Cardio vascular disease is not accepted, where cardiovasculardisease is accepted. IGV tools throws an error in later case.<br />
+<br />
+Once all the required files in place run following command:<br />
+<br />
+sh&nbsp; &lt;path to igv tools&gt;/igvtools&nbsp; index &lt;input&gt;.vcf<br />
+<br />
+Example code:<br />
+sh&nbsp; /opt/igvtools_2.3.32/igvtools&nbsp; index&nbsp; gatk_output.vcf <br />
+<br />
+This would create a new file with idx extension.<br />
+Using the above example, user should see two files: gatk_output.vcf and gatk_output.vcf.idx (.idx file- index file)<br />
+<br />
+This index file is mandatory to load VCF file in IGV. Current versions of IGV prompts user if idx file is missing. However, it looks for index file in the same folder where VCF file is present.<br />
+<br />
+<br />
+<b>Indexing with tabix:</b><br />
+<br />
+Requirements:<br />
+1) Install tabix and bgzip (ubuntu/debian have these&nbsp; two tools in repositories)<br />
+2) VCF file<br />
+<br />
+Indexing and extracting part of VCF:<br />
+<br />
+1) First zip the vcf file using bgzip. gzipped files are not indexed by tabix.<br />
+<br />
+command line: bgzip &lt;input&gt;.vcf<br />
+Example: bgzip gatk_output.vcf<br />
+<br />
+bgzip will create zipped vcf file with gz extension. In the above example, gatk_output.vcf.gz would be created in user space.<br />
+<br />
+2) Index the zipped vcf file using tabix<br />
+<br />
+command line: tabix&nbsp; -p&nbsp; vcf&nbsp; &lt;input_vcf.gz.&gt; <br />
+Example: tabix -p vcf gatk_output.vcf.gz<br />
+<br />
+-p option is to denote input file type. In this case, it is vcf. Tabix supports indexing of gff, bed, sam, vcf.<br />
+<br />
+After indexing, user should see a new file with extension .tbi in the current foler. In the above example, user should see gatk_output.vcf.gz.tbi in current folder.<br />
+<br />
+Index the zipped vcf file using bcftools:<br />
+command line: bcftools&nbsp; index&nbsp; &lt;input_vcf.gz.&gt; <br />
+Example: bcftools&nbsp; index gatk_output.vcf.gz<br />
+<br />
+3) Extract region of interest:<br />
+<br />
+Command line:&nbsp;&nbsp; tabix &lt;input.vcf.gz&gt; &lt;region of interest&gt; <br />
+Example:&nbsp; tabix&nbsp; gatk_output.vcf.gz&nbsp; chr18: 1-100000<br />
+<br />
+Out put would be in original format without VCF headers. To get VCF headers, type following command:<br />
+<br />
+Command line:&nbsp;&nbsp; tabix -h &lt;input.vcf.gz&gt; &lt;region of interest&gt; <br />
+Example:&nbsp; tabix&nbsp; -h gatk_output.vcf.gz&nbsp; chr18: 1-100000<br />
+<br />
+User can direct the output to another vcf file:<br />
+<br />
+Example:&nbsp; tabix&nbsp; -h gatk_output.vcf.gz&nbsp; chr18: 1-100000 &gt; chr18.vcf<br />
+<br />
+To extract partial information from VCFs stored on public servers: For eg. dbSNP VCFs stored on ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/<br />
+<br />
+1) Create an index using tabix for VCF file:&nbsp; ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/All.vcf.gz<br />
+<br />
+command line:&nbsp;&nbsp; tabix -p vcf ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/All.vcf.gz<br />
+<br />
+This would take some time and creates an index file locally. In general, index files on remote servers will have different time stamps due to which extracting information fails (my general observation with NCBI servers). Tabix doesn't work if time stamps are different for eg. if time stamp on index file is earlier than source gzip file it would not work.<br />
+<br />
+2) Extract region of interest<br />
+<br />
+Command line:&nbsp; tabix -h &lt;remote_server_vcf.gz&gt; &lt;region of interest&gt;<br />
+Example: tabix&nbsp; -h&nbsp;&nbsp; ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/All.vcf.gz chr18: 1-100000<br />
+<br />
+<br />
+<br />
+<br /></div>
+<br />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52918388-1', 'auto');
+  ga('send', 'pageview');
+
+</script><br /></div>

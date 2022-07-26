@@ -1,0 +1,236 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Post data analysis, a biologist is left with significant genes. These significant genes are associated with fold change, p-value. In addition, they are associated with covariates (categorical variables) such as gender, disease state. There could be several other covariates that are associated with significant genes. In this example let us deal with two such variables: gender (male and female) and condition (normal and tumor).<br />
+<br />
+&nbsp;&nbsp;&nbsp; Initial figure would look like this: All the data plotted as box plot, for tumor and normal<br />
+<div class="separator" style="clear: both; text-align: left;">
+</div>
+<div class="separator" style="clear: both; text-align: left;">
+<a href="https://1.bp.blogspot.com/-sxck1S8fLAE/Wxp_pjyqeGI/AAAAAAAABD4/Oah80_0UMfsGVYvnm4TOyB0UzT4mHS68wCLcBGAs/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="747" data-original-width="972" height="490" src="https://1.bp.blogspot.com/-sxck1S8fLAE/Wxp_pjyqeGI/AAAAAAAABD4/Oah80_0UMfsGVYvnm4TOyB0UzT4mHS68wCLcBGAs/s640/Rplot01.png" width="640" /></a></div>
+<br />
+Final picture would look like this with per gene, per gender, per condition box plots: <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-PwAXXWp6y9U/WxqAq8RLNRI/AAAAAAAABEE/klyP3K3c2i0EhUSae4zb5qlU6Ic1qkA3wCLcBGAs/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://1.bp.blogspot.com/-PwAXXWp6y9U/WxqAq8RLNRI/AAAAAAAABEE/klyP3K3c2i0EhUSae4zb5qlU6Ic1qkA3wCLcBGAs/s640/Rplot.png" width="640" /></a></div>
+Now let us start. Fir simulate expression data for 10 genes  with condition (disease state) and gender (male and female) as covariates. The data has expression values 10 genes and 12 samples.<br />
+Code to simulate data frame:<br />
+==============<br />
+$ df1 = data.frame(genes = paste0("gene_", seq(1, 10)), matrix(sample(round(rnorm( 120, 4, 4), 2)), 10, 12))<br />
+$ colnames(df1)[-1] = paste0("sample", seq(1, 12))<br />
+$ head(df1)<br />
+&gt; head(df1)<br />
+&nbsp;&nbsp; genes sample1 sample2 sample3 sample4 sample5 sample6 sample7<br />
+1 gene_1&nbsp;&nbsp; -0.35&nbsp;&nbsp;&nbsp; 3.15&nbsp;&nbsp;&nbsp; 5.69&nbsp;&nbsp; -4.23&nbsp;&nbsp;&nbsp; 3.40&nbsp;&nbsp;&nbsp; 4.81&nbsp;&nbsp;&nbsp; 1.84<br />
+2 gene_2&nbsp;&nbsp; -2.40&nbsp;&nbsp;&nbsp; 5.23&nbsp;&nbsp;&nbsp; 3.13&nbsp;&nbsp;&nbsp; 0.23&nbsp;&nbsp;&nbsp; 1.83&nbsp;&nbsp;&nbsp; 9.54&nbsp;&nbsp;&nbsp; 1.38<br />
+3 gene_3&nbsp;&nbsp; -3.59&nbsp;&nbsp; -0.34&nbsp;&nbsp;&nbsp; 9.55&nbsp;&nbsp;&nbsp; 7.19&nbsp;&nbsp;&nbsp; 6.63&nbsp;&nbsp; 11.06&nbsp;&nbsp;&nbsp; 5.30<br />
+4 gene_4&nbsp;&nbsp;&nbsp; 5.89&nbsp;&nbsp;&nbsp; 0.51&nbsp;&nbsp;&nbsp; 8.64&nbsp;&nbsp; -3.56&nbsp;&nbsp;&nbsp; 7.88&nbsp;&nbsp;&nbsp; 2.67&nbsp;&nbsp; 13.93<br />
+5 gene_5&nbsp;&nbsp;&nbsp; 3.41&nbsp;&nbsp;&nbsp; 4.44&nbsp;&nbsp;&nbsp; 6.06&nbsp;&nbsp;&nbsp; 8.70&nbsp;&nbsp;&nbsp; 0.49&nbsp;&nbsp;&nbsp; 1.82&nbsp;&nbsp;&nbsp; 8.71<br />
+6 gene_6&nbsp;&nbsp;&nbsp; 0.79&nbsp;&nbsp;&nbsp; 6.56&nbsp;&nbsp;&nbsp; 5.97&nbsp;&nbsp;&nbsp; 5.70&nbsp;&nbsp;&nbsp; 0.64&nbsp;&nbsp; -1.40&nbsp;&nbsp;&nbsp; 8.37<br />
+&nbsp; sample8 sample9 sample10 sample11 sample12<br />
+1&nbsp;&nbsp;&nbsp; 4.44&nbsp;&nbsp; -3.81&nbsp;&nbsp;&nbsp;&nbsp; 4.07&nbsp;&nbsp;&nbsp;&nbsp; 4.77&nbsp;&nbsp;&nbsp;&nbsp; 0.63<br />
+2&nbsp;&nbsp;&nbsp; 2.09&nbsp;&nbsp;&nbsp; 0.23&nbsp;&nbsp;&nbsp;&nbsp; 1.90&nbsp;&nbsp;&nbsp;&nbsp; 5.36&nbsp;&nbsp;&nbsp; 12.26<br />
+3&nbsp;&nbsp;&nbsp; 3.36&nbsp;&nbsp;&nbsp; 1.03&nbsp;&nbsp;&nbsp;&nbsp; 4.35&nbsp;&nbsp;&nbsp; -1.29&nbsp;&nbsp;&nbsp;&nbsp; 7.00<br />
+4&nbsp;&nbsp;&nbsp; 6.83&nbsp;&nbsp;&nbsp; 4.51&nbsp;&nbsp;&nbsp;&nbsp; 3.38&nbsp;&nbsp;&nbsp; -0.35&nbsp;&nbsp;&nbsp;&nbsp; 4.54<br />
+5&nbsp;&nbsp; 10.25&nbsp;&nbsp;&nbsp; 0.53&nbsp;&nbsp;&nbsp;&nbsp; 9.28&nbsp;&nbsp;&nbsp; 10.10&nbsp;&nbsp;&nbsp;&nbsp; 0.64<br />
+6&nbsp;&nbsp;&nbsp; 9.47&nbsp;&nbsp;&nbsp; 0.09&nbsp;&nbsp;&nbsp;&nbsp; 6.43&nbsp;&nbsp;&nbsp;&nbsp; 3.05&nbsp;&nbsp;&nbsp;&nbsp; 7.27 <br />
+<br />
+======================================<br />
+Now simulate the categorical variable data (gender and condition). Gender is male and female. Condition is Normal and Tumor. We have 6 samples of Normal and 6 samples of Tumor. With in each condition, 3 are males and 3 are females.<br />
+code:<br />
+===============================<br />
+&gt; pheno = data.frame( samples = paste0("sample", seq(1, 12)), condition = rep(c("Normal", "Tumor"), each = 6), gender = rep(rep(c("Male", "Female"), each = 3), 2))<br />
+&gt; pheno<br />
+&nbsp;&nbsp;&nbsp; samples condition gender<br />
+1&nbsp;&nbsp; sample1&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+2&nbsp;&nbsp; sample2&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+3&nbsp;&nbsp; sample3&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+4&nbsp;&nbsp; sample4&nbsp;&nbsp;&nbsp; Normal Female<br />
+5&nbsp;&nbsp; sample5&nbsp;&nbsp;&nbsp; Normal Female<br />
+6&nbsp;&nbsp; sample6&nbsp;&nbsp;&nbsp; Normal Female<br />
+7&nbsp;&nbsp; sample7&nbsp;&nbsp;&nbsp;&nbsp; Tumor&nbsp;&nbsp; Male<br />
+8&nbsp;&nbsp; sample8&nbsp;&nbsp;&nbsp;&nbsp; Tumor&nbsp;&nbsp; Male<br />
+9&nbsp;&nbsp; sample9&nbsp;&nbsp;&nbsp;&nbsp; Tumor&nbsp;&nbsp; Male<br />
+10 sample10&nbsp;&nbsp;&nbsp;&nbsp; Tumor Female<br />
+11 sample11&nbsp;&nbsp;&nbsp;&nbsp; Tumor Female<br />
+12 sample12&nbsp;&nbsp;&nbsp;&nbsp; Tumor Female <br />
+====================================<br />
+ggplot2 deals with long format better than wide format. Hence let us convert the expression data into long format first and then merge with phenotype data (pheno).<br />
+code:<br />
+==============================<br />
+library(tidyr)<br />
+df2 = gather(df1, "sample", "expression", -genes)<br />
+================================== <br />
+Once we have converted the data into long format, let us merge the data and make a single data frame. Make sure that common columns used in merging are of same type.<br />
+code:<br />
+==============================<br />
+pheno$samples=as.character(pheno$samples)<br />
+df3 = merge(df2, pheno, by.x = "sample", by.y = "samples")<br />
+head(df3)<br />
+&gt; head (df3)<br />
+&nbsp;&nbsp; sample&nbsp; genes expression condition gender<br />
+1 sample1 gene_1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -0.35&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+2 sample1 gene_2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -2.40&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+3 sample1 gene_3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -3.59&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+4 sample1 gene_4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.89&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+5 sample1 gene_5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.41&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+6 sample1 gene_6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.79&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp; Male<br />
+===============================<br />
+Now let us explore the ways of display the data. First let us display the data. Then we will show in different ways of representation. Our final goal is to show the data as box plot. We can show the box plots by the type (either by gender or by condition). Once we display the data by category, then display the data error bars and connect the means by line. First let us draw very basic box plot. Before that let us convert samples as levels.<br />
+code:<br />
+===========================<br />
+library(ggplot2)<br />
+df3$sample = as.factor(df3$sample)<br />
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) + geom_boxplot(position = position_dodge(width = 1.1))<br />
+=============================<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-sxck1S8fLAE/Wxp_pjyqeGI/AAAAAAAABD8/NcpB8MmVIVgp1QVzi72CvvaVrPgAnBI_gCEwYBhgL/s1600/Rplot01.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="747" data-original-width="972" height="490" src="https://4.bp.blogspot.com/-sxck1S8fLAE/Wxp_pjyqeGI/AAAAAAAABD8/NcpB8MmVIVgp1QVzi72CvvaVrPgAnBI_gCEwYBhgL/s640/Rplot01.png" width="640" /></a></div>
+Once we draw the box plots,&nbsp; let us draw the connecting the lines.<br />
+code:<br />
+=====================<br />
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    geom_boxplot(position = position_dodge(width = 1.1))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    stat_summary(fun.y=mean, geom="line", aes(group=1))  +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    stat_summary(fun.y=mean, geom="point", size=3)<br />
+====================================<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/--9Xvk5JXsdY/WxqD2oXNrgI/AAAAAAAABEY/bZKt63YxB9kHvRWbnaYqNmuFWACQDHRHQCLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://4.bp.blogspot.com/--9Xvk5JXsdY/WxqD2oXNrgI/AAAAAAAABEY/bZKt63YxB9kHvRWbnaYqNmuFWACQDHRHQCLcBGAs/s640/Rplot02.png" width="640" /></a></div>
+Boxplots draw median line, in general and in above picture, box plots are connected by mean. Once box plots are drawn,&nbsp; let us add the error bars. Since R is lazy, let us draw error bars first and then other stuff.<br />
+code:<br />
+==========================<br />
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) +<br />
+&nbsp;&nbsp;&nbsp;    stat_boxplot(geom="errorbar", width=.5)+<br />
+&nbsp;&nbsp;&nbsp;    geom_boxplot(position = position_dodge(width = 1.1))+<br />
+&nbsp;&nbsp;&nbsp;    stat_summary(fun.y=mean, geom="line", aes(group=1))  +<br />
+&nbsp;&nbsp;&nbsp;    stat_summary(fun.y=mean, geom="point", size=3)<br />
+====================================<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-Rgx1G6OZymU/WxqIizVu9CI/AAAAAAAABEw/H0duvOlKhhIiBLme_V3dw3GMYzbX1enewCLcBGAs/s1600/Rplot04.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://4.bp.blogspot.com/-Rgx1G6OZymU/WxqIizVu9CI/AAAAAAAABEw/H0duvOlKhhIiBLme_V3dw3GMYzbX1enewCLcBGAs/s640/Rplot04.png" width="640" /></a></div>
+Now that error bars are drawn, let us overlay the data (using jitter function) on boxplot.<br />
+code:<br />
+======================================<br />
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    stat_boxplot(geom="errorbar", width=.5)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp; geom_boxplot(position = position_dodge(width = 1.1))+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    stat_summary(fun.y=mean, geom="line", aes(group=1),lwd=1.2)  +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    stat_summary(fun.y=mean, geom="point", size=4, alpha=0.5)+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    geom_jitter(width = 0.1, color="black", alpha=0.5)<br />
+======================================= <br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-_XGq7xLnSNk/WxqIUdDu6wI/AAAAAAAABEs/JXwrUMpBSAkquykMQQ8jN1-vYJuaYCSHwCLcBGAs/s1600/Rplot03.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://1.bp.blogspot.com/-_XGq7xLnSNk/WxqIUdDu6wI/AAAAAAAABEs/JXwrUMpBSAkquykMQQ8jN1-vYJuaYCSHwCLcBGAs/s640/Rplot03.png" width="640" /></a></div>
+<br />
+<br />
+<br />
+<br />
+Let us beautify the plot now. We will remove background, increase the font size, remove the legend, increase tick marks and plot titles.<br />
+code: <br />
+===========================<br />
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) +<br />
+&nbsp;&nbsp;&nbsp; stat_boxplot(geom="errorbar", width=.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_boxplot(position = position_dodge(width = 1.1))+<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="line", aes(group=1),lwd=1.2)&nbsp; +<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", size=4, alpha=0.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_jitter(width = 0.1, color="black", alpha=0.5) +<br />
+&nbsp;&nbsp;&nbsp; labs(x = "Condition", y = "Expression")+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.major = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.minor = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br />
+======================================== <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-L-EB5niNI6w/WxqJfMZxeaI/AAAAAAAABE8/snLF7pV7KMEO2WT4_s3gmlULxGWx0xPPwCLcBGAs/s1600/Rplot06.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://3.bp.blogspot.com/-L-EB5niNI6w/WxqJfMZxeaI/AAAAAAAABE8/snLF7pV7KMEO2WT4_s3gmlULxGWx0xPPwCLcBGAs/s640/Rplot06.png" width="640" /></a></div>
+Now that we have cleaned up the graph little bit, let us draw box plots for all the genes. So far, the box plots represent cumulative data for all genes. Let us break this into per gene box plot.<br />
+code:<br />
+=======================================<br />
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) +<br />
+&nbsp;&nbsp;&nbsp; stat_boxplot(geom="errorbar", width=.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_boxplot(position = position_dodge(width = 1.1))+<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="line", aes(group=1),lwd=1.2)&nbsp; +<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", size=4, alpha=0.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_jitter(width = 0.1, color="black", alpha=0.5) +<br />
+&nbsp;&nbsp;&nbsp; labs(x = "Condition", y = "Expression")+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 12),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.major = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.minor = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp; )+<br />
+&nbsp;&nbsp;&nbsp; facet_grid( ~ genes,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scales = 'free_y',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; space = "free"<br />
+&nbsp;&nbsp;&nbsp; ) <br />
+&nbsp;=====================================<br />
+<div class="separator" style="clear: both; text-align: left;">
+<a href="https://3.bp.blogspot.com/-HVKcRniwniQ/WxqKShgAN1I/AAAAAAAABFE/UjApH0rVWygbMlGAWDTa8hI6kzHQAnjIACLcBGAs/s1600/Rplot07.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://3.bp.blogspot.com/-HVKcRniwniQ/WxqKShgAN1I/AAAAAAAABFE/UjApH0rVWygbMlGAWDTa8hI6kzHQAnjIACLcBGAs/s640/Rplot07.png" width="640" /> </a>Now this is per gene, per condition data. Let us now break this down to per gene, per condition, per gender data.</div>
+<div class="separator" style="clear: both; text-align: left;">
+code:</div>
+<div class="separator" style="clear: both; text-align: left;">
+=================</div>
+<div class="separator" style="clear: both; text-align: left;">
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) +</div>
+&nbsp;&nbsp;&nbsp; stat_boxplot(geom="errorbar", width=.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_boxplot(position = position_dodge(width = 1.1))+<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="line", aes(group=1),lwd=1.2)&nbsp; +<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", size=4, alpha=0.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_jitter(width = 0.1, color="black", alpha=0.5) +<br />
+&nbsp;&nbsp;&nbsp; labs(x = "Condition", y = "Expression")+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 9),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.major = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.minor = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.text.x = element_text(size = 14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.text.y = element_text(size = 18),<br />
+&nbsp;&nbsp;&nbsp; )+<br />
+&nbsp;&nbsp;&nbsp; facet_grid( gender ~ genes,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scales = 'free_y',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; space = "free"<br />
+&nbsp;&nbsp;&nbsp; )<br />
+============================<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-vhiC1eH2pCM/WxqLYeaib4I/AAAAAAAABFQ/dmvPmp6Q-tgGvVjOCeM8P3LrNmDuIM0tgCLcBGAs/s1600/Rplot09.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://4.bp.blogspot.com/-vhiC1eH2pCM/WxqLYeaib4I/AAAAAAAABFQ/dmvPmp6Q-tgGvVjOCeM8P3LrNmDuIM0tgCLcBGAs/s640/Rplot09.png" width="640" /></a></div>
+&nbsp;Now that we have plotted expression data per condition, per gene, per gender, let us plot total gene expression (all 10 gene expression) at the end.<br />
+code:<br />
+========================================<br />
+ggplot(df3, aes(x = condition, y = expression, fill = condition)) +<br />
+&nbsp;&nbsp;&nbsp; stat_boxplot(geom="errorbar", width=.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_boxplot(position = position_dodge(width = 1.1))+<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="line", aes(group=1),lwd=1.2)&nbsp; +<br />
+&nbsp;&nbsp;&nbsp; stat_summary(fun.y=mean, geom="point", size=4, alpha=0.5)+<br />
+&nbsp;&nbsp;&nbsp; geom_jitter(width = 0.1, color="black", alpha=0.5) +<br />
+&nbsp;&nbsp;&nbsp; labs(x = "Condition", y = "Expression")+<br />
+&nbsp;&nbsp;&nbsp; theme_bw()+<br />
+&nbsp;&nbsp;&nbsp; theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.x = element_text(size = 7),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.text.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.x = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; axis.title.y = element_text(size = 24),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.major = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; panel.grid.minor = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legend.position = "none",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.text.x = element_text(size = 14),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strip.text.y = element_text(size = 18)<br />
+&nbsp;&nbsp;&nbsp; )+<br />
+&nbsp;&nbsp;&nbsp; facet_grid( gender ~ genes,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scales = 'free_y',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; space = "free",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; margins = "genes"<br />
+&nbsp;&nbsp;&nbsp; )<br />
+=================================<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-qSgXK2B53Pc/WxqMKs29OaI/AAAAAAAABFg/7NRP85dNp1EXDUoioWcw2Rcm7J7c00P9wCLcBGAs/s1600/final.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="922" data-original-width="1200" height="490" src="https://1.bp.blogspot.com/-qSgXK2B53Pc/WxqMKs29OaI/AAAAAAAABFg/7NRP85dNp1EXDUoioWcw2Rcm7J7c00P9wCLcBGAs/s640/final.png" width="640" /></a></div>
+</div>

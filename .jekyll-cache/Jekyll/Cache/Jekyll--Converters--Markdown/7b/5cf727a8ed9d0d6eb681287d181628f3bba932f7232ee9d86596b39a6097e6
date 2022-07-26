@@ -1,0 +1,17 @@
+I"<p>One of the easiest conversions is to convert a tab file to fasta. Reverse is also true except that some times sequences are in multiple lines and can cause issues in format conversion.</p>
+
+<p>Following is an example tab file to try on:</p>
+<pre><code class="language-code">seq1    atgc
+seq2    gcta
+seq3    agtcg
+</code></pre>
+<p>Let’s list the methods to convert</p>
+<pre><code class="language-code">$ seqkit -w 0 tab2fx &lt;input.fa&gt; -o &lt;output.fa(.gz)&gt;
+$ awk -v OFS="\n" '{print "&gt;"$1,$2}' test.txt
+$ awk -v OFS="\n" '{$1="&gt;"$1}1' test.txt
+$ sed  's/^/&gt;/;s/\t/\n/' test.txt 
+$ sed -r 's/^(.*)\t(.*)/&gt;\1\n\2/' test.txt
+$ parallel --colsep '\t' echo '\&gt;'{1}'\\n'{2} :::: test.txt
+$ while IFS=$'\t' read i j ; do echo "&gt;"$i"\n"$j ; done &lt; test.txt
+</code></pre>
+:ET

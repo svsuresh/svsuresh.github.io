@@ -1,0 +1,86 @@
+<div style="text-align: justify;">
+Some times, we need to merge multiple fastq files into one single fastq. However, for some reason, let us say there are multiple directories and within each directory, there are fastq files. These fastq files may or may not be equal in number and also may have different file naming pattern. Let us take a simple example where there are 3 samples and for each sample, there are uneven number of replicates to be merged. For the sake of simplicity, I took only one read file.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Below is the organization of samples and their contents. Samples are located in a directory called "test".</div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-OARP_ln9jUc/Xkzp4Kt_4xI/AAAAAAAABRk/nsXRXc4X4S4k0LgpCf2eB6q-z9tSYYLPgCLcBGAsYHQ/s1600/directory.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="451" data-original-width="363" height="400" src="https://1.bp.blogspot.com/-OARP_ln9jUc/Xkzp4Kt_4xI/AAAAAAAABRk/nsXRXc4X4S4k0LgpCf2eB6q-z9tSYYLPgCLcBGAsYHQ/s400/directory.png" width="321" /></a></div>
+<div style="text-align: justify;">
+Observe that each sample has uneven number of files and task is to merge fastq file sample wise and merged files will be placed in a directory by name "merged".&nbsp; Following are the steps to do that:</div>
+<ol>
+<li>Create a dictionary with folder name as key and files as values (Key=value pair)</li>
+<li>Create a list of directories&nbsp; </li>
+<li>Using lambda wild cards access each key and key values come from step 2.</li>
+</ol>
+<div style="text-align: justify;">
+Here is the snakemake code:</div>
+<div style="text-align: justify;">
+=====================================</div>
+<div style="text-align: justify;">
+# Import python library </div>
+<div style="text-align: justify;">
+import os<br />
+<br />
+# Create an empty sample dictionary </div>
+<div style="text-align: justify;">
+sample_dict = {}</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+# Fill the dictionary. There are better ways of creating dictionary. </div>
+<div style="text-align: justify;">
+for i in (os.listdir("test")):<br />
+&nbsp;&nbsp;&nbsp; sample_dict[i] = ["test" + os.sep + i + os.sep + j for j in os.listdir(os.path.join("test", i))]</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+# Print the dictionary to check if every thing is correct or not<br />
+print(sample_dict)</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+# Create sample list<br />
+samples = glob_wildcards("test/{sample}/{id}.fastq").sample<br />
+</div>
+<div style="text-align: justify;">
+# Create unique sample list<br />
+samples = sorted(set(samples))<br />
+</div>
+<div style="text-align: justify;">
+# Check the sample list<br />
+print(samples)<br />
+<br />
+rule all:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expand("merge/{sample}_merged.fastq", sample=samples)<br />
+<br />
+rule first:<br />
+&nbsp;&nbsp;&nbsp; input:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lambda wildcards: sample_dict[wildcards.sample]<br />
+&nbsp;&nbsp;&nbsp; output:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "merge/{sample}_merged.fastq"<br />
+&nbsp;&nbsp;&nbsp; shell:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "cat {input} &gt; {output}"</div>
+<div style="text-align: justify;">
+=====================================</div>
+<div style="text-align: justify;">
+lambda wildcards will access each element in the dictionary (sample_dict) based on the values in samples object. We have defined samples in rule all. Execute the code a directory upstream to the test.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Output would be stored in a folder called "merge".&nbsp; Contents of merge directory, post merging is:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-sz8Nlt-jRCE/XkzuOVlmvYI/AAAAAAAABRw/OpLC_1XDfXcb3jZUPBnNGX__ZodDoa7ngCLcBGAsYHQ/s1600/final.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="593" data-original-width="491" height="400" src="https://1.bp.blogspot.com/-sz8Nlt-jRCE/XkzuOVlmvYI/AAAAAAAABRw/OpLC_1XDfXcb3jZUPBnNGX__ZodDoa7ngCLcBGAsYHQ/s400/final.png" width="330" /></a></div>
+<div style="text-align: justify;">
+Now you see there are 3 merged files in merge directory. Now you can limit the files to R1 or R2 whichever you like.</div>

@@ -1,0 +1,46 @@
+---
+layout: post
+title: Replace column names in R from another data frame
+date: '2018-06-12T22:15:00.000+05:30'
+author: suresh
+tags:
+- data frame
+- replacement
+- loop
+- column name
+- cran-R
+modified_time: '2018-06-12T22:15:22.949+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-2660910227291235244
+blogger_orig_url: https://digibio.blogspot.com/2018/06/replace-column-names-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Well, one request to replace column names of a data frame from another one. In case, there is no match, keep the original one.<br />
+<br />
+=======================================<br />
+&gt; bar=read.csv("bar.txt", sep="\t", header = T, strip.white = T,stringsAsFactors = F)<br />
+&gt; bartable=read.csv("table.tsv", sep="\t", header = T, strip.white = T, stringsAsFactors = F)<br />
+<br />
+&gt; bartable<br />
+gene ATAGTTCTCGT GAAGCAGTATG GAAGACTTGGT AAAAAAAAAA<br />
+1  gene1           0           0           3          0<br />
+2 gen1e2           0           0           0          0<br />
+<br />
+&gt; bar<br />
+Sample     Barcode<br />
+1    sc1 CCTAGATTAAT<br />
+2    sc2 GAAGACTTGGT<br />
+3    sc3 GAAGCAGTATG<br />
+4    sc4 GGTAACCTGAC<br />
+5    sc5 ATAGTTCTCGT<br />
+&gt; for (i in colnames(bartable)){<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    if ( i %in% bar$Barcode){<br />
+&nbsp;&nbsp;&nbsp;&nbsp;        colnames(bartable)[match(i,colnames(bartable))] =as.character (bar [which&nbsp;&nbsp;&nbsp; (bar$Barcode==i),][1])<br />
+&nbsp;&nbsp;&nbsp;    }<br />
+}<br />
+<br />
+&gt; bartable<br />
+gene sc5 sc3 sc2 AAAAAAAAAA<br />
+1  gene1   0   0   3          0<br />
+2 gen1e2   0   0   0          0<br />
+================================</div>

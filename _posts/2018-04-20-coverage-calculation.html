@@ -1,0 +1,83 @@
+---
+layout: post
+title: 'coverage calculation '
+date: '2018-04-20T16:10:00.001+05:30'
+author: suresh
+tags:
+- mpileup
+- bam
+- coverage
+- depth
+- igvtools
+- samtools
+modified_time: '2019-02-04T09:19:16.736+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-536904283632979000
+blogger_orig_url: https://digibio.blogspot.com/2018/04/coverage-calculation.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+There are times that we struggle with basic stuff and forum links are either expired or circular. One such stuff is calculate the average coverage for any given region in a bam file. Since bam format is ubiquitous in alignment, we assume that there are several tools can do this. Many tools exist to manipulate bam files, but none of them do little beyond basic stuff. But most of the commands are convoluted or require more than bam files (.bed, .fa and so on so forth). In addition, different tools use different cut-offs (as default) in producing read depth. They are not documented and even if they are, they will be some where tucked in the corner either in source code or&nbsp; serpentine manuals. In general, manuals are like tax laws. You need an expert to get full advantage of the system. Okay, let us move on to topic. Let us say you want coverage for a region and you are given a bam file without reference sequence file or a bed file. Samtools and IGVtools can help you out. But if you use default arguments, you end up vastly different values. Below are the three commands which give you comparable coverage for any given region:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ samtools depth -a -d 100000&nbsp; -r&nbsp; chr17:41243668-41246110 test.bam | datamash mean 3</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+output: 27012.516987311.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+-a = for all sites</div>
+<div style="text-align: justify;">
+-d = maximum depth cutoff</div>
+<div style="text-align: justify;">
+-r = region</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+27012.516987311 </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ samtools mpileup -ABQ0 -d 100000&nbsp; -r&nbsp; chr17:41243668-41246110 test.bam | datamash mean 4</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+output:&nbsp; 27016.835448219</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+-A = do not skip any anomalous reads</div>
+<div style="text-align: justify;">
+-BQ0= cut off BQ value is 0</div>
+<div style="text-align: justify;">
+-d = maximum depth cutoff</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+$ igvtools count&nbsp; -w 1 --query&nbsp; chr17:41243668-41246110 test.bam test.wig hg19 </div>
+<div style="text-align: justify;">
+$ sed '1,2d' test3.wig | datamash mean 2</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+output: </div>
+<div style="text-align: justify;">
+27013.084731887</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+-w = width of the window</div>
+<div style="text-align: justify;">
+hg19= build name. IGV stores the genome information igv/genomes folder in your home folder if you are on linux. Or you can use chrom.sizes (https://github.com/igvteam/igv/tree/master/resources/chromSizes) instead of genome (hg19 here)</div>
+<div style="text-align: justify;">
+test.wig = output file in wig format. Wig format tab separated format. </div>
+<div style="text-align: justify;">
+'1,2'd = delete first two lines</div>
+<div style="text-align: justify;">
+<br />
+Link to download IGV tools is available under "Install igvtools" section in page: https://software.broadinstitute.org/software/igv/download.<br />
+<br /></div>
+</div>

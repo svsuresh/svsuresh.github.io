@@ -1,0 +1,29 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+One of the packages in R to generate venn diagrams is <a href="https://cran.r-project.org/web/packages/VennDiagram/index.html">VennDiagram</a>. It draws venn diagrams fast and allows sufficient customization. However, it is not clear how to add external text to the diagram from the manual. Let us say we want to add number of samples from each list to the diagram some thing like this:</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-Qw6f2PeVOoc/W0zXbQiHC7I/AAAAAAAABKA/4ZZEpnSnd78OqYM65o6x82bA2bUzf-DYgCLcBGAs/s1600/test.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="800" data-original-width="800" height="320" src="https://4.bp.blogspot.com/-Qw6f2PeVOoc/W0zXbQiHC7I/AAAAAAAABKA/4ZZEpnSnd78OqYM65o6x82bA2bUzf-DYgCLcBGAs/s320/test.png" width="320" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: left;">
+Simulated data has two data frames:df1 and df2. Each df has 10 genes and 4 genes&nbsp; in common. Gene names are in row names of the data frame. Example code for simulation and for above image is given below:</div>
+<div class="separator" style="clear: both; text-align: left;">
+============================================ </div>
+<div class="separator" style="clear: both; text-align: left;">
+&gt; gene=paste0("gene_", 1:10)</div>
+&gt; expn=matrix(rep(rnorm(1:10),10),10,10)<br />
+&gt; df1= data.frame("expn"=expn)<br />
+&gt; row.names(df1)=gene<br />
+&gt; gene2=paste0("gene_", 7:16)<br />
+&gt; expn2=matrix(rep(rnorm(1:10),10),10,10)<br />
+&gt; df2= data.frame("expn"=expn2)<br />
+&gt; row.names(df2)=gene2<br />
+&gt; library(VennDiagram)<br />
+<div class="separator" style="clear: both; text-align: left;">
+&gt; venn.diagram(list("df1 (n=10)"=row.names(df1), "df2 (n=10)"=row.names(df2)), filename = "test.tiff", height=800, width=800, resolution =300,cex=1, cat.cex=1, cat.pos = c(-5,5),cat.dist=c(0.04,0.04))</div>
+<div class="separator" style="clear: both; text-align: left;">
+============================================ </div>
+<div style="text-align: justify;">
+In current working directory of R, you would find a tiff file with name test.tiff. There is no way of turning of log files with this function within this function, as of today. Each time the code is executed, function creates a log file and soon they will accumulate if you are fiddling with the function. However you can suppress the logs by typing in, before venn.diagram above (once per execution):<br />
+=================================================<br />
+futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")<br />
+&nbsp;===============================================</div>
+</div>

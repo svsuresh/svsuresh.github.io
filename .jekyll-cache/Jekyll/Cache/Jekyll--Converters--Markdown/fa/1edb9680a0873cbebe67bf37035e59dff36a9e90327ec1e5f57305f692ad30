@@ -1,0 +1,54 @@
+I"÷
+<p>I have come across this request where user wants to trim a multi sequence fasta file as per the very first sequence in an aligned file with gaps. Following is the example</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$cat</span> test.fa
+
+<span class="o">&gt;</span>seq1
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">-------------------------------cttgagctggggtctggccatggggtaaa</span>
+gaagcagcagcagagacagaccaatgccaatg----------------------------
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">------------------------------------------------------------</span>
+<span class="nt">-----------</span>
+<span class="o">&gt;</span>seq2
+ggatcagcaccagccccggctgctccttcaccttgagttgtggccgggccatggggtaga
+gcaggagcaacaaggacagcccgataccgatcaggatcccatactcaatgcccacacata
+gtgaacccaaaaaggtggccacatgcacaaacagatcccatttattggtgcgccacaaaa
+cggggatgattttgtagtcgaccatctgcatgacggccatgatgatgaccgcggccagcg
+ctgacttggggatgtagtaacagtagggcaccaggaaggccagtactaacaggatcaggg
+accctgtgaaaagaccattcgccggtgttcttacaccgctctgtgagttgacagcagttc
+tggaaaaactgccggtgacaggataggaatgaacaaaggaactgagaatgttggcagtac
+
+</code></pre></div></div>
+<p>As you see, user has an aligned file. Very first sequence has the sequence of interest, but has leading and lagging gaps. Now user wants to extract the first sequence and the sequence at those coordinates for rest of the sequences, in alignment file. Following is the soltuion:</p>
+
+<p>First let us the get the coordinates of the sequence:</p>
+
+<pre><code class="language-code">
+$seqkit head -n 1 test.fa | seqkit locate -Prip '([ATGC]+)' 
+
+seqID	patternName	pattern	strand	start	end	matched
+seq1	([ATGC]+)	([ATGC]+)	+	212	272	cttgagctggggtctggccatggggtaaagaagcagcagcagagacagaccaatgccaatg
+
+</code></pre>
+
+<p>Now let us take the coordinates 212 and 272, and extract the sequence between those positions for all the sequences:</p>
+
+<pre><code class="language-code">$ seqkit -w 0 subseq -r 212:272 test.fa                      
+
+&gt;seq1
+cttgagctggggtctggccatggggtaaagaagcagcagcagagacagaccaatgccaatg
+&gt;seq2
+gacggccatgatgatgaccgcggccagcgctgacttggggatgtagtaacagtagggcacc
+
+</code></pre>
+
+<p>Interesting request I would say.</p>
+:ET

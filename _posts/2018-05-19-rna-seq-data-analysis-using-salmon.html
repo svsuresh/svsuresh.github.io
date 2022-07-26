@@ -1,0 +1,56 @@
+---
+layout: post
+title: Salmon-DESEQ2 and Salmon-Wasabi-Sleuth pipe line with Snakemake
+date: '2018-05-19T13:12:00.002+05:30'
+author: ssv
+tags:
+- pipeline
+- deseq2
+- RNAseq
+- snakemake
+- sleuth
+- wasabi
+- salmon
+modified_time: '2019-05-15T20:23:20.932+05:30'
+thumbnail: https://1.bp.blogspot.com/-R0_wYdquruI/Wv_RAmqctyI/AAAAAAAABBw/LwJSzqeUWXEvBRDgWAjaoprie2HEDhXHACLcBGAs/s72-c/salmon_deseq2_wasabi_sleuth.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-5455604991073692939
+blogger_orig_url: https://digibio.blogspot.com/2018/05/rna-seq-data-analysis-using-salmon.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Transcriptomic data's final goal is to identify the differential entities (genes/transcripts/exons/isoforms) between or among conditions with statistical significance. Classical way of this in NGS is to use splice aware aligners, transcript reconstitution (via exons),&nbsp; followed by quantification and then differential analysis. Next generation tools in transcriptomic data analysis skip alignment totally, use other approaches to quantify the transcripts. Some of these are claim to be faster than traditional aligners. There are three such popular pseudo aligners/quantification tools: <a href="http://www.cs.cmu.edu/~ckingsf/software/sailfish/" target="_blank">sailfish</a>, <a href="https://pachterlab.github.io/kallisto/about" target="_blank">Kallisto</a> and <a href="https://salmon.readthedocs.io/en/latest/salmon.html" target="_blank">salmon</a>.&nbsp; These tools do not produce bam or sam. They produce quantification files direct or use existing bams from traditional aligners for quantification. </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+In today's note, we will try salmon and subsequent differential analysis tools. <br />
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-R0_wYdquruI/Wv_RAmqctyI/AAAAAAAABBw/LwJSzqeUWXEvBRDgWAjaoprie2HEDhXHACLcBGAs/s1600/salmon_deseq2_wasabi_sleuth.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="524" data-original-width="826" height="406" src="https://1.bp.blogspot.com/-R0_wYdquruI/Wv_RAmqctyI/AAAAAAAABBw/LwJSzqeUWXEvBRDgWAjaoprie2HEDhXHACLcBGAs/s640/salmon_deseq2_wasabi_sleuth.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+Above work flow is written in Snakemake and is available on my <a href="https://github.com/svsuresh">Github</a> repo. Data can be downloaded from <a href="https://github.com/griffithlab/rnaseq_tutorial/wiki/RNAseq-Data">here</a>&nbsp;from Griffith lab tutorials. There are certain things that need attention:<br />
+1. Salmon needs fasta sequence for transcriptome only, not genome sequence. So one needs sequences for transcripts only. In addition it also needs transcript-gene mapping file (as tsv). For chromosome 22, I made it available <a href="https://drive.google.com/open?id=1tYZ7ISRQEEXCH_uuE2hb_2pTf8MYrJWr">here</a>. Sequence is zipped and mapping file is provided as tsv. Note that the information is downloaded from UCSC using table browser and redundant entries are removed.</div>
+<div style="text-align: justify;">
+<br />
+2. For report generation in R, you would need a library called "regionReport". This in turn needs a latex to pdf converter. Do not install texlive from repositories. It causes lots&nbsp; of headache. Instead, install&nbsp; <a href="https://cran.r-project.org/web/packages/tinytex/index.html">tinytex</a> package, available in CRAN-R repos. Once installed, run "install_tinytex" to install necessary packages. This in turn install, necessary binaries/functions in a bin folder in your home folder.<br />
+<br />
+3. Use bootstrap option (while executing Salmon) if you want to use wasabi-sleuth work flow. Without quantification bootstrap option, sleuth will not work although wasabi package works fine.<br />
+<br />
+<a href="https://github.com/svsuresh/salmon_deseq2_snakemake">Here</a> is the github (written by me) link to Snakemake scripts for Salmon-DESEQ2 and Salmon-Wasabi-Sleuth work flow. Make sure that your raw data, reference and output folders are edited proper in the scripts.<br />
+<br />
+Instructions to run the script:<br />
+<ol>
+<li>Download all the files from Github. Keep it any where in you like. But keep all of them in the same folder. </li>
+<li>Create a directory of your project (for eg project_a)</li>
+<li>Move config.yaml (in github directory) to the folder (for eg. project_a)</li>
+<li>Create a new directory called "reference" in the new folder (for eg. project_a/reference)</li>
+<li>Now move to reference directory. Download fasta file and transcript to gene map files from <a href="https://drive.google.com/open?id=1tYZ7ISRQEEXCH_uuE2hb_2pTf8MYrJWr">here</a>.&nbsp;</li>
+<li>Make a new directory by name "raw_data" and keep the paired fastq files in the directory, downloaded from griffith lab.</li>
+<li>Now there are two directories, where the snakemake files are stored. There is another directory (project_a) with raw_data, config.yaml and reference files.&nbsp;</li>
+<li>Execute the snakemake workflow by following command:<br /><br />$ snakemake -j 4 -s Snakefile --directory ../project_a </li>
+</ol>
+</div>
+</div>

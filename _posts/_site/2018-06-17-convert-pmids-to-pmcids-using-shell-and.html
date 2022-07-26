@@ -1,0 +1,74 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Eutils are provided by NCBI and are very useful in accessing information from NCBI programmatically. In this note, let us convert PMIDs into PMCIDs. For this let us use eutils (for shell programming) and biopython (for python programming) to convert PMIDs to PMCIDs. There is small issue which I am not able to address is biopython results are not on par with command line utils from NCBI.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+First, let us look at the PMID examples.&nbsp;</div>
+<div style="text-align: justify;">
+================================== </div>
+<div style="text-align: justify;">
+$ cat pmid.txt <br />
+29900339<br />
+29897644<br />
+21990379<br />
+19304878<br />
+==================================</div>
+<div style="text-align: justify;">
+Now let us convert these 4 PMIDs to PMCIDs using eutils and bash shell:</div>
+<div style="text-align: justify;">
+==================================</div>
+<div style="text-align: justify;">
+$ while read line; do efetch -db pubmed -id $line -format xml | xtract -pattern ArticleIdList -element ArticleId ; done&nbsp;&nbsp; &lt; pmid.txt | cut -f1,4<br />
+==================================</div>
+<div style="text-align: justify;">
+output:</div>
+<div style="text-align: justify;">
+===============================================<br />
+29900339&nbsp;&nbsp; &nbsp;PMC5997901<br />
+29897644<br />
+21990379&nbsp;&nbsp; &nbsp;PMC3266030<br />
+19304878&nbsp;&nbsp; &nbsp;PMC2682512<br />
+===============================================</div>
+<div style="text-align: justify;">
+First and second columns are PMID and PMCID, respectively. </div>
+<div style="text-align: justify;">
+Now let us use biopython libraries in python to extract the same information.</div>
+<div style="text-align: justify;">
+======================================</div>
+<div style="text-align: justify;">
+from Bio import Entrez<br />
+&gt; import pandas as pd<br />
+&gt; with open("pmid.txt") as f:<br />
+&nbsp;&nbsp;&nbsp; pmids = f.read()<br />
+&gt; Entrez.email = "someone@example.org"<br />
+&gt;elink_res = []<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in pmids.splitlines():<br />
+&nbsp;&nbsp;&nbsp; elink_res.append(Entrez.read(Entrez.elink(dbfrom="pubmed", id=i,&nbsp;&nbsp;&nbsp; linkname="pubmed_pmc")))<br />
+<br />
+&gt; elink_res_format = []<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in range(0, len(elink_res)):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for j in elink_res[i]:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (len(j["LinkSetDb"])) == 0:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; elink_res_format.append([j["IdList"][0], "NA"])<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (len(j["LinkSetDb"])) == 1:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; elink_res_format.append([j["IdList"][0], j["LinkSetDb"][0]["Link"][0]["Id"]])<br />
+<br />
+&gt; print(pd.DataFrame(elink_res_format, columns=["PMID", "PMCID"])) </div>
+<div style="text-align: justify;">
+=======================================</div>
+<div style="text-align: justify;">
+Please make sure that indentation is as per python code requirements. Output is</div>
+<div style="text-align: justify;">
+===============================================</div>
+<div style="text-align: justify;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PMID&nbsp;&nbsp;&nbsp; PMCID<br />
+0&nbsp; 29900339&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA<br />
+1&nbsp; 29897644&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NA<br />
+2&nbsp; 21990379&nbsp; 3266030<br />
+3&nbsp; 19304878&nbsp; 2682512</div>
+<div style="text-align: justify;">
+===============================================</div>
+<div style="text-align: justify;">
+Issue is that for first (29900339) PMID, biopython is not able to fetch corresponding PMCID where as command line utils from NCBI was able to fetch PMCID. I am not sure if this is code error or biopython error or NCBI returning results error. </div>
+</div>

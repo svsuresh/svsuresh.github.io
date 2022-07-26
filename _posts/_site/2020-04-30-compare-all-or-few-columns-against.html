@@ -1,0 +1,48 @@
+<div style="text-align: justify;">
+Some times, simple questions seem to be difficult and solutions seem to be drowned in complex questions and their complex solutions. One of the simple question I came across recently was how to compare all the values in each column (except one) against a single column values. Requirement is to print and concatenate the column names instead of row values or status of comparison (True/False). Let us look at the following simple example:</div>
+<div style="text-align: justify;">
+===========================================</div>
+<div style="text-align: justify;">
+Gene, value1, value2, value3, Ave.value</div>
+<div style="text-align: justify;">
+A, 11, 12, 15, 11</div>
+<div style="text-align: justify;">
+B, 11, 12, 12, 12</div>
+<div style="text-align: justify;">
+C, 11, 19, 18, 14</div>
+<div style="text-align: justify;">
+============================================= </div>
+<div style="text-align: justify;">
+Now the question is to compare value1, value2 and value 3 against average value, print column names wherever values are bigger than average value (Ave.value here). For eg. if column value2 has value more than average value, print column name in that row (in a new column). Follow the code for better understanding.</div>
+<div style="text-align: justify;">
+code: </div>
+<div style="text-align: justify;">
+============================================= </div>
+<div style="text-align: justify;">
+df$new = apply(df[, 2:4] &gt; df[, 5], 1, function(x)<br />&nbsp;&nbsp;&nbsp; ifelse(any(x), paste(colnames(df)[2:4][x], collapse = ', '), "")) </div>
+<div style="text-align: justify;">
+=============================================</div>
+<div style="text-align: justify;">
+output:</div>
+<div style="text-align: justify;">
+=============================================</div>
+<div style="text-align: justify;">
+&gt; df<br />&nbsp; Gene value1 value2 value3 Ave.value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new<br />1&nbsp;&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12&nbsp;&nbsp;&nbsp;&nbsp; 15&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value2, value3<br />2&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12&nbsp;&nbsp;&nbsp;&nbsp; 13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value3<br />3&nbsp;&nbsp;&nbsp; C&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 19&nbsp;&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value2, value3</div>
+<div style="text-align: justify;">
+=============================================</div>
+<div style="text-align: justify;">
+Now if we want to compare all columns against a cut off (value of 14 in example), one can use following code:</div>
+<div style="text-align: justify;">
+Code: </div>
+<div style="text-align: justify;">
+==========================================</div>
+<div style="text-align: justify;">
+df$new=apply(df[,2:4],1,function(x) names(df[,2:4])[which(x&gt;14)])<br />========================================== </div>
+<div style="text-align: justify;">
+output: </div>
+<div style="text-align: justify;">
+=========================================== </div>
+<div style="text-align: justify;">
+&gt; df<br />&nbsp; Gene value1 value2 value3 Ave.value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new<br />1&nbsp;&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp; 12&nbsp;&nbsp;&nbsp;&nbsp; 15&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value3<br />2&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp; 12&nbsp;&nbsp;&nbsp;&nbsp; 13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />3&nbsp;&nbsp;&nbsp; C&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp; 19&nbsp;&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value2, value3</div>
+<div style="text-align: justify;">
+==========================================</div>

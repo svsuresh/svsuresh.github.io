@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/transcriptomics-rna-seq-and-3ivt-and">Aug 17, 2015 - Transcriptomics: RNA seq and 3'IVT and exon arrays</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Transcriptome is dynamic and measurement of transcriptome is fraught with several technical and biological hurdles. First <i>en masse&nbsp; </i>arrays to study transcriptome were 3' IVT arrays, followed by exon arrays. However, out put from these technologies was not satisfactory enough to understand transcriptome in full. Advances in sequencing technologies pushed transcriptome data analysis further by introducing RNA-seq. RNA-seq has added advantage that it is possible to study variations as well in coding regions (mostly). This added advantage made it attractive for biologists to go past WGS and WES to study biological functions. In addition, advances in microRNA (part of transcriptional control machinery) studies made it possible to understand dynamics of cell, organ and organisms. However, still there is necessity in technology advancements to connect the dots between genome (and exome), transcriptome (RNA-mRNA, miRNA, siRNA etc), proteome and metabolome.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+In general, RNAseq is cumbersome as RNA is not as stable as DNA and lots of experimental care is to be taken for tissue storage, RNA extraction, RNA storage and cDNA conversion.&nbsp; I am side stepping all the above mentioned steps till sequencing (all the bench work). Following are few necessary steps in RNA seq data analysis.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+General steps in RNA seq data analysis:</div>
+<div style="text-align: justify;">
+<br />
+1) Data qc and pruning. QC and pruning are very important steps that can throw the entire results off, if they are not done proper. Following steps may be necessary to cull noise from data. </div>
+<ol style="text-align: justify;">
+</ol>
+<ol style="text-align: justify;">
+</ol>
+<ul>
+<li>QC (Fastqc tool)</li>
+<li>
+
+
+
+
+
+Adaptor removal </li>
+<li>Trimming of reads</li>
+<li>Read Quality trimming</li>
+<li>K-mer coverage trimming</li>
+<li>K-mer coverage normalization&nbsp; </li>
+</ul>
+<div style="text-align: justify;">
+There are several tools to perform steps 2-5. One of the tools I use for this is cutadapt. QC must be done before and after pruning to check if pruning lead to meaningful noise reduction.</div>
+<div style="text-align: justify;">
+<br />
+2) Data processing (alignment and post alignment pruning)</div>
+<ol style="text-align: justify;">
+</ol>
+<ul>
+<li>Alignment (Reference based and <i>denovo</i> assembly) </li>
+<li>
+
+
+Differential gene expression (post alignment)</li>
+<li>Variant calling (post alignment) </li>
+</ul>
+<div style="text-align: justify;">
+There are several tools available 
+for alignment, post alignment processing (indexing, sorting, 
+quantification, normalization of reads) and subsequent downstream 
+processing (variant calling, Differential gene expression&nbsp; and meta 
+analysis).<br />
+<div style="text-align: justify;">
+<br /></div>
+&nbsp;3) Meta analysis</div>
+<div style="text-align: justify;">
+<br />
+Meta analysis varies depending on the end point of the study. Meta analysis for variant calling pipeline differs significantly from DE pipeline. They will be explained in later notes in this blog. </div>
+<div style="text-align: justify;">
+4) Plots and reports<br />
+<br />
+As much as data analysis, plots are very import part of data analysis to understand, prune, analyze, present and publish results. This part will be taken care of, during pipeline execution. <br />
+<br />
+In following notes, I would outline variant calling, differential gene expression using multiple methods (pipelines) linked to dedicated pipeline blogs. Following are the pipelines that would be explained:</div>
+<div style="text-align: justify;">
+1) Variant calling </div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-kC0hJ0oe54I/VdDLww7Os1I/AAAAAAAAAUw/-L5tvfeVRhc/s1600/RNAseq_p1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="300" src="http://3.bp.blogspot.com/-kC0hJ0oe54I/VdDLww7Os1I/AAAAAAAAAUw/-L5tvfeVRhc/s400/RNAseq_p1.png" width="400" /></a></div>
+<div class="separator" style="clear: both; text-align: justify;">
+This pipeline is outlined here as <a href="http://digibio.blogspot.com/2015/07/variant-calling-in-rna-seq-and-bpipe.html" target="_blank">bpipe</a> within this blog.</div>
+<div class="separator" style="clear: both; text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: justify;">
+2) Variant calling as per GATK best practices workflow, as outlined <a href="https://www.broadinstitute.org/gatk/guide/best-practices?bpm=RNAseq" target="_blank">here</a>. Instead of suggested RNASTAR aligner, example uses Tophat aligner. In brief, GATK best practice is as outlined below and the bash script for executing entire pipe line is given <a href="http://digibio.blogspot.com/2015/10/rna-seq-and-gatk-best-practices.html" target="_blank">here</a>.</div>
+<div class="separator" style="clear: both; text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-rEL7YX6wK5s/VdDOsECpMbI/AAAAAAAAAU8/cns_2lD6YoA/s1600/RNAseq_p2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="347" src="http://3.bp.blogspot.com/-rEL7YX6wK5s/VdDOsECpMbI/AAAAAAAAAU8/cns_2lD6YoA/s400/RNAseq_p2.png" width="400" /></a></div>
+<div style="text-align: justify;">
+3) Differential expression analysis can be done several ways of which pipeline involving Tuxedo suite (Tophat, cufflinks, cuffdiff, cummeRbund) is one of the popular pipelines. The other pipelines involve HTseq and packages in R such as DESeq2, EdgeR etc.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Tuxedo pipeline is well explained <a href="http://cole-trapnell-lab.github.io/cufflinks/manual/" target="_blank">here</a> and is in short represented below. An example tuxedo pipeline in bash script (combined with R script) is provided <a href="http://digibio.blogspot.com/2015/09/rnaseq-data-analysis-and-tuxedo-workflow.html" target="_blank">here</a> :</div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: justify;">
+<a href="http://3.bp.blogspot.com/-ArLC4wc23iE/VdDZG-kPRSI/AAAAAAAAAVY/mnW4NYUbH3s/s1600/RNAseq_p3%25281%2529.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="353" src="http://3.bp.blogspot.com/-ArLC4wc23iE/VdDZG-kPRSI/AAAAAAAAAVY/mnW4NYUbH3s/s640/RNAseq_p3%25281%2529.png" width="640" /></a></div>
+<div style="text-align: justify;">
+Several analysts forego tuxedo pipeline, instead prefer Htseq and DESeq2/EdgeR pipeline for DE calculation. It is outlined below and a bash script with R script within is provided <a href="http://digibio.blogspot.com/2015/08/rna-seq-data-analysis-tophat-htseq-and.html" target="_blank">here</a> for this pipeline. </div>
+<div style="text-align: justify;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-m220M3EPTnM/VdDannymkyI/AAAAAAAAAVk/VjdtUucl3aA/s1600/RNAseq_p4.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="296" src="http://1.bp.blogspot.com/-m220M3EPTnM/VdDannymkyI/AAAAAAAAAVk/VjdtUucl3aA/s400/RNAseq_p4.png" width="400" /></a></div>
+<div style="text-align: justify;">
+<br /></div>
+<ol style="text-align: justify;">
+</ol>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/import-multiple-files-in-to-r-as-data" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/variant-calling-in-rna-seq-and-bpipe" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

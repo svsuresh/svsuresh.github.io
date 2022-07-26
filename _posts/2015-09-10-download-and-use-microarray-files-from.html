@@ -1,0 +1,23 @@
+---
+layout: post
+title: Download and use microarray files from GEO in R
+date: '2015-09-10T15:23:00.000+05:30'
+author: suresh
+tags:
+- microarray
+- GSE
+- GEOquery
+- GEO
+modified_time: '2015-09-10T15:23:01.739+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-9170126640083788076
+blogger_orig_url: https://digibio.blogspot.com/2015/09/download-and-use-microarray-files-from.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+GEO is repository service offered by NCBI to make genomics and transcriptomics data available to public. There are several ways to download the data from GEO. From R, here is the simple script. To download data from GEO within R, one needs package, by name "<a href="http://bioconductor.org/packages/release/bioc/html/GEOquery.html" target="_blank">GEOquery</a>". This note <br />
+<br />
+Following is the code to download data (CEL files)<br /><br />
+#######################################<br />
+##GEO Query script to fetch cel files#############<br />#######################################<br />
+library(GEOquery)<br />gse8771 = getGEOSuppFiles("GSE8771")<br />untar("GSE8771/GSE8771_RAW.tar", exdir="data")<br />cels=list.files("data/", pattern = "CEL")<br />sapply(paste("data", cels, sep="/"), gunzip)<br />##################################################<br /><br />
+getGEOsuppFiles downloads all the cel files as a single tar file and stores it in a new folder with name "GSExxxx" in the current working directory. In the example code, R creates a new folder titled "GSE8771", in current working directory. Files are downloaded as single tar file with gzipped sample files inside, to save bandwidth. User can untar the files either in the current directory or directory of choice. Example code stores untarred archive will with gzipped sample data in a folder titled "data" in current working directory. These files can be gunzipped in a batch, using sapply function. Once gunzipped, user can read the files using functions in "simpleaffy" package <br /></div>

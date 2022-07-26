@@ -1,0 +1,56 @@
+---
+layout: post
+title: hisat2, conda, bioconda and windows 10
+date: '2018-01-20T13:28:00.003+05:30'
+author: suresh
+tags:
+- ubuntu
+- installation
+- conda
+- bioconda
+- hisat2
+- windows 10
+modified_time: '2018-03-13T11:46:27.948+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-4688102874151467429
+blogger_orig_url: https://digibio.blogspot.com/2018/01/hisat2-conda-bioconda-and-windows-10.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+Conda is one of the package management tools in GNU-Linux and OS X with packages bundled in. On windows, it still has to catch up <i>esp</i>. in bioinformatics area. As many bioinformaticians/bioinformatics scientists work with GNU-Linux, dual boot systems are commonly used. For laptops, it is pain and power management in GNU-Linux is not optimized as much as in Windows. Windows 10 creators update allows the user to run GNU-Linux side by side without third party software which is kind of very interesting and useful for many people who use linux regularly.&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+For those who are very new to using linux on windows, first you need to enable windows subsystem for linux in windows 10. There are several online resources (blogs/websites) detailing how to activate windows subsystem for linux. Briefly, you need to do following things:</div>
+<ol style="text-align: justify;">
+<li>You need to enable developer mode in settings ( Settings &gt; Update and Security &gt; For developers)</li>
+<li>&nbsp;Enable windows subsystem for linux (control panel &gt; Programs and features &gt; Turn windows features on or off)</li>
+<li>Run "lxrun /install". This would download ubuntu by default and installs the ubuntu linux in user folder (linux distribution would be installed to : C:\Users\&lt;user-id&gt;\AppData\Local\lxss). This also would ask for user account creation.</li>
+</ol>
+<div style="text-align: justify;">
+Above steps activate windows subsystem for linux (WSL) and install ubuntu. Now that ubuntu is installed (xenial as of 20th Jan, 2018), launch bash shell. Bash shell would be available as option in start menu ("Bash on Ubuntu on Windows"). Click on it. It would launch bash shell and try to run few commands such as ls, echo $PATH etc. Windows partitions are available on /mnt/. So user can access windows user desktop (path would like this: /mnt/c/Users/&lt;user_id&gt;/Desktop).&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+If every thing works, now install conda environment. Conda is different from Pip in that conda installs other packages as well, in addition to python packages. Conda is a big distribution. For installing bioinformatics you would not need entire installation. Instead download miniconda from <a href="https://conda.io/miniconda.html" target="_blank">here</a>. Download linux version and for any serious bioinformatics work, I would suggest 64 bit installer and python version is 3.6. Now that miniconda installer is downloaded, launch bash shell (in windows) and navigate to the folder where installer is downloaded. Run following command:&nbsp; sh Miniconda3-latest-Linux-x86_64.sh<span class="n">.&nbsp; This should install , miniconda. Now that miniconda is installed, try running&nbsp; "$ which conda" (without $ prompt). This would print some thing like this: /home/&lt;user_id&gt;/.miniconda3/bin/conda. Now that conda is available, you need to add bioconda channel to conda.</span></div>
+<div style="text-align: justify;">
+<span class="n"><br /></span></div>
+<div style="text-align: justify;">
+<span class="n">Execute following lines (copy/pasted from :https://bioconda.github.io/) in following order:</span></div>
+<ul style="text-align: justify;">
+<li><span class="p"></span><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">r</span><span class="p"></span><span class="n"> </span></li>
+<li><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">defaults</span><span class="n">&nbsp;</span></li>
+<li><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span><span class="n">&nbsp;</span></li>
+<li><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">bioconda</span></li>
+</ul>
+<div style="text-align: justify;">
+<span class="n">Now that bioconda channels are available, in conda, you can install almost all of the bioinformatics packages in bioconda, using conda. You can view all the packages from here: https://bioconda.github.io/recipes.html.</span></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<span class="n">for installing any package, run: conda install &lt;package name&gt; (for eg. conda install bwa).&nbsp; This would resolve package dependencies and installs bwa with all the dependencies. If you want to know, if some package is available or not, use "conda search &lt;package_name&gt;" (for eg. conda search hisat2&nbsp; command searches for hisat2 and prints out the results). But make sure bioconda channel is added to conda for searching bioconda packages.&nbsp;</span></div>
+<div style="text-align: justify;">
+<span class="n"><br /></span></div>
+<div style="text-align: justify;">
+<span class="n">Now that you have installed bioinformatics in ubuntu within windows, you have best of the both worlds.</span></div>
+</div>

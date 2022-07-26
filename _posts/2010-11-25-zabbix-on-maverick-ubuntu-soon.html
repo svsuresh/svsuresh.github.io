@@ -1,0 +1,52 @@
+---
+layout: post
+title: zabbix with lighttpd on maverick (ubuntu)
+date: '2010-11-25T04:29:00.003+05:30'
+author: ssv
+tags:
+- zabbix with lighttpd on ubuntu
+modified_time: '2014-07-17T15:37:53.993+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-4389391806157732228
+blogger_orig_url: https://digibio.blogspot.com/2010/11/zabbix-on-maverick-ubuntu-soon.html
+---
+
+A few assumptions:<br />
+1) Lighttpd and Mysql is already installed and configured on the system and admin passwords are in hand.<br />
+2) PHP5 is also installed on the system <br />
+3) Lighttp and mysql daemons are up running before installation.<br />
+<br />
+As of 26th Nov, 2010, Zabbix 1.8.2 is available from ubuntu repositories.<br />
+<br />
+1) From synaptic or using apt-get, install zabbix-server-mysql and zabbix-frontend-php.<br />
+2) While installing, package manager asks for admin password for mysql and creates a database by name zabbix. Later on asks you for a new password for database zabbix. Remember this password with care.<br />
+3) After this, zabbix-frontend-php will also be installed.<br />
+4) See if zabbix-server daemon is up. (ps aux | grep | grep zabbix).<br />
+5) Now that it is installed, one needs to change time zone in php.ini (/etc/php5/cgi/php.ini - on maverick). You should be looking at "date.timezone" in php.ini. Entry should be something like this: date.timezone =Asia/Kolkata in php.ini. For setting a different zone,&nbsp; look at this page first before setting: http://in.php.net/manual/en/book.datetime.php.<br />
+6) Edit following entries in php.ini<br />
+max_execution_time (better be 300 or above), memory_limit (better be 128M or above), upload_max_filesize ( better be 2M and above).<br />
+6) After changing php.ini, restart/reload lighttpd daemon.<br />
+7) By default, zabbix server start at port: 10051. Add following lines to /etc/services:<br />
+<br />
+# Zabbix ports<br />
+zabbix_agent 10050/tcp<br />
+zabbix_trap&nbsp; 10051/tcp<br />
+<br />
+8) Edit "DBPassword" entry in /etc/zabbix/zabbix_server.conf and add the Zabbix db password that was created at the start.<br />
+9) By default, zabbix-frontend-php installs in /usr/share/zabbix. You can edit lighttpd.conf (/etc/lighttpd/lighttpd.conf) and point to /usr/share/zabbix or copy /usr/share/zabbix folder to /var/www.&nbsp; What I did was i created a link to /usr/share/zabbix in /var/www. That also works.<br />
+10) Launch your browser, point to http://localhost&nbsp; or http://localhost/zabbix (as per your zabbix installation)<br />
+11) If every thing goes well, you should see a launch page as shown in<br />
+<div class="separator" style="clear: both; text-align: center;"><a href="http://www.zabbix.com/documentation/_media/1.8/manual/installation/frontend_first_login_page.png?cache=" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="231" src="http://www.zabbix.com/documentation/_media/1.8/manual/installation/frontend_first_login_page.png?cache=" width="320" /></a></div>12) If this is what you see, then your installation is complete.<br />
+13) Suppose if you see this page, then your installation is not yet completed, follow the steps and installation be done in simple steps.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;"><a href="http://www.zabbix.com/documentation/_media/1.8/manual/installation/installation_01_introduction.png?cache=" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="231" src="http://www.zabbix.com/documentation/_media/1.8/manual/installation/installation_01_introduction.png?cache=" width="320" /></a></div>14) If you have any problems, you can mail me the problems in installation.<br />
+<br />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52918388-1', 'auto');
+  ga('send', 'pageview');
+
+</script>

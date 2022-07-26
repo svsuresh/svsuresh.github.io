@@ -1,0 +1,34 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+One of the requests I came across is to replace the fasta header with file name. There are multiple fasta files with one sequence in each file. Each file has one fasta header and corresponding sequence. This is possible in bash shell and parallel.<br />
+<br />
+Following is an example fasta where<span itemscope="" itemtype="http://schema.org/Answer"><span itemprop="text"></span></span><code class="language-bash">&nbsp;</code>HC1993.fa is a fasta file and sequence id is X58834. Now this header needs to replaced by file name. <br />
+<pre class="pre"><code class="language-bash">&nbsp;</code></pre>
+Input:<br /><code class="language-bash"></code><code class="language-bash">$ cat HC1993.fa 
+</code><code class="language-bash"></code><pre class="pre"><code class="language-bash">&gt;X58834 
+CCTGCATCTGCAA
+</code></pre>
+<br />
+Expected output (assumption is that first line in each fasta file is fasta header):<br />
+
+
+<pre class="pre"><code class="language-bash">$ cat HC1993.fa 
+&gt;HC1993
+CCTGCATCTGCAA
+</code></pre>
+<br />
+in bash:<br />
+
+
+<pre class="pre"><code class="language-bash">$ for i in *.fa; do sed "1s/.*/&gt;${i%.fa}/" $i; done
+&gt;HC1993
+CCTGCATCTGCAA
+</code></pre>
+<br />
+using GNU-parallel:<br />
+
+
+<pre class="pre"><code class="language-bash">$  parallel  'sed "1s/.*/&gt;{.}/" {}' ::: *.fa
+&gt;HC1993
+CCTGCATCTGCAA
+</code></pre>
+</div>

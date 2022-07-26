@@ -1,0 +1,58 @@
+---
+layout: post
+title: Partial renaming of fasta headers
+date: '2020-07-27T10:05:00.000+05:30'
+author: suresh
+tags:
+- seqkit
+- fasta headers
+- fasta
+modified_time: '2020-07-27T10:11:03.383+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8153684186182290745
+blogger_orig_url: https://digibio.blogspot.com/2020/07/partial-renaming-of-fasta-headers.html
+---
+
+Some times, we may need to replace headers of fasta files in part. <a href="https://github.com/shenwei356/seqkit">Seqkit</a> allows user to replace either sequence or headers in fasta file. Current blog note, deals with replacing headers in part i.e partial editing of headers.<br />
+Example input:<br />
+================================================== <br />
+&gt;123456789.1<br />
+AGCT<br />
+&gt;123456789.2<br />
+AGCT<br />
+&gt;222221122.1<br />
+AGCT<br />
+==================================================<br />
+User wants to replace every thing before dot(.) and append every thing after dot including dot post replacement.Value key pair and expected output is as below:<br />
+================================================== <br />
+123456789&nbsp;&nbsp; abcde<br />
+222221122&nbsp;&nbsp; ghijk<br />
+================================================== <br />
+Expected output:<br />
+================================================== <br />
+&gt;abcde.1<br />
+AGCT<br />
+&gt;abcde.2<br />
+AGCT<br />
+&gt;ghijk.1<br />
+AGCT<br />
+=================================================== <br />
+code:<br />
+===================================================<br />
+$ seqkit replace --quiet -p '([0-9]+)(\.[0-9])' -r '{kv}${2}'&nbsp; -k ids.txt test.fa <br />
+&gt;abcde.1<br />
+AGCT<br />
+&gt;abcde.2<br />
+AGCT<br />
+&gt;ghijk.1<br />
+AGCT<br />
+=========================================================<br />
+Explanation:<br />
+<ol>
+<li>seqkit, by default, replaces headers</li>
+<li>--quiet is not to print errors, logs etc onto screen</li>
+<li>-p is option for pattern</li>
+<li>([0-9]+)(\.[0-9]) - Two pattern captures (within normal brackets). First pattern ([0-9]+) catches multiple numbers (first part of headers- before dot) and second pattern catches (\.[0-9]) one dot and one number between 0 and 9</li>
+<li>By default, KV (key-value) pair replaces first pattern</li>
+<li>In addition, we added second pattern to append to replaced value (${2} denotes second pattern).</li>
+</ol>
+<br />

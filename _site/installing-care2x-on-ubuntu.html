@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/installing-care2x-on-ubuntu">Nov 8, 2010 - Installing Care2x on Ubuntu</a></h1>
+            <div class="post-content">
+            Care2x is a open source hospital information system software. For further information look at the available information at http://www.care2x.org/.<br />
+<br />
+Here, I describe how to install and get it working on a ubuntu system (Maverick 10.10).<br />
+<br />
+Few assumptions:<br />
+<ol><li>User knows running http daemons (here, we use lighttpd)</li>
+<li>Knows how to start and stop daemons including database and httpd</li>
+</ol>Procedure:<br />
+<br />
+<ol><li> Download latest build from http://sourceforge.net/projects/care2002/files/ (as of Nov 8, 2010, available version is Care2x-HIS-2.6.27). Save it to a place convenient to you on your&nbsp; (linux) system and extract it to a folder (probably to simpler&nbsp; named folder like care2x). </li>
+<li>Launch synaptic or&nbsp; package manager of your choice. Install following packages: lighttpd, php5-mysql, php5-gd,php5-common,php5-adodb, mysql 5.1 (server and client, both).</li>
+<li>Once you install all the packages above, check if your lighttpd is working. Go to http://localhost or http://127.0.0.1. It should display welcome page (titled "Place holder page"). If you do not see welcome page, see if daemon is running. httpd installation makes your system a webserver.</li>
+<li>Check if your mysql installation. If it is working, create a root user password and then create a user as a root. Create a database by name "create2x" and make the new user as administrator for this database. Allocating a new user for this database is for security purposes.</li>
+<li> Also check if your php installation is working.</li>
+<li>Now go to the folder, where care2x installation folder is located. Move it to either /opt or /var/www/. Edit lighttpd configuration file.(/etc/lighttpd/lighttpd.conf) to point to index.html of care2x installation folder.</li>
+<li> stop and restart the lighttpd and check if your server is working proper.</li>
+<li>Once you are sure that both daemons are up and followed the procedure above, now you are ready for installation.</li>
+<li>Change the permissions to 777 on care2x folder. </li>
+<li>Now launch your browser (chrome and firefox, both work) and point to http://localhost/installer (assuming that care2x folder is made root folder in lightttpd.conf).&nbsp;</li>
+<li>Now installation proceeds as shown on care2x website.&nbsp;</li>
+</ol>I will soon post the screenshots.<br />
+<br />
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/how-to-upgrade-from-iso-in-ubuntu" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/share-thunderbird-mail-accounts-between" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

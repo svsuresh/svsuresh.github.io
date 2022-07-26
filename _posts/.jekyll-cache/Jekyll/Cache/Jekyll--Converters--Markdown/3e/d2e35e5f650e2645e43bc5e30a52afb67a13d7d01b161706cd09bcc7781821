@@ -1,0 +1,33 @@
+I"È<p>Despite itâ€™s 2020, we still have issues in installing standard software such as vep. On Focal (ubuntu distribution), do the following</p>
+
+<ol>
+  <li>Install following libraries
+    <ol>
+      <li>libdbd-mysql-perl</li>
+      <li>libdbi-perl</li>
+      <li>libarchive-zip-perl</li>
+    </ol>
+  </li>
+  <li>Run the command
+    <ol>
+      <li>cpan Module::Build (This would give you many options, I chose <strong>sudo</strong>)</li>
+    </ol>
+  </li>
+  <li>Now clone the vep repo
+    <ol>
+      <li>Clone the vep repo (git clone https://github.com/Ensembl/ensembl-vep.git)</li>
+      <li>Go to ensembl-vep repo</li>
+      <li>You should see htslib directory. you can keep it if you are okay with it. I did step 4 and 5</li>
+      <li>Delete the htslib</li>
+      <li>Clone the htslib (git clone https://github.com/samtools/htslib.git)</li>
+    </ol>
+  </li>
+  <li>Now execute the command
+    <ol>
+      <li>perl INSTALL.pl</li>
+    </ol>
+  </li>
+</ol>
+
+<p>This should build VEP and asks you to download the cache and fasta (reference) files. They are huge. Do not download unless you are working in ivory towers. You can download the plugins though. Plugins are installed in your home directory/.vep. They are small.</p>
+:ET

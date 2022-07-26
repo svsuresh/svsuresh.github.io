@@ -1,0 +1,26 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+In one of my earlier posts, I posted an example zero length assertions in R. In this note, we have examples for zero length assertions in bash and python 3. Let us take an example file first and the run the code.<br />
+=============================================== <br />
+Protein of unknown function (DUF1466)&nbsp;&nbsp;&nbsp; RCS1&nbsp;&nbsp;&nbsp; #N/A<br />
+Ras family&nbsp;&nbsp;&nbsp; Small GTPase superfamily&nbsp;&nbsp;&nbsp; GO:0003924|GO:0005525<br />
+Sugar-tranasporters, 12 TM&nbsp;&nbsp;&nbsp; Molybdate-anion transporter&nbsp;&nbsp;&nbsp; GO:0015098|GO:0015689|GO:0016021<br />
+Sodium:dicarboxylate symporter family&nbsp;&nbsp;&nbsp; Sodium:dicarboxylate symporter&nbsp;&nbsp;&nbsp; GO:0015293|GO:0016021<br />
+mTERF&nbsp;&nbsp;&nbsp; Transcription termination factor, mitochondrial/chloroplastic&nbsp;&nbsp;&nbsp; GO:0003690|GO:0006355<br />
+==============================================<br />
+Now the user wants every thing before GO terms and #N/A. The easier way is to cut last column out with awk or bash. However, let us use look ahead to get want we want. Let us start with bash (file name is lookaround.txt):<br />
+==================================== <br />
+$&nbsp; grep -Po '.*(?=\t[GO|\#NA])' lookaround.txt<br />
+====================================<br />
+This code looks for string "GO" or "#NA" preceded by a tab. This would print:<br />
+====================================<br />
+Protein of unknown function (DUF1466)&nbsp;&nbsp;&nbsp; RCS1<br />Ras family&nbsp;&nbsp;&nbsp; Small GTPase superfamily<br />Sugar-tranasporters, 12 TM&nbsp;&nbsp;&nbsp; Molybdate-anion transporter<br />Sodium:dicarboxylate symporter family&nbsp;&nbsp;&nbsp; Sodium:dicarboxylate symporter<br />mTERF&nbsp;&nbsp;&nbsp; Transcription termination factor, mitochondrial/chloroplastic <br />
+====================================<br />
+Let us do it in python 3 (mind your indents):<br />
+===============================<br />
+&gt;import re<br />&gt;with open("lookaround.txt", "r") as f:<br />&nbsp;&nbsp;&nbsp; test = f.readlines()<br />
+&gt;bout = [re.search(r'.*\t(?=[GO|\\#NA])', i).group(0) for i in test]<br />&gt;print(*bout, sep='\n')<br />
+======================================<br />
+output is:<br />
+=========================================== <br />
+Protein of unknown function (DUF1466)&nbsp;&nbsp; RCS1&nbsp;&nbsp;&nbsp; <br />Ras family&nbsp; Small GTPase superfamily&nbsp;&nbsp;&nbsp; <br />Sugar-tranasporters, 12 TM&nbsp; Molybdate-anion transporter <br />Sodium:dicarboxylate symporter family&nbsp;&nbsp; Sodium:dicarboxylate symporter&nbsp; <br />mTERF&nbsp;&nbsp; Transcription termination factor, mitochondrial/chloroplastic&nbsp; <br />
+==========================================</div>

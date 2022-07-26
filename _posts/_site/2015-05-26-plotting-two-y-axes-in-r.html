@@ -1,0 +1,95 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+In R, there are several efficient ways to plot multiple Y and/or multiple X plots. In today's note, simplest way (may be crude) to plot multiple Y axes (two) with legend are shown with example.&nbsp; Logic is :<br />
+1) Plot&nbsp; one graph<br />
+2) Initiate new graph<br />
+3) Plot second graph, but do not draw x and y axis i.e visually only points are displayed, but not their axes. X axis is already drwn step 1 and Y axis needs to be drawn on the other side (i.e right side of the plot)<br />
+4) Draw the Y-axis on right hand side for the second plot<br />
+5) Add legend to the right top corner of the plot.<br />
+<br />
+Let us jump into example code:<br />
+1) R has a preloaded data called "mtcars". Let us load it first. Please note that R by default installs several example datasets with package by name, "datasets". Launch R and type in code provided below:<br />
+code: data(mtcars)<br />
+2) Check the data headers <br />
+code: head(mtcars)<br />
+It should look like this:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-VZ8EjiSbrr4/VWN5iZCOPPI/AAAAAAAAALo/P3k29EvpODc/s1600/head.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="113" src="http://4.bp.blogspot.com/-VZ8EjiSbrr4/VWN5iZCOPPI/AAAAAAAAALo/P3k29EvpODc/s400/head.png" width="400" /></a></div>
+3) Let us save the plot as png before starting plotting:&nbsp;code: png("graph.png", height=960, width = 960, units = "px", pointsize = 20)<br />
+4) Initiate&nbsp; plotting by defining graph margins. <br />
+&nbsp;code: par(mar=c(4, 4, 4, 4) + 0.1)<br />
+<br />
+<div style="text-align: left;">
+<span style="font-family: Arial,Helvetica,sans-serif;">Please note that function "par" allows user to set the graph margins with arguement "mar" (as lines of text). Default parameters for the graph plotting with plot function is c(5, 4, 4, 2) + 0.1. This means that on Y axis,&nbsp; we have only 2 lines of margin. Let us make it 4, though 3 is enough for us. </span></div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+<span style="font-family: Arial,Helvetica,sans-serif;"><span style="font-family: inherit;"><br />
+5) Let us plot car weights (in kilo pounds) against car mileage by running following command:<br />
+code: plot(mtcars$wt ~ mtcars$mpg, pch=19, col="green", ylim=c(min(mtcars$wt), max(mtcars$wt)), xlim=c(min(mtcars$mpg), max(mtcars$mpg)+5),xlab="Mileage(Miles per gallon)", ylab="Car Weight in kilo pounds")<br />
+<br />
+Plot looks like this (in the back ground) though you won't see on screen:<br />
+</span></span><br />
+<div class="separator" style="clear: both; text-align: center;">
+<span style="font-family: Arial,Helvetica,sans-serif;"><span style="font-family: inherit;"><a href="http://3.bp.blogspot.com/-Tz54QNv6wjs/VWN5fAFivPI/AAAAAAAAALM/2uefYIom5I8/s1600/graph1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://3.bp.blogspot.com/-Tz54QNv6wjs/VWN5fAFivPI/AAAAAAAAALM/2uefYIom5I8/s640/graph1.png" width="640" /></a></span></span></div>
+<span style="font-family: Arial,Helvetica,sans-serif;"><span style="font-family: inherit;"><br />
+Logic:<br />
+pch=19, col="green" (draw filled circles, colored green<br />
+y axis limits (ylim) = from min value (min(mtcars$wt)) to max value (max(mtcars$wt)) of variable "car weight"<br />
+x axis limits (xlim) = from min value to max value of variable "car mileage" <br />
+x lab and y lab are labels for x and y axes. <br />
+<br />
+6) Initiate new graph over the existing graph <br />
+code: par(new=TRUE)<br />
+<br />
+7) Draw the second graph.This graph plots piston capacity and car weights.<br />
+code: plot(mtcars$disp ~ mtcars$mpg, pch=19, col="blue", xlim=c(min(mtcars$mpg), max(mtcars$mpg)+5), axes=F, xlab="", ylab="")<br />
+<br />
+Please note that axes=F means do not display X and Y axis in graph (i.e dispaly only values).&nbsp; X and Y axis labels are supprssed for display.<br />
+<br />
+Plot looks like this (in the back ground) though you won't see on screen:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-C4ojJjIp8hM/VWN5fM3RPlI/AAAAAAAAALI/ZwOLMr9lFNE/s1600/graph2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://1.bp.blogspot.com/-C4ojJjIp8hM/VWN5fM3RPlI/AAAAAAAAALI/ZwOLMr9lFNE/s640/graph2.png" width="640" /></a></div>
+8) Display axis on right side of the graph. <br />
+code: axis(4)<br />
+Please note that for axis function,&nbsp; following are the values to display the axis: 4= right side,&nbsp; 3= Top side,&nbsp; 2= left side, 1= bottom side.<br />
+<br />
+Plot looks like this (in the back ground) though you won't see on screen:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-UNGaN4R18c8/VWN7kBOl5jI/AAAAAAAAAL0/hAUTiEI9xi0/s1600/graph5.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://3.bp.blogspot.com/-UNGaN4R18c8/VWN7kBOl5jI/AAAAAAAAAL0/hAUTiEI9xi0/s640/graph5.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-wje3eMyGIb8/VWN5fiddVnI/AAAAAAAAALU/EP-GcZ6ZqEw/s1600/graph3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><br />
+</a></div>
+<br />
+9) Add text to the second y-axis <br />
+code: mtext("Piston capacity in cc", line=3, side=4)<br />
+Plot looks like this (in the back ground) though you won't see on screen:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/--FY2b5BsZbQ/VWN5fCJAEFI/AAAAAAAAALQ/xNoD_mIAUY4/s1600/graph.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://3.bp.blogspot.com/--FY2b5BsZbQ/VWN5fCJAEFI/AAAAAAAAALQ/xNoD_mIAUY4/s640/graph.png" width="640" /></a></div>
+<br />
+<br />
+10) Add legend to the graph on right top corner.<br />
+code: legend("topright", c("Car weight", "Piston capacity"), box.lty = 0, lty=1, pch=19, col=c("green", "blue"), inset=0.05) <br />
+Plot looks like this (in the back ground) though you won't see on screen:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/--FY2b5BsZbQ/VWN5fCJAEFI/AAAAAAAAALQ/xNoD_mIAUY4/s1600/graph.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://3.bp.blogspot.com/--FY2b5BsZbQ/VWN5fCJAEFI/AAAAAAAAALQ/xNoD_mIAUY4/s640/graph.png" width="640" /></a></div>
+<br />
+11) Eng the image plotting<br />
+code: dev.off()<br />
+<br />
+12) Final image should look like this (just as above):<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/--FY2b5BsZbQ/VWN5fCJAEFI/AAAAAAAAALQ/xNoD_mIAUY4/s1600/graph.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="640" src="http://3.bp.blogspot.com/--FY2b5BsZbQ/VWN5fCJAEFI/AAAAAAAAALQ/xNoD_mIAUY4/s640/graph.png" width="640" /></a></div>
+Entire code:<br />
+<br />
+data(mtcars)<br />
+head(mtcars)<br />
+png("graph4.png", height=960, width = 960, units = "px", pointsize = 20,)<br />
+par(mar=c(4, 4, 4, 4) + 0.1)<br />
+plot(mtcars$wt ~ mtcars$mpg, pch=19, col="green", ylim=c(min(mtcars$wt), max(mtcars$wt)), xlim=c(min(mtcars$mpg), max(mtcars$mpg)+5),xlab="Mileage(Miles per gallon)", ylab="Car Weight in kilo pounds")<br />
+par(new=TRUE)<br />
+plot(mtcars$disp ~ mtcars$mpg, pch=19, col="blue", xlim=c(min(mtcars$mpg), max(mtcars$mpg)+5), axes=F, xlab="", ylab="")<br />
+axis(4)<br />
+mtext("Piston capacity in cc", line=3, side=4)<br />
+legend("topright", c("Car weight", "Piston capacity"), box.lty = 0, lty=1, pch=19, col=c("green", "blue"), inset=0.05)<br />
+dev.off()</span></span></div>
+</div>

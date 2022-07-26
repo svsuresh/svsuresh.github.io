@@ -1,0 +1,56 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Interactome project aims to be one stop solution for PPI (protein-protein interaction) networks for researchers. Interactome project for <a href="http://interactome.dfci.harvard.edu/H_sapiens/" target="_blank">humans</a> and other model organisms is hosted by CCSB. Researcher can use interactome <a href="http://interactome.dfci.harvard.edu/H_sapiens/index.php?page=search" target="_blank">search engine</a> to look for interactions and the search engine offers the user to export the data in excel format. However, exported data is not in excel format, but it is in csv format. After downloading the data, please use following script to generate networks and the script is derivative of igraph scripts in rbloggers.<br />
+<br />
+##########################################<br />
+## load igraph library<br />
+library(igraph)<br />
+<br />
+## read excel file exported from human interactome database<br />
+test=read.csv("internal_human_interactome_2016-04-17.xls", sep="\t")<br />
+<br />
+## View the first few values <br />
+head(test)<br />
+<br />
+## shuffle the columns<br />
+ppi=test[,c(2,4,1,3)]<br />
+<br />
+## View the first few values of shuffled columns<br />
+head(ppi)<br />
+<br />
+## Create a data frame for graphs <br />
+gg=graph.data.frame(ppi)<br />
+<br />
+## interactive plot using tk <br />
+tkplot(gg1,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; layout = layout.fruchterman.reingold, <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vertex.label = V(gg)$name,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vertex.label.color= "black",<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; edge.arrow.size=0,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; edge.curved=FALSE<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br />
+############################################<br />
+<br />
+Before shuffling the columns:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://1.bp.blogspot.com/-eSaFuYGhMOU/VxULAy2IKtI/AAAAAAAAAcs/2wq2ste2--UHQyAI9uYPLoeezAs9BatZgCLcB/s1600/before_shuffling.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="300" src="https://1.bp.blogspot.com/-eSaFuYGhMOU/VxULAy2IKtI/AAAAAAAAAcs/2wq2ste2--UHQyAI9uYPLoeezAs9BatZgCLcB/s640/before_shuffling.png" width="640" /></a></div>
+<br />
+After shuffling the columns:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-qaT0jn_a1ks/VxULAyw885I/AAAAAAAAAcw/XwEgTgIHlBEtErwvA9goePUea60Y-Wd4ACKgB/s1600/after_shuffling.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="256" src="https://3.bp.blogspot.com/-qaT0jn_a1ks/VxULAyw885I/AAAAAAAAAcw/XwEgTgIHlBEtErwvA9goePUea60Y-Wd4ACKgB/s640/after_shuffling.png" width="640" /></a></div>
+<br />
+<br />
+Example exported picture from interactive plot: Please note that tkplot allows the user to export images as eps only. Use convert (from image magick package) to convert images from eps to png.<br />
+<br />
+Example exported images: (Here the vertex size is reduced to 1 pixel in interactive tkplot) <br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-P1RKEPfvsOg/VxULQoEJL0I/AAAAAAAAAc0/GgfbG5VRrjMTx7JPObR-0xTQIvvLirksQCLcB/s1600/spoke_interactions.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="323" src="https://2.bp.blogspot.com/-P1RKEPfvsOg/VxULQoEJL0I/AAAAAAAAAc0/GgfbG5VRrjMTx7JPObR-0xTQIvvLirksQCLcB/s640/spoke_interactions.png" width="640" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-kDih3RaTJC0/VxULglctPwI/AAAAAAAAAc4/pmegeivvW8kc4i9ad02t6LiJgrAvy7L0ACLcB/s1600/all_interactions.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="324" src="https://3.bp.blogspot.com/-kDih3RaTJC0/VxULglctPwI/AAAAAAAAAc4/pmegeivvW8kc4i9ad02t6LiJgrAvy7L0ACLcB/s640/all_interactions.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<br />
+Convert eps files to png files:<br />
+<br />
+$ convert -density 300 interactions.eps interactions.png<br />
+Above script converts interactions.eps (input file) to interactions.png (output file) with 300dpi (high resolution pic)</div>

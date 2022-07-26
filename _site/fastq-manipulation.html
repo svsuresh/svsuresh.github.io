@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/fastq-manipulation">Jun 21, 2017 - Fastq manipulation</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+Generic format to store the sequences (read sequences) post sequencing is .fastq. There are several tools to parse fastq files. One of them is seqtk. Fastq formatted files store lots of useful information like sequencing machine, lane, flowcell, index sequence, quality&nbsp; filter, sequence, sequence quality etc. Hence before starting analysis, it is better to have a look at the fastq file. Download the example rnaseq files from <a href="https://github.com/griffithlab/rnaseq_tutorial/wiki/RNAseq-Data" target="_blank">here</a>.&nbsp; Description about these files are provided in the same page. Please go through it to understand the source of the samples.<br />
+<br />
+<br />
+Print first 4 lines of fastq.gz<br />
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz | head -4</li>
+</ul>
+&nbsp;Print stats of a fastq file <br />
+<ul style="text-align: left;">
+<li>&nbsp;$ seqkit stats hcc1395_normal_rep1_r1.fastq.gz</li>
+</ul>
+Print all the reads in a fastq<br />
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -n</li>
+</ul>
+Count the number of reads<br />
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -n | wc -l&nbsp;</li>
+</ul>
+&nbsp;Print the reads in each file for all 12 files (works in bash shell). If you do not want to use seqkit, you can use zgrep program. Assumption here is that all reads come from same machine.<br /><div>
+<ul style="text-align: left;">
+<li>$ for i in *.gz; do echo $i;&nbsp; seqkit seq $i -n | wc -l; done | paste - -&nbsp;</li>
+<li>$ for i in *.gz; do echo $i;&nbsp; zgrep -P "^\@K00193" $i&nbsp; | wc -l; done | paste - -&nbsp;</li>
+</ul>
+Base frequency in any given read (for each nucleotide):</div>
+<div>
+<ul style="text-align: left;">
+<li>$ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -s&nbsp; | head -1 | | fold -w1 | sort | uniq -c</li>
+</ul>
+</div>
+<div>
+&nbsp;Count frequency of bases in a fastq file: </div>
+<div>
+<ul style="text-align: left;">
+<li>&nbsp; $ seqkit seq hcc1395_normal_rep1_r1.fastq.gz -s&nbsp;&nbsp; | fold -w1 | sort | uniq -c</li>
+</ul>
+&nbsp;This code will print frequency per base<br /><ul style="text-align: left;">
+</ul>
+</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/filter-fasta-sequences-by-length" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/write-list-to-xlsx-in-r" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,86 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+In R, there are several ways to collapse columns (from wide format) to limited number of columns (to long format). There are certain cases where one needs to separate values (for eg. genes, transcripts, annotations etc) in a cell of a column and append it to appropriate gene. For eg. let us say a gene has 3 different GO terms. In table with two columns, one column has gene and another column has 3 GO terms&nbsp; in a single cell, but separated by , or ; or any other delimiter. Now we would like to transform this data in such a way that first column should contain gene name and in the second column, each row should have only one GO term as described below:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<b>Before</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Gene X | GO term 1, GO term2, GO term3</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<b>After</b></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Gene X | GO term 1</div>
+<div style="text-align: justify;">
+Gene X | GO term 1</div>
+<div style="text-align: justify;">
+Gene X | GO term 1</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Let me take an example with a <a href="https://www.biostars.org/p/272202/" target="_blank">pos</a>t from biostars:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Gene&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | GO_terms</div>
+<div style="text-align: justify;">
+ENO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | GO:0000015^GO:0000287^GO:0004634^GO:0006096</div>
+<div style="text-align: justify;">
+CCYL1&nbsp;&nbsp;&nbsp; | GO:0000079</div>
+<div style="text-align: justify;">
+SAP30&nbsp;&nbsp;&nbsp;&nbsp; | GO:0000118^GO:0003677^GO:0004407^GO:0046872^GO:0006351</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Expected output is:</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+&nbsp;&nbsp;&nbsp;&nbsp; Gene&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GO_terms</div>
+<div style="text-align: justify;">
+&nbsp;1:&nbsp;&nbsp; ENO&nbsp;&nbsp;&nbsp; GO:0000015</div>
+<div style="text-align: justify;">
+&nbsp;2:&nbsp;&nbsp; ENO&nbsp;&nbsp;&nbsp; GO:0000287</div>
+<div style="text-align: justify;">
+&nbsp;3:&nbsp;&nbsp; ENO&nbsp;&nbsp;&nbsp; GO:0004634</div>
+<div style="text-align: justify;">
+&nbsp;4:&nbsp;&nbsp; ENO&nbsp;&nbsp;&nbsp; GO:0006096</div>
+<div style="text-align: justify;">
+&nbsp;5: CCYL1&nbsp; GO:0000079</div>
+<div style="text-align: justify;">
+&nbsp;6: SAP30&nbsp;&nbsp; GO:0000118</div>
+<div style="text-align: justify;">
+&nbsp;7: SAP30&nbsp;&nbsp; GO:0003677</div>
+<div style="text-align: justify;">
+&nbsp;8: SAP30&nbsp;&nbsp; GO:0004407</div>
+<div style="text-align: justify;">
+&nbsp;9: SAP30&nbsp;&nbsp; GO:0046872</div>
+<div style="text-align: justify;">
+10: SAP30&nbsp; GO:0006351</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+R code for this is:</div>
+<div style="text-align: justify;">
+========================</div>
+<div style="text-align: justify;">
+test=read.csv("test.txt", header=T, stringsAsFactors = F, sep="\t")</div>
+<div style="text-align: justify;">
+test$GO_terms=gsub('\\^',";", test$GO_terms)&nbsp;</div>
+<div style="text-align: justify;">
+test2=cSplit(test, "GO_terms", ";", "long")</div>
+<div style="text-align: justify;">
+=================== </div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+test.txt is original file. Substitution is necessary because csplit function doesn't consider&nbsp; ^ as separator with a reason. In general, ^ is used to denote start in regex. Hence convert ^ to a normal/accepted delimiter and then use csplit function. Had there been normal delimiter (such as , ; :) then delimiter substitution is not necessary. One can directly use csplit. </div>
+</div>

@@ -1,0 +1,34 @@
+I"å<p>There are times, we want to replace sequence (in fasta format) headers using parts of the headers. Here is an example queestion and itâ€™s solution using seqkit.</p>
+
+<p>Example input:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;seq1 protein1
+MEFKH
+&gt;seq2 protein 2
+MKESR
+&gt;seq3 protein 3
+MNNQR
+</code></pre></div></div>
+
+<p>User has another file with multicolumn mapping as below:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cat test.tsv
+seq1	group_1000	ID_01
+seq2	group_1001	ID_02
+seq3	group_1002	ID_03      
+</code></pre></div></div>
+
+<p>Now user wants to append 3rd column (starting with ID)  at the after sequence ID (seq1,2,3), but retain rest of the text too. Expected output is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;seq1 ID_01  protein1
+MEFKH
+&gt;seq2 ID_02  protein 2
+MKESR
+&gt;seq3 ID_03  protein 3
+MNNQR  
+</code></pre></div></div>
+
+<p>Code for above problem is:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>seqkit <span class="nt">-w</span> 0 <span class="nt">--quiet</span> replace <span class="nt">-p</span> <span class="s1">'^(\w+)( .+)$'</span> <span class="nt">-r</span> <span class="s1">'${1} {kv} ${2}'</span> <span class="nt">-k</span> &lt;<span class="o">(</span><span class="nb">awk</span> <span class="nt">-v</span> <span class="nv">OFS</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span> <span class="s1">'{print $1,$3}'</span>  test.tsv<span class="o">)</span> test.fa
+</code></pre></div></div>
+:ET

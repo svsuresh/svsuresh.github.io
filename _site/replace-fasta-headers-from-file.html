@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/replace-fasta-headers-from-file">Sep 13, 2017 - Replace fasta headers from a file</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<span style="font-family: Arial,Helvetica,sans-serif;">Most bioinformatics data analysts come across several issues when dealing with fasta files. One such issue is change the headers of multiple fasta files (with a single sequence in each fasta file)&nbsp; and headers are listed in another text file.</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Examples are given below:</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;"><b>Folder name</b>: test</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><b>Folder contents</b>: test1.fasta, test2.fasta, test3.fasta so on</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><b>Each fasta file content</b>:</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">$ cat test1.fasta</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;"><code>$ cat test1.fasta<br />&gt;gene=test1 <br />ATGAAGTTCTTTCTGTTGCTTTTCACCATTGGGTTCTGCTGGGCTCAGTATTCCCCAAATACACAACAAG<br /><br />$ cat test2.fasta<br />&gt;gene = test2<br />GACGGACATCTATTGTTCATCTGTTTGAATGGCGATGGGTTGATATTGCTCTTGAATGTGAGCGATATTT</code></span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Now another file with headers (to be used in replacement):</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash">$ cat Headers.txt </code><code class="language-bash"><br />transcript1</code><code class="language-bash"><br />transcript2&nbsp;</code></span><br />
+<div style="text-align: left;">
+<span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash"></code><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Expected output is:</span></div>
+<pre class="pre" style="text-align: left;"><span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><code>$ cat test1.fasta</code>
+<code></code></span></pre>
+<div style="text-align: left;">
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><code><br />&gt;transcript1 <br />ATGAAGTTCTTTCTGTTGCTTTTCACCATTGGGTTCTGCTGGGCTCAGTATTCCCCAAATACACAACAAG<br /><br />$ cat test2.fasta<br />&gt;transcript2<br />GACGGACATCTATTGTTCATCTGTTTGAATGGCGATGGGTTGATATTGCTCTTGAATGTGAGCGATATTT</code></span></div>
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">Expected output should not change the file name (as in test1.fasta, test2.fasta etc), but should change the headers of each file from a list of headers in another text file (headers.txt in this example).</span><br />
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span>
+<span style="font-family: Arial,Helvetica,sans-serif;">&nbsp;Code is:</span><br />
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><b><code class="language-bash">$ mkdir test</code></b></span><br />
+<pre class="pre"><span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash"><b><span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><span itemscope="" itemtype="http://schema.org/Answer"><pre class="pre"><code class="language-bash">$ for i in $(seq 1 $(ls *.fasta |wc -l)); do sed -n "$i"p headers.txt| 
+   sed 's/^/&gt;/'&gt; test/$(ls *.fasta| sed -n "$i"p); cat $(ls *.fasta| sed -n "$i"p)|
+   sed '1d' &gt;&gt;test/$(ls *.fasta| sed -n "$i"p); done</code></pre>
+</span></span><span itemscope="" itemtype="http://schema.org/Answer">
+</span></b></code><code class="language-bash"></code>Now there are certain assumptions:</span></pre>
+<ul style="text-align: left;">
+<li><span style="font-family: Arial,Helvetica,sans-serif;">Order of fasta files in the directory and order of headers in headers.txt are same</span></li>
+<li><span style="font-family: Arial,Helvetica,sans-serif;">User must be using bash shell</span></li>
+</ul>
+<pre class="pre" style="text-align: left;"><span style="font-family: Arial,Helvetica,sans-serif;"><code class="language-bash">
+</code></span></pre>
+<span style="font-family: Arial,Helvetica,sans-serif;"><br /></span></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/manipulate-fasta-header" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/split-and-melt-columns-in-r" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

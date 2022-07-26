@@ -1,0 +1,39 @@
+<p>Here is an example of editing fasta headers with spaces. User wants to remove every thing after space in the header.</p>
+
+<p>Example file</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span>ENST00000390567.1 cdna chromosome:GRCh38:14:105881034:105881053:-1 gene:ENSG00000211907.1 gene_biotype:IG_D_gene
+GGTATAGTGGG
+<span class="o">&gt;</span>ENST00000452198.1 cdna chromosome:GRCh38:14:105881539:105881556:-1 gene:ENSG00000225825.1 gene_biotype:IG_D_gene
+GGGTATAGCA
+</code></pre></div></div>
+<p>Expected output:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span>ENST00000390567.1 
+GGTATAGTGGG
+<span class="o">&gt;</span>ENST00000452198.1 
+GGGTATAGCA
+</code></pre></div></div>
+<p>with grep:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">grep</span> <span class="nt">-o</span> <span class="s2">"^</span><span class="se">\S</span><span class="s2">*"</span> test.fa
+
+<span class="o">&gt;</span>ENST00000390567.1
+GGTATAGTGGG
+<span class="o">&gt;</span>ENST00000452198.1
+GGGTATAGCA
+</code></pre></div></div>
+<p>$with Awk</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">awk</span> <span class="nt">-F</span> <span class="s2">" "</span> <span class="s1">'{print $1}'</span> test.fa 
+
+<span class="o">&gt;</span>ENST00000390567.1
+GGTATAGTGGG
+<span class="o">&gt;</span>ENST00000452198.1
+GGGTATAGCA
+</code></pre></div></div>
+<p>with sed</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sed '/^&gt;/ s/\s.*//' test.fa 
+
+&gt;ENST00000390567.1
+GGTATAGTGGG
+&gt;ENST00000452198.1
+GGGTATAGCA
+</code></pre></div></div>

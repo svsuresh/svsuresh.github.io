@@ -1,0 +1,91 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+One of the first steps in NGS data analysis is to create directories for samples. Some of the tools require one directory for each sample so that each sample analysis result is saved with the same name in individual directories. For eg. hisat2 workflow (HiSat2-Stringtie-Ballgown) enforces user to use individual directories for each output. This is kind of hassle for a bohemian analyst. But then one can't escape such developer forced architecture, for good or bad. <br />
+<br />
+Purpose of this note today is to create multiple directories for NGS data one per sequence file. Since directory creation is independent and can be parallelized, let us use a tool called <a href="https://www.gnu.org/software/parallel/" target="_blank">GNU-parallel</a>, available in most of the linux distros. </div>
+<div style="text-align: justify;">
+<br />
+Below is a typical example of data on a linux machine: Tree command lists the files in any given directory. In this example, we are listing all the files in raw_data directory. Let us create one directory per sample (without .fastq.gz extension and move each one to respective directory)<br />
+<b>$ tree raw_data</b><br />
+<b>raw_data/</b><br />
+<b>├── hcc1395_normal_rep1_r1.fastq.gz</b><br />
+<b>├── hcc1395_normal_rep1_r2.fastq.gz</b><br />
+<b>├── hcc1395_normal_rep2_r1.fastq.gz</b><br />
+<b>├── hcc1395_normal_rep2_r2.fastq.gz</b><br />
+<b>├── hcc1395_normal_rep3_r1.fastq.gz</b><br />
+<b>├── hcc1395_normal_rep3_r2.fastq.gz</b><br />
+<b>├── hcc1395_tumor_rep1_r1.fastq.gz</b><br />
+<b>├── hcc1395_tumor_rep1_r2.fastq.gz</b><br />
+<b>├── hcc1395_tumor_rep2_r1.fastq.gz</b><br />
+<b>├── hcc1395_tumor_rep2_r2.fastq.gz</b><br />
+<b>├── hcc1395_tumor_rep3_r1.fastq.gz</b><br />
+<b>└── hcc1395_tumor_rep3_r2.fastq.gz</b><br />
+<br />
+<b>0 directories, 12 files</b></div>
+<div style="text-align: justify;">
+<b><br />Command:</b><br />
+$ ls *.gz |parallel 'basename {} .fastq.gz | xargs mkdir'<b><br /><br />What is happening here:</b>ls *.gz - lists all the files with .gz extension. In this case, all the sample files<br />
+parallel - Program<br />
+basename - a command&nbsp; use to remove file extension. File extension to be removed is .fastq.gz</div>
+<div style="text-align: justify;">
+{} - Output from ls *.gz, but individual line</div>
+<div style="text-align: justify;">
+mkdir - make directory option</div>
+<div style="text-align: justify;">
+xargs - since mkdir doesn't take stdin, we are using xargs.</div>
+<div style="text-align: justify;">
+<br /></div>
+Program has following logic steps<br />
+<ol style="text-align: left;">
+<li>list all the sequence files with .gz extension</li>
+<li>Strip .fastq.gz extension using basename function</li>
+<li>create directories using sequence names with stripped extensions</li>
+</ol>
+Output:<br />
+<br />
+$ ls<br />
+hcc1395_normal_rep1_r1&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; hcc1395_tumor_rep1_r1<br />
+hcc1395_normal_rep1_r1.fastq.gz&nbsp; hcc1395_tumor_rep1_r1.fastq.gz<br />
+hcc1395_normal_rep1_r2&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; hcc1395_tumor_rep1_r2<br />
+hcc1395_normal_rep1_r2.fastq.gz&nbsp; hcc1395_tumor_rep1_r2.fastq.gz<br />
+hcc1395_normal_rep2_r1&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; hcc1395_tumor_rep2_r1<br />
+hcc1395_normal_rep2_r1.fastq.gz&nbsp; hcc1395_tumor_rep2_r1.fastq.gz<br />
+hcc1395_normal_rep2_r2&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; hcc1395_tumor_rep2_r2<br />
+hcc1395_normal_rep2_r2.fastq.gz&nbsp; hcc1395_tumor_rep2_r2.fastq.gz<br />
+hcc1395_normal_rep3_r1&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; hcc1395_tumor_rep3_r1<br />
+hcc1395_normal_rep3_r1.fastq.gz&nbsp; hcc1395_tumor_rep3_r1.fastq.gz<br />
+hcc1395_normal_rep3_r2&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; hcc1395_tumor_rep3_r2<br />
+hcc1395_normal_rep3_r2.fastq.gz&nbsp; hcc1395_tumor_rep3_r2.fastq.gz<br />
+<div style="text-align: justify;">
+<br />
+Let us assume that you have sequences in .fastq format and they are not gzipped, then it is much easier. Use following command:<b><br /><br />$ ls *.gz |parallel 'mkdir {.}'</b><br />
+{.} in parallel would strip of the extension. This we can exploit in string two extensions. For eg. let us say we have to repeat the same exercise above, without using basename. Then the command would be:</div>
+<div style="text-align: justify;">
+</div>
+<div style="text-align: justify;">
+<b>$ ls *.gz |parallel 'echo {.}' | parallel 'mkdir {.}'</b><br />
+In this command, we are stripping extension with first parallel command (which .gz), in the second parallel command, we are stripping remaining extension (.fastq).<br />
+Now the issue is that we are not happy with the directories created. We would like to delete all the directories, keeping files intact. <br />
+<br />
+<b>$ echo */ | xargs rm -rf</b><br />
+<br />
+echo */ lists all the directories in current directory and rm -rf deletes directories. xargs is used to direct echo output to rm -rf<br />
+<br />
+Now that we have created directories, now we need to move the files into the directory. We can write another script to move each file into it's directory. It is not necessary. Let us do following things where we create directories and then move the files into respective directories:<br />
+<br />
+Command:<br />
+<br />
+Before:<br />
+<b>$ tree .<br />.<br />├── hcc1395_normal_rep1_r1.fastq.gz<br />├── hcc1395_normal_rep1_r2.fastq.gz<br />├── hcc1395_normal_rep2_r1.fastq.gz<br />├── hcc1395_normal_rep2_r2.fastq.gz<br />├── hcc1395_normal_rep3_r1.fastq.gz<br />├── hcc1395_normal_rep3_r2.fastq.gz<br />├── hcc1395_tumor_rep1_r1.fastq.gz<br />├── hcc1395_tumor_rep1_r2.fastq.gz<br />├── hcc1395_tumor_rep2_r1.fastq.gz<br />├── hcc1395_tumor_rep2_r2.fastq.gz<br />├── hcc1395_tumor_rep3_r1.fastq.gz<br />└── hcc1395_tumor_rep3_r2.fastq.gz<br /><br />0 directories, 12 files</b><br />
+After:<br />
+<b>$ tree .<br />.<br />├── hcc1395_normal_rep1_r1<br />│&nbsp;&nbsp; └── hcc1395_normal_rep1_r1.fastq.gz<br />├── hcc1395_normal_rep1_r2<br />│&nbsp;&nbsp; └── hcc1395_normal_rep1_r2.fastq.gz<br />├── hcc1395_normal_rep2_r1<br />│&nbsp;&nbsp; └── hcc1395_normal_rep2_r1.fastq.gz<br />├── hcc1395_normal_rep2_r2<br />│&nbsp;&nbsp; └── hcc1395_normal_rep2_r2.fastq.gz<br />├── hcc1395_normal_rep3_r1<br />│&nbsp;&nbsp; └── hcc1395_normal_rep3_r1.fastq.gz<br />├── hcc1395_normal_rep3_r2<br />│&nbsp;&nbsp; └── hcc1395_normal_rep3_r2.fastq.gz<br />├── hcc1395_tumor_rep1_r1<br />│&nbsp;&nbsp; └── hcc1395_tumor_rep1_r1.fastq.gz<br />├── hcc1395_tumor_rep1_r2<br />│&nbsp;&nbsp; └── hcc1395_tumor_rep1_r2.fastq.gz<br />├── hcc1395_tumor_rep2_r1<br />│&nbsp;&nbsp; └── hcc1395_tumor_rep2_r1.fastq.gz<br />├── hcc1395_tumor_rep2_r2<br />│&nbsp;&nbsp; └── hcc1395_tumor_rep2_r2.fastq.gz<br />├── hcc1395_tumor_rep3_r1<br />│&nbsp;&nbsp; └── hcc1395_tumor_rep3_r1.fastq.gz<br />└── hcc1395_tumor_rep3_r2<br />&nbsp;&nbsp;&nbsp; └── hcc1395_tumor_rep3_r2.fastq.gz<br /><br />12 directories, 12 files</b>Now let us say that we are not happy and we want to bring back all the files from subdirectories into current directory i.e copy/move all the sequence files in sub directories to current directory, do the following:<br />
+<br />
+<b>$ ls | parallel 'cp {}/*.gz .'<br /><br />What is happening&nbsp; here:</b><br />
+ls - lists all the directories<br />
+cp - copy<br />
+{} - each directory<br />
+/- escape character<br />
+*- every thing<br />
+gz - copy files with .gz extension<br />
+. - current directory </div>
+</div>

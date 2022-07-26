@@ -1,0 +1,148 @@
+---
+layout: post
+title: using Biomart in R
+date: '2014-07-17T14:25:00.003+05:30'
+author: suresh
+tags:
+- bioc
+- bioconductor
+- biomart
+- cran-R
+modified_time: '2014-07-17T15:37:00.805+05:30'
+thumbnail: http://2.bp.blogspot.com/-lBTFYse1WM0/U8dZMG1zuKI/AAAAAAAAAFM/42Y7tNLtqJ0/s72-c/probes.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-8233039769446926779
+blogger_orig_url: https://digibio.blogspot.com/2014/07/using-biomart-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">Biomart is annotation package in R for annotating data from microarray studies. User can download biomart from this page: http://www.bioconductor.org/packages/release/bioc/html/biomaRt.html<br />
+<br />
+Using biomart is very simple. Biomart package contains several sources of annotations (for eg. ENSEMBL, VEGA, unimart etc)&nbsp; and each source will have an associated version number which would be useful in replicating the annotations. Within each source, there are several databases for organism. Each database contains annotations for user provided information (for eg. affymetrix probe sets, gene symbol). User can list the sources of annotations, choose the database and supply the information that needs to be annotated.<br />
+<br />
+Think biomart as a street with full of shops. In this analogy, each shop is a mart or source of annotation. Within each shop, there are several sections (i.e several databases). Each section (database) contains information that user requires.<br />
+<br />
+When user annotates information, user has to choose the source/mart (shop), section (database)&nbsp; to annotate the data. User&nbsp; can supply data in multiple formats depending on the database/mart. Biomart annotates the data with a simple logic. User needs to provide common information between database and user's data. Biomart automagically fetches corresponding data. It works more or less like a joining tables in data base. While joining two tables, user has to join tables based on a common id between the two tables. Once they are joined, it is easy to fetch data using both the tables.<br />
+<br />
+Biomart query has three parts:<br />
+<br />
+1) What user wants to fetch<br />
+2) What biological annotations&nbsp; program should use. This should be common with source. Will explain below.<br />
+3) List of entities (genes, probes etc) for which user wants annotation<br />
+<br />
+Regarding point 1, user wants to fetch several annotations for entities mentioned in point 3. Available annotations are called "attributes" in biomart package and available attributes can change from mart to mart and within mart, data base to database.<br />
+<br />
+Regarding point 2, when user wants to fetch annotations, user has to define the category or categories (for eg. affy_hg_u133_plus_2, unigene etc ) using which biomart annotates user supplied list.&nbsp; These categories are called "filters" and&nbsp; user can&nbsp; list available filters within a database and mart.<br />
+<br />
+Regarding point 3, user needs to supply the entities that are to annotated. They are called "values"&nbsp; in biomart. The entity category must be listed in "filters" of the dataset/mart. For eg. for annotating affymetrix hgu 133 plus 2 vairants (eg. "210254_at", "220772_at"), filters should contain a category called "affy_hg_u133_plus_2". <br />
+<br />
+Biomart query structure is calling&nbsp; an annotation function with 3 arguments as followed:<br />
+<br />
+get biomart annotation (wanted annotations, for which category annotations are wanted, probe/gene list under the category)<br />
+<br />
+1) Load biomart in R<br />
+<pre class="brush: r; title: ; notranslate" title="">&nbsp;$ library("biomaRt")</pre><br />
+If biomart is not installed, user should install biomart first before proceeding further and installation instructions are provided in the page: http://www.bioconductor.org/packages/release/bioc/html/biomaRt.html<br />
+<br />
+2) List all the marts / sources of information<br />
+<br />
+$ listMarts()<br />
+<br />
+This should list around 60 sources (as of&nbsp; biomart package version 2.20.0). Out put would be huge and user should see three columns:<br />
+<br />
+<br />
+column 1 without header: serial number , column 2 with header "biomart" , listing the sources/marts and column 3 with header version listing each source version.<br />
+<br />
+<br />
+<br />
+3) Select a mart<br />
+<br />
+<pre class="brush: r; title: ; notranslate" title="">$ useMart("ensembl")</pre><br />
+User can choose any mart of choice.&nbsp; Here we choose ensemble as mart/source of annotation.<br />
+<br />
+3) List the databases within ensembl mart.<br />
+<br />
+$ ensembl = useMart("ensembl")<br />
+<br />
+<br />
+This would store useMart command as variable and to list the databases within ensembl, use following command:<br />
+<br />
+<pre class="brush: r; title: ; notranslate" title="">$ listDatasets(ensembl)</pre><pre class="brush: r; title: ; notranslate" title="">&nbsp;</pre><div class="brush: r; title: ; notranslate" style="text-align: left;" title="">This should all the databases in ensembl annotation source.&nbsp;</div><div class="brush: r; title: ; notranslate" style="text-align: left;" title=""></div><div class="brush: r; title: ; notranslate" style="text-align: left;" title="">They are around 66 (as of&nbsp; biomart package version 2.20.0). Out put would be huge and user should see 4 columns:<br />
+column 1 without header: serial number , column 2 with header  "dataset" , listing the datasets, column 3 with header "Description", short description of each dataset&nbsp; and column 4 with header version  listing each source version. <br />
+In general, each data set represents an organism in ensembl mart.</div><div style="text-align: left;"><br />
+</div><div style="text-align: left;">A working annotation example for Affymetrix Human Genome U133 Plus 2.0 Array probes:<br />
+<br />
+1)&nbsp; Click on the link to view example probes: https://drive.google.com/file/d/0B0MpwluEDxNuY3h6NnBPczR1Wjg/edit?usp=sharing. These probes are from Affymetrix Human Genome U133 Plus 2.0 Array.</div><br />
+User should see following probes on screen:<br />
+<div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-lBTFYse1WM0/U8dZMG1zuKI/AAAAAAAAAFM/42Y7tNLtqJ0/s1600/probes.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-lBTFYse1WM0/U8dZMG1zuKI/AAAAAAAAAFM/42Y7tNLtqJ0/s1600/probes.png" height="127" width="320" /></a></div>2) Copy the text and paste in a text editor of choice. Save it as "affy_probes.txt"<br />
+3) Initiate R section and navigate to the directory where affy_probes.txt file is saved <br />
+4) Import probes by executing following command:<br />
+<br />
+$ affy &lt;- read.table ("affy_probes.txt", header=TRUE)<br />
+<br />
+4) This should create an object in current R section, by name "affy". Print affy to see if import is correct. Execute following command:<br />
+<br />
+$ affy<br />
+<br />
+User should see following screen (if import is correct):<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;"><a href="http://4.bp.blogspot.com/-8vlO38jPisc/U8daekZq2EI/AAAAAAAAAFU/ZLNAtdX8ti8/s1600/affy_import.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-8vlO38jPisc/U8daekZq2EI/AAAAAAAAAFU/ZLNAtdX8ti8/s1600/affy_import.png" height="115" width="320" /></a></div>5) Now load Biomart (biomaRt package) library.<br />
+6) List marts availabale<br />
+<br />
+$ listMarts()<br />
+<br />
+7) Select a mart to choose and store it as an object for later use<br />
+$ ensembl=useMart("ensembl")<br />
+<br />
+8) List datasets available within ensembl mart<br />
+&nbsp;$ listDatasets(ensembl)<br />
+<br />
+9) Use human gene dataset to annotate affymetrix probes.<br />
+$ hs_ensembl=useDataset("hsapiens_gene_ensembl", mart=ensembl)<br />
+<br />
+10) Choose the required/wanted annotations from available attributes from dataset "hs_ensembl".<br />
+<br />
+For this example, I chose Chromosome Name, Gene End (bp), GO Term Name, Gene Start (bp), WikiGene Name and Affy HG U133-PLUS-2 probeset. (Though we are supplying probes, we need to fetch them as well, for comparison)<br />
+<br />
+$ attr=listAttributes(hs_ensembl)[c(94,6,7,8,85,28,29),]<br />
+<br />
+<br />
+11) Print selected annotations to cross check if required annotations are selected.<br />
+<div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-jwVjyGOrMbM/U8eOhWSMTRI/AAAAAAAAAFk/QtcGONKNP5M/s1600/attr.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-jwVjyGOrMbM/U8eOhWSMTRI/AAAAAAAAAFk/QtcGONKNP5M/s1600/attr.png" height="114" width="320" /></a></div>12) Annotate the probesets (and store the annotations to an object: "bm_hs_ensembl")<br />
+<br />
+$ bm_hs_ensembl=getBM(attributes=c(attr[,1]), filters='affy_hg_u133_plus_2', values=affy, mart=hs_ensembl)<br />
+<br />
+13) Store the annotated probes as a tab separated file for future use<br />
+<br />
+$ write.table (bm_hs_ensembl, "bm_hs_ensembl.txt", sep="\t")<br />
+<br />
+This is how probes of interest can be annotated in biomart. R configuration I used for this work is:<br />
+<br />
+&gt; sessionInfo()<br />
+R version 3.1.1 (2014-07-10)<br />
+Platform: x86_64-pc-linux-gnu (64-bit)<br />
+<br />
+locale:<br />
+&nbsp;[1] LC_CTYPE=en_US.UTF-8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LC_NUMERIC=C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LC_TIME=en_US.UTF-8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;[4] LC_COLLATE=en_US.UTF-8&nbsp;&nbsp;&nbsp;&nbsp; LC_MONETARY=en_US.UTF-8&nbsp;&nbsp;&nbsp; LC_MESSAGES=en_US.UTF-8&nbsp;&nbsp; <br />
+&nbsp;[7] LC_PAPER=en_US.UTF-8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LC_NAME=C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LC_ADDRESS=C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+[10] LC_TELEPHONE=C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+<br />
+attached base packages:<br />
+[1] stats&nbsp;&nbsp;&nbsp;&nbsp; graphics&nbsp; grDevices utils&nbsp;&nbsp;&nbsp;&nbsp; datasets&nbsp; methods&nbsp;&nbsp; base&nbsp;&nbsp;&nbsp;&nbsp; <br />
+<br />
+other attached packages:<br />
+[1] biomaRt_2.20.0<br />
+<br />
+loaded via a namespace (and not attached):<br />
+&nbsp;[1] AnnotationDbi_1.26.0 Biobase_2.24.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BiocGenerics_0.10.0&nbsp; DBI_0.2-7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;[5] GenomeInfoDb_1.0.2&nbsp;&nbsp; IRanges_1.22.9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; parallel_3.1.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RCurl_1.95-4.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;[9] RSQLite_0.11.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stats4_3.1.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tools_3.1.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; XML_3.98-1.1 </div><br />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52918388-1', 'auto');
+  ga('send', 'pageview');
+
+</script><br />

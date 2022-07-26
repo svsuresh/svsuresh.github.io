@@ -1,0 +1,64 @@
+---
+layout: post
+title: Join dataframes by range in R
+date: '2017-11-09T23:11:00.001+05:30'
+author: suresh
+tags:
+- range
+- sqldf
+- fuzzyjoin
+- dataframe
+- cran-R
+modified_time: '2017-11-09T23:11:15.403+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-2471323453917476012
+blogger_orig_url: https://digibio.blogspot.com/2017/11/join-dataframes-by-range-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+There are times where you would like to know the gene/transcript/exon for your SNP of interest. So you have SNP details in one data frame and gene and it's coordinates in another dataframe. For SNP, let us say you are have SNP ID and position (with/without other information) and for chromosome/gene/transcript/exon, you have coordinates (start and stop) and ID (chromosome number/gene symbol/transcript symbol/exon number).&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Now problem is to join both the data frames so you can get chromosome/gene/transcript/exon name/ID and coordinates. Let me take an example here:</div>
+<br />
+<b>SNPs of interest:</b><br />
+<b>&nbsp;</b><br />
+<b>&nbsp;&nbsp; SNV &nbsp;&nbsp;&nbsp; pos<br />1&nbsp;&nbsp; SNP1&nbsp; 899983<br />2&nbsp;&nbsp; SNP2&nbsp; 937283<br />3&nbsp;&nbsp; SNP3&nbsp; 951771<br />4&nbsp;&nbsp; SNP4&nbsp; 991102<br />5&nbsp;&nbsp; SNP5 1034215<br />6&nbsp;&nbsp; SNP6 1063818</b><br />
+<br />
+Code to create this table/dataframe in R:<br />
+======================================== <br />
+$ df1&lt;-data.frame(SNV=paste0("SNP",seq(1,6)),<br />
+&nbsp;&nbsp;&nbsp; pos=c(899983,937283,951771,991102,1034215,1063818)) <br />
+============================================<br />
+<br />
+<b>Reference genes and coordinates:</b><br />
+<br />
+<b>&nbsp; gene&nbsp; start&nbsp;&nbsp;&nbsp; stop<br />1&nbsp;&nbsp; g1&nbsp; 355079&nbsp; 355336<br />2&nbsp;&nbsp; g2&nbsp; 446820&nbsp; 462604<br />3&nbsp;&nbsp; g3&nbsp; 700794&nbsp; 707341<br />4&nbsp;&nbsp; g4&nbsp; 887159 1236478<br />5&nbsp;&nbsp; g5&nbsp; 110971&nbsp; 112320<br />6&nbsp;&nbsp; g6&nbsp; 156060&nbsp; 284753 </b><br />
+<br />
+Code to create this table/dataframe in R:<br />
+==========================================<br />
+df2&lt;-data.frame(gene=c('g1','g2','g3','g4','g5','g6'),<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start=c(355079,446820,700794,887159,110971,156060),<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop=c(355336,462604,707341,1236478,112320,284753))<br />
+==========================================<br />
+<br />
+Now the problem we are trying to address to is where does my SNP lie and which gene has the variants and coordinates of the gene(s) that houses the variants.<br />
+<br />
+This can be done in more than 2 ways in R. Let us solve this problem in two ways.<br />
+<br />
+Code using <a href="https://cran.r-project.org/web/packages/fuzzyjoin/index.html" target="_blank">fuzzyjoin</a> library:<br />
+<br />
+<b>$ library(fuzzyjoin)</b><br />
+<b>$ fuzzy_join(df1, df2, by = c("pos" = "start", "pos" = "stop"), match_fun = list(`&gt;=`, `&lt;=`)) </b><br />
+<br />
+output:<br />
+&nbsp;&nbsp; SNV&nbsp;&nbsp;&nbsp;&nbsp; pos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene&nbsp; start&nbsp;&nbsp;&nbsp; stop<br />1 SNP1&nbsp; 899983&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />2 SNP2&nbsp; 937283&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />3 SNP3&nbsp; 951771&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />4 SNP4&nbsp; 991102&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />5 SNP5 1034215&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />6 SNP6 1063818&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />
+<br />
+It seems that all variants on g4 gene. Now what we did in above code was to join two dataframes and column "pos" from df1 on two columns of df2 ("start" and "stop"). We ask the code to look for variant position that more than or equal to start and less than or equal to stop i.e in between the start and stop of df2.<br />
+<br />
+Let us do the same, with <a href="https://cran.r-project.org/web/packages/sqldf/index.html" target="_blank">sqldf</a> library:<br />
+<br />
+<b>$ library(sqldf)&nbsp;&nbsp;&nbsp; <br />$ sqldf("select * from df1 left join df2 on&nbsp; df1.pos between df2.start and df2.stop")&nbsp;</b><br />
+<b><br /></b>
+output:<br />SNV&nbsp;&nbsp;&nbsp;&nbsp; pos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene&nbsp; start&nbsp;&nbsp;&nbsp; stop<br />1 SNP1&nbsp; 899983&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />2 SNP2&nbsp; 937283&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />3 SNP3&nbsp; 951771&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />4 SNP4&nbsp; 991102&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />5 SNP5 1034215&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />6 SNP6 1063818&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br /><b></b><br />
+<br />
+<br /></div>

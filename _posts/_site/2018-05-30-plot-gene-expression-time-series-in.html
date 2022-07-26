@@ -1,0 +1,63 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+In other note <a href="https://digibio.blogspot.com/2018/04/time-series-experiments-and-ggplot.html">here</a>, we have plotted time series gene expression profile as bar plots. The data had 3 replicates, but without a condition. In this note, we will plot time series gene expression data with no replicates, but with a condition (treated vs untreated).<br />
+<br />
+We have 50 observations per time point (5 time points) per condition (two conditions). Hence we have 500 observations (50 values x 2 conditions x 5 times points=500). One thing what users would like to see is expression levels before and after or between any two comparable conditions (for eg normal vs tumor). Let us connect two values by a line, per each gene. So that we know which is what. We can plot the data horizontally or vertically.<br />
+<br />
+Code begins here:<br />
+========================= <br />
+# Let us simulate a dataframe with 500 values as I explained above.<br />
+x &lt;- data.frame(replicate(10, sample(0:500, 50, replace=TRUE)))<br />
+rownames(x) &lt;- paste("gene", c(1:nrow(x)), sep="")<br />
+colnames(x)[seq(1,ncol(x), 2)] &lt;- paste("treated.Month", c(1:(ncol(x)/2)), sep="")<br />
+colnames(x)[seq(2,ncol(x), 2)] &lt;- paste("untreated.Month", c(1:(ncol(x)/2)), sep="")<br />
+x$id=row.names(x)<br />
+<br />
+# Now let us convert the data from wide to long format<br />
+library(tidyverse)<br />
+gx=gather(x,"treatment","Expression",-id)<br />
+<br />
+#Let us create two more columns after splitting treatment column.<br />
+library(stringr)<br />
+gx[,c("condition","time")]=str_split_fixed(gx$treatment,"\\.",2)<br />
+<br />
+# Convert the new columns to factor<br />
+gx$time=as.factor(gx$time)<br />
+gx$condition=as.factor(gx$condition)<br />
+```<br />
+#Take any 6 genes. In this example, we take result of head.<br />
+gx6=subset(gx,gx$id %in% head(gx$id) )<br />
+<br />
+#Now plot genes vertically<br />
+library(ggplot2)<br />
+ggplot(gx6, aes( id, Expression,  color = condition)) +<br />
+geom_point(size = 4) +<br />
+geom_line(aes(group = id), color = "brown", size = 1) +<br />
+facet_wrap(~ time, nrow = 1, ncol = 5) +<br />
+theme_bw() +<br />
+theme(<br />
+axis.text.x = element_text(angle = 90, size = 17),<br />
+axis.text.y = element_text(size = 17),<br />
+axis.title.x = element_blank(),<br />
+strip.text.x = element_text(size = 15)<br />
+)<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-Ro4WbMfqWU4/Ww5rsc_p5OI/AAAAAAAABDM/w411-QoLBiYw3ZJLOD-rVazGqoNIEbkHwCLcBGAs/s1600/Rplot02.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="970" data-original-width="1200" height="516" src="https://3.bp.blogspot.com/-Ro4WbMfqWU4/Ww5rsc_p5OI/AAAAAAAABDM/w411-QoLBiYw3ZJLOD-rVazGqoNIEbkHwCLcBGAs/s640/Rplot02.png" width="640" /></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<br />
+#Now plot genes horizontally<br />
+ggplot(gx6, aes(Expression, id, color = condition)) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    geom_point(size = 4) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; geom_line(aes(group = id), color = "brown", size = 1) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    facet_wrap(~ time, nrow = 1, ncol = 5) +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    theme_bw() +<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    theme(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          axis.text.x = element_text(angle = 90, size = 17),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          axis.text.y = element_text(size = 17),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          axis.title.x = element_blank(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          strip.text.x = element_text(size = 15)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          )<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://2.bp.blogspot.com/-sbcahB8aeHY/Ww5ryxfl7mI/AAAAAAAABDQ/gUr47aZAPBAuzhI0M6_dYaTa8dHkC6lUwCEwYBhgL/s1600/Rplot.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="970" data-original-width="1200" height="516" src="https://2.bp.blogspot.com/-sbcahB8aeHY/Ww5ryxfl7mI/AAAAAAAABDQ/gUr47aZAPBAuzhI0M6_dYaTa8dHkC6lUwCEwYBhgL/s640/Rplot.png" width="640" /></a></div>
+<br /></div>

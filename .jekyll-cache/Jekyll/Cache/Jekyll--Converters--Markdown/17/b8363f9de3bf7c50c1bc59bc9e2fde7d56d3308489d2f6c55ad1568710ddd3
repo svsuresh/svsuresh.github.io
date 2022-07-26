@@ -1,0 +1,9 @@
+I"�<p>I don’t want to post one line notes (May be I have done in the past without knowing). But here is one, I want to post. I looked at multiple posts and several mind numbing ways to remove double extension in python. In biology, it’s very common (fq.gz, fastq.gz, fa.gz, gtf.gz etc). Here is the simple code to remove double extension</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="n">pl</span>
+
+<span class="n">test</span><span class="o">=</span><span class="n">pl</span><span class="p">.</span><span class="n">Path</span><span class="p">(</span><span class="s">"x.tar.gz"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s">''</span><span class="p">).</span><span class="n">with_suffix</span><span class="p">(</span><span class="s">''</span><span class="p">))</span>
+</code></pre></div></div>
+<p>This would print <code class="language-plaintext highlighter-rouge">x</code>.</p>
+:ET

@@ -1,0 +1,78 @@
+---
+layout: post
+title: Gene expression plotting using Lollipop plots for two conditions in R
+date: '2018-06-25T19:24:00.003+05:30'
+author: suresh
+tags:
+- gene expression
+- lollipop
+- cran-R
+modified_time: '2018-06-25T19:25:15.865+05:30'
+thumbnail: https://4.bp.blogspot.com/-FaDmgbhos9U/WzDy-Kp0AMI/AAAAAAAABH0/IRBUkdR5RsQYfScSDMJv5DVqjDDZeyIBgCLcBGAs/s72-c/Screenshot%2Bat%2B2018-06-25%2B19-19-21.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-1138662071280795933
+blogger_orig_url: https://digibio.blogspot.com/2018/06/lollipot-plot-for-two-conditions-in-r.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+It is pretty common that biologists compare expression patterns between two conditions for genes. There are several ways to display expression patterns between conditions. However they are good in displaying overall (for all genes) expression patterns. If one draws difference for each gene, it would look messy. There are other ways to show the differences. For eg lollipop plots.They are called lollipop plots as output looks like bunch of lollipops in sand. <br />
+<br />
+Let us take an example data and then produce lollipop plot. You can download dummy data from <a href="https://drive.google.com/open?id=1LTkJFMNMpI9NpaXU4mI90jSaeVVieRWnsGe_P7ws-m8">here</a>.&nbsp; Data screen shot:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-FaDmgbhos9U/WzDy-Kp0AMI/AAAAAAAABH0/IRBUkdR5RsQYfScSDMJv5DVqjDDZeyIBgCLcBGAs/s1600/Screenshot%2Bat%2B2018-06-25%2B19-19-21.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="835" data-original-width="549" height="640" src="https://4.bp.blogspot.com/-FaDmgbhos9U/WzDy-Kp0AMI/AAAAAAAABH0/IRBUkdR5RsQYfScSDMJv5DVqjDDZeyIBgCLcBGAs/s640/Screenshot%2Bat%2B2018-06-25%2B19-19-21.png" width="419" /></a></div>
+<div class="separator" style="clear: both; text-align: justify;">
+Now user wants to plot each gene value next to each other for each cell. Let us do it in ggplot2 package. Data needs some rearrangement. Please note that I plotted only first 20 lines (head).</div>
+<div class="separator" style="clear: both; text-align: justify;">
+===================</div>
+<div class="separator" style="clear: both;">
+$ suppressPackageStartupMessages(library(dplyr))</div>
+<div class="separator" style="clear: both;">
+$ suppressPackageStartupMessages(library(tidyr))</div>
+<div class="separator" style="clear: both;">
+$ suppressPackageStartupMessages(library(ggplot2))</div>
+<div class="separator" style="clear: both;">
+$ df1=read.csv("text.tsv", strip.white = T, stringsAsFactors = T,sep="\t")</div>
+<div class="separator" style="clear: both;">
+$ df2=head(df1,20) %&gt;%gather("gene","expression", -cells) %&gt;%&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;arrange(gene,expression) %&gt;% mutate (cells = factor(cells, unique(cells)))</div>
+<div class="separator" style="clear: both;">
+$ df2$gene=as.factor(df2$gene)</div>
+<div class="separator" style="clear: both;">
+<br /></div>
+<div class="separator" style="clear: both;">
+$ ggplot(df2, aes(x=cells, y=expression)) +</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; geom_point(aes(color=gene, size=3), position=position_dodge(width=.6))+</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; geom_linerange(aes(ymin=0, ymax=expression,color=gene),position =&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; position_dodge(.6))+</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; theme_bw()+</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; theme(</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;legend.position = "none",</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;panel.grid.major = element_blank(),</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;panel.grid.minor = element_blank(),</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;axis.text.x = element_text(margin=margin(t=20),size=12,angle = 45),</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;axis.text.y = element_text(size=18),</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;axis.title.y = element_text(size=18),</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;axis.title.x = element_text(size=18))+</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;scale_color_manual(values=c("darkgreen", "red"))+</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ylab("Expression")+</div>
+<div class="separator" style="clear: both;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;xlab("Cells")</div>
+<div class="separator" style="clear: both;">
+=================================</div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-LFIDH6vQY18/WzDz3GG_vnI/AAAAAAAABH8/45BWU6u8zfQYGAOAnFoYF4jxWqlceW9AgCLcBGAs/s1600/download.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="840" data-original-width="840" height="640" src="https://4.bp.blogspot.com/-LFIDH6vQY18/WzDz3GG_vnI/AAAAAAAABH8/45BWU6u8zfQYGAOAnFoYF4jxWqlceW9AgCLcBGAs/s640/download.png" width="640" /></a></div>
+<br /></div>
+</div>

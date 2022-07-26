@@ -1,0 +1,40 @@
+---
+layout: post
+title: 'Replace gene symbols with gene IDs in data frame '
+date: '2018-06-12T21:39:00.001+05:30'
+author: suresh
+tags:
+- gene IDs
+- gene symbols
+- forcats
+- replace
+- dataframe
+modified_time: '2018-06-12T21:39:13.741+05:30'
+thumbnail: https://3.bp.blogspot.com/-EvZRdU_UGMc/Wx_uTqRNEtI/AAAAAAAABHM/7pqmMYXyUUAsiTnbdap6QpVb6_aNVlQBQCLcBGAs/s72-c/data.png
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-6939448304568371389
+blogger_orig_url: https://digibio.blogspot.com/2018/06/replace-gene-symbols-with-gene-ids-in.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Some times, user may have to replace all the values with some other values for eg. all the gene symbols with entrez gene IDs. Now let us have a look at following data and data can be downloaded from <a href="https://drive.google.com/open?id=1fHRedfuc9dewMAvpsRajOM-u-PhhThZFo1Ouq9c4sUY">here</a>:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://3.bp.blogspot.com/-EvZRdU_UGMc/Wx_uTqRNEtI/AAAAAAAABHM/7pqmMYXyUUAsiTnbdap6QpVb6_aNVlQBQCLcBGAs/s1600/data.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="222" data-original-width="1600" height="88" src="https://3.bp.blogspot.com/-EvZRdU_UGMc/Wx_uTqRNEtI/AAAAAAAABHM/7pqmMYXyUUAsiTnbdap6QpVb6_aNVlQBQCLcBGAs/s640/data.png" width="640" /></a></div>
+<div style="text-align: justify;">
+This data has IDs in first column and rest of the columns with HGNC symbols. Now we need to replace all of them with entrez gene IDs. Let us do it with forcats package.&nbsp;&nbsp;</div>
+<div style="text-align: justify;">
+Steps are to make a unique list of genes and get Entrez IDs using biomart library. Then map them to gene symbols and then replace.</div>
+<div style="text-align: justify;">
+========================================= </div>
+<div style="text-align: justify;">
+$ library(tidyr)<br />$ gene_list=unique(sort(gather(df[-1],"","genes")$genes))&nbsp;</div>
+<div style="text-align: justify;">
+$ library(biomaRt)<br />$ mart &lt;- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")<br />$ test=getBM(attributes = c("hgnc_symbol", "entrezgene"), filters = "hgnc_symbol", values = gene_list, bmHeader = T, mart = mart) </div>
+$ colnames(test)=c("hgnc_symbol","ncbi_gene_id")<br />$ test$ncbi_gene_id=as.character(test$ncbi_gene_id)<br />
+$ library(forcats)<br />$ new_df=df<br />$ new_df[-1] &lt;- lapply(new_df[-1], function(x) lvls_revalue(factor(x, levels = test$hgnc_symbol), test$ncbi_gene_id)) <br />
+===========================================<br />
+Let us have a look at new_df (output) now:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://4.bp.blogspot.com/-EMT9phu9Frw/Wx_wGsAZY1I/AAAAAAAABHY/qgH5Oas07jMUMUIaiAvgwGliTc6uZz3wgCLcBGAs/s1600/final.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="461" data-original-width="1491" height="196" src="https://4.bp.blogspot.com/-EMT9phu9Frw/Wx_wGsAZY1I/AAAAAAAABHY/qgH5Oas07jMUMUIaiAvgwGliTc6uZz3wgCLcBGAs/s640/final.png" width="640" /></a></div>
+<br />
+<br /></div>

@@ -1,0 +1,54 @@
+---
+layout: post
+title: Replace gene IDs in UCSC gtf
+date: '2017-10-05T03:31:00.000+05:30'
+author: suresh
+tags:
+- table browser
+- UCSC
+- hgtables
+- awk
+- gtf
+modified_time: '2017-10-05T03:31:48.313+05:30'
+blogger_id: tag:blogger.com,1999:blog-3175511529662794199.post-3594039924250450110
+blogger_orig_url: https://digibio.blogspot.com/2017/10/replace-gene-ids-in-ucsc-gtf.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+UCSC has a wonderful tool called <a href="https://genome.ucsc.edu/cgi-bin/hgTables" target="_blank">Table browser</a> to export, intersect and sequence information of reference genome data in context of user supplied data where user data is optional. User can export data in several standard formats. One of them is gtf format. gtf format is limited version of gff3.&nbsp; User can learn how to export data in gtf from <a href="https://genome.ucsc.edu/FAQ/FAQdownloads.html#download37" target="_blank">here</a> hosted on UCSC.One of the problems that users face while analyzing RNAseq data (esp by Tophat/Cufflinks or New tuxedo protocol) is that both gene ID and Transcript ID are same. Once you download, gtf track, take a back up of it before you proceed any further.</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Example gtf record would look like this:</div>
+<div style="text-align: justify;">
+<span itemscope="" itemtype="http://schema.org/Answer"><br /><b>chr22&nbsp;&nbsp;
+ hg38_refGene&nbsp;&nbsp;&nbsp; exon&nbsp;&nbsp;&nbsp; 50798655&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50799637&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene_id "NR_026981"; transcript_id "NR_026981";</b></span></div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Steps to follow:</div>
+<div style="text-align: justify;">
+<span itemscope="" itemtype="http://schema.org/Answer"></span></div>
+<ol>
+<li>In hgtables, Choose NCBI refseq as track and in output format,</li>
+<li>Choose selected fields from primary and related tables and click on 
+get output.It would take you to a page where you can choose the output. </li>
+<li>Select name and name2 fields and click on get output. This would output transcript name and gene name. <br />Example ouput would look like this:<br /><b>NR_026981&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RPL23AP82</b></li>
+<li>Now replace genid (in UCSC gtf) with gene symbol from freshly exported list.</li>
+</ol>
+For step 4, use following code:<br />
+<b>$ awk&nbsp; 'NR==FNR{A[$1]=$2;next} $2 in A{$2=A[$2]}1' &lt;file from step3&gt; FS='[";]' OFS='"' &lt;your gtf&gt; | sed 's/""/";/g'&nbsp;</b><br />
+<br />
+Example data and code:<br />
+<br />
+$ cat test.gtf<br /><br />
+chr22&nbsp;&nbsp; hg38_refGene&nbsp;&nbsp;&nbsp; exon&nbsp;&nbsp;&nbsp; 50798655&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50799637&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene_id "NR_026981"; transcript_id "NR_026981";<br /><br />
+$ cat test.hgtables<br /><br />
+NR_026981&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RPL23AP82<br /><br />
+$ awk&nbsp; 'NR==FNR{A[$1]=$2;next} $2 in A{$2=A[$2]}1' test.hgtables FS='[";]' OFS='"' test.gtf | sed 's/""/";/g'<br /><br />
+chr22&nbsp;&nbsp; hg38_refGene&nbsp;&nbsp;&nbsp; exon&nbsp;&nbsp;&nbsp; 50798655&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50799637&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene_id "RPL23AP82"; transcript_id "NR_026981";<br />
+<br />
+Output from step 3 will have extra two lines at the start (starting with #. Remove them) <br />
+</div>

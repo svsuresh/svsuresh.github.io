@@ -1,0 +1,126 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+Some times, we may need randomly generated files for our purpose. This note explains how to create random nucleotide sequences and amino acid sequences<br />
+<br />
+libraries required: Biostrings (for later purpose)<br />
+<h4 style="text-align: left;">
+Create random nucleotide sequence of length 1000 bases:</h4>
+1) Load library Biostrings<br />
+code: library(Biostrings)<br />
+<br />
+2) Generate random sequence of length 1000 bases with letters ATGC only.&nbsp; This would print 1000 base length nucleotide characters.<br />
+code: sample(DNA_BASES, 1000, replace = TRUE, prob = c(0.4,0.1,0.1,0.4))<br />
+<br />
+Function DNA_BASES in biostrings prints 4 bases, where DNA_ALPHABETS prints entire IUPAC code for DNA.<br />
+Please note that in sample function, we can supply probability as well, for each base.&nbsp; In the example above, we have supplied example probabilities for each base.<br />
+<br />
+3) Save the output as an object in R.<br />
+code: seq.n=sample(DNA_BASES, 1000, replace = TRUE, prob = c(0.4,0.1,0.1,0.4))<br />
+<br />
+4) Collapse all characters in to a single sequence<br />
+command: paste(seq.n, collapse="")<br />
+<br />
+This would print a continuous/contiguous stretch of bases (4). However, we would like to use it for further processes. At this point this can either be saved as another object or as a biostring.<br />
+<br />
+5) Let us save it as biostring object.<br />
+command: ds.seq.n=DNAString(paste(seq.n, collapse=""))<br />
+<br />
+6) Look at the object class.<br />
+commad: class (ds.seq.n)<br />
+<br />
+This would print the class as biostring.<br />
+<br />
+7) Let us look at the frequency of the bases. This should match with the probabilities supplied in 2 and 3rd steps<br />
+command: alphabetFrequency(ds.seq.n, baseOnly=TRUE)<br />
+<br />
+Please note that baseOnly option prints frequencies for A, T, G, C and others. If this options is not supplied, frequencies for all&nbsp; IUPAC bases&nbsp; will be printed. <br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-T1_NI7UdjGE/VZRF2_lR1EI/AAAAAAAAAQQ/WYr7Ri3ewws/s1600/frquency.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="156" src="http://1.bp.blogspot.com/-T1_NI7UdjGE/VZRF2_lR1EI/AAAAAAAAAQQ/WYr7Ri3ewws/s640/frquency.png" width="640" /></a></div>
+<br />
+8) Write the file to disk.<br />
+First we need to convert the DNAstring to DNAstringset as DNAstring cannot be directly written to disk in fasta format. In addition, we cannot supply name(s) to DNAstring object where as DNAstringset object can accept names. Please follow the code for comments:<br />
+<br />
+Code:<br />
+dss.seq.n=DNAStringSet(ds.seq.n) # converts and stores DNAstring object as DNAstringSet object<br />
+names(dss.seq.n)="test.nt" # name of the sequence is set to test.nt<br />
+writeXStringSet(dss.seq.n, "test.fasta", format = 'fasta')&nbsp; # writes the above example random file to current working directory (in R) as test.fasta. <br />
+<br />
+9) Open the file (test.fasta) in any text editor of your choice.<br />
+&nbsp;&nbsp; <br />
+Code for generating random nucleotide sequence:<br />
+library(Biostrings)<br />
+seq.n=sample(DNA_BASES, 1000, replace = TRUE, prob = c(0.4,0.1,0.1,0.4))<br />
+ds.seq.n=DNAString(paste(seq.n, collapse=""))<br />
+class(ds.seq.n)<br />
+alphabetFrequency(ds.seq.n, baseOnly=TRUE)<br />
+dss.seq.n=DNAStringSet(ds.seq.n)<br />
+names(dss.seq.n)="test.nt"<br />
+writeXStringSet(dss.seq.n, "test.fasta", format = 'fasta')<br />
+<h4 style="text-align: left;">
+Create random aminoacid&nbsp; sequence of length 350 amino acids:</h4>
+1) Load library Biostrings<br />
+code: library(Biostrings)<br />
+<br />
+2)
+ Generate random sequence of length 350 amino acids (AA) with standard 20 aminoacids.&nbsp; 
+This would print&nbsp; 350 amino acids length&nbsp; characters.<br />
+code: sample(c(AA_STANDARD), 350, replace = TRUE)<br />
+<br />
+Function AA_STANDARD in biostrings prints 20 AA, where AA_ALPHABET prints entire IUPAC code for proteins. Please note that in sample function, we can supply probability as well, for each AA. However,&nbsp; In the example above, we have not supplied example probabilities for each AA.<br />
+<br />
+3) Save the output as an object in R.<br />
+code: seq.p=sample(AA_STANDARD, 350, replace = TRUE)<br />
+<br />
+4) Collapse all characters in to a single sequence<br />
+command: paste(seq.p, collapse="")<br />
+<br />
+This
+ would print a continuous/contiguous stretch of AA. However, we 
+would like to use it for further processes. At this point this can 
+either be saved as another object or as a biostring.<br />
+<br />
+5) Let us save it as biostring object.<br />
+command: ds.seq.p=AAString(paste(seq.p, collapse=""))<br />
+<br />
+Please note that biostring objects for Nt (DNAstring) and AA (AAstring) are different as biostring looks at the standard code for each type.<br />
+<br />
+6) Look at the object class.<br />
+command: class (ds.seq.p)<br />
+<br />
+This would print the class as biostring.<br />
+<br />
+7) Let us look at the frequency of AA. <br />
+command: alphabetFrequency(ds.seq.p)<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-DKoB9l-jk9s/VZRLe9wRNtI/AAAAAAAAAQk/BTUTAVSaUz8/s1600/pseq.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="156" src="http://3.bp.blogspot.com/-DKoB9l-jk9s/VZRLe9wRNtI/AAAAAAAAAQk/BTUTAVSaUz8/s640/pseq.png" width="640" /></a></div>
+<br />
+<br />
+8) Write the file to disk.<br />
+First we need to convert the AAstring to AAstringset as AAstring cannot be directly written to 
+disk in fasta format. In addition, we cannot supply name(s) to AAstring
+ object where as AAstringset object can accept names. Please follow the
+ code for comments:<br />
+<br />
+Code:<br />
+dss.seq.p=AAStringSet(ds.seq.p) # converts and stores AAstring object as AAstringSet object<br />
+names(dss.seq.p)= "test.p" # name of the sequence is set to test.p<br />
+writeXStringSet(dss.seq.p, "testp.fasta", format = 'fasta')&nbsp; # writes the above example random AA file
+ to current working directory (in R) as testp.fasta.<br />
+<br />
+9) Open the file (testp.fasta) in any text editor of your choice.<br />
+<br />
+<br />
+Code for creating random amino acid sequence:<br />
+seq.p=sample(AA_STANDARD, 350, replace = TRUE)<br />
+seq.p<br />
+ds.seq.p=AAString(paste(seq.p, collapse=""))<br />
+ds.seq.p<br />
+alphabetFrequency(ds.seq.p)<br />
+# write file to disk<br />
+dss.seq.p=AAStringSet(ds.seq.p)<br />
+names(dss.seq.p)= "test.p"<br />
+writeXStringSet(dss.seq.p, "testp.fasta", format = 'fasta')<br />
+<br /></div>

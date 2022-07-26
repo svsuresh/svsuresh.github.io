@@ -1,0 +1,64 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Cram is a compression format like BAM (binary alignment/map) format. However, cram is supposed to be more efficient in data compression and available in lossy and lossless compression formats (like song compression-lossy and lossless). Samtools, in current git repositories (as of 27th July, 2014) support cram rudimentarily (as view). Cramtool kit from EBI can convert bam files to cram files. It is java based tool and can be downloaded from https://github.com/enasequence/cramtools/blob/master/cramtools-2.1.jar?raw=true (working link as of 27th July, 2014). However, it doesn't support indexing cram files as I understand. For indexing cram files, staden_io_utils package has to be installed on computer. 1000 genomes support cram format (http://www.1000genomes.org/faq/what-are-cram-files).<br />
+<br />
+Samtools, Cram toolkit can convert bam to cram and samtools and staden_io_libs can index cram files. However in my use, i found cram toolkit better than samtools. Samtools can convert bam to cram easy, but converting back to bam to cram takes lots of time, compared to cram tool kit.<br />
+<br />
+Prerequisites:<br />
+1) Compile latest samtools from samtools git repository<br />
+2) Down load install cram toolkit from EBI (https://github.com/enasequence/cramtools/blob/master/cramtools-2.1.jar?raw=true (working link as of 27th July, 2014)<br />
+3) Install staden-io-lib-utils&nbsp; (available in Debian and ubuntu repositories)<br />
+<br />
+Convert bam to cram:<br />
+<br />
+1) using samtools:<br />
+<br />
+$ samtools view -C &lt;input.bam&gt; -T &lt;reference.fasta&gt; -o &lt;output.cram&gt;<br />
+example code: $ samtools view -C tumor.bam -T ../bioinfo_software/hg19/ref.fa -o tumor_st.cram<br />
+<br />
+2) Using cram tool kit<br />
+<br />
+$&nbsp; java -jar &lt;path to cramtools&gt;/cramtools-2.1.jar cram&nbsp; -I &lt;input.bam&gt; -R &lt;reference.fasta&gt; -O &lt;output.cram&gt;<br />
+<br />
+example code: $ java -jar /opt/biotools/cramtools-2.1.jar cram&nbsp; -I tumor.bam -R ../bioinfo_software/hg19/ref.fa -O tumor_ls.cram<br />
+<br />
+For an example bam (original. bam with 1.3 Mb size),&nbsp; I found cram toolkit compresses bam better than samtools.<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-UHku6ca-LCs/U9H_doKXczI/AAAAAAAAAI8/XcKFtO_Svt4/s1600/cram.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="126" src="http://4.bp.blogspot.com/-UHku6ca-LCs/U9H_doKXczI/AAAAAAAAAI8/XcKFtO_Svt4/s1600/cram.png" width="320" /></a></div>
+Index cram files:<br />
+<br />
+1) Using samtools<br />
+<br />
+$ samtools index &lt;input&gt;.cram<br />
+example code: samtools index cramtools_lossless.cram<br />
+<br />
+However, i got this error if we supply command samtools index *.cram (for batch indexing)<br />
+"Samtools-htslib-API: bam_index_build2() not yet implemented. fish: Job 1, “samtools index *.cram ” terminated by signal SIGABRT (Abort)" ( I am using fish shell)<br />
+<br />
+2) Using cram_index from staden-io-lib-utils<br />
+<br />
+&nbsp;$ cram_index &lt;input&gt;.cram<br />
+Example code:&nbsp; $ cram_index samtools.cram<br />
+<br />
+However, cram_index doesn't support "cram_index *.cram" command either for compressing multiple cram files.<br />
+<br />
+Next step was to recreate original bam file from compressed cram file using samtools and cramtool kit and comparing them:<br />
+<br />
+1) Samtools takes lots of time in&nbsp; converting cram to bam.&nbsp; In fact, I have to stop converting as it went silent for considerable time and cramtool kit converted the cram files back into bam files within no time. However there are&nbsp; size differences which I will have to look into.<br />
+<br />
+commands used are (for cramtools):<br />
+<br />
+1) java -jar /opt/biotools/cramtools-2.1.jar bam&nbsp; -I cramtools_lossy.cram&nbsp; -R ../bioinfo_software/hg19/ref.fa -O cramtools_lossy.bam<br />
+2) java -jar /opt/biotools/cramtools-2.1.jar bam&nbsp; -I cramtools_lossless.cram -R ../bioinfo_software/hg19/ref.fa -O cramtools_lossless.bam <br />
+<br />
+<br /><div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-Pa0qbGmVMpk/U9IDE7sINSI/AAAAAAAAAJI/358nt9rXwLY/s1600/bam.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="58" src="http://2.bp.blogspot.com/-Pa0qbGmVMpk/U9IDE7sINSI/AAAAAAAAAJI/358nt9rXwLY/s1600/bam.png" width="320" /></a></div>
+<br />
+Samtools was able to index recreated bam files. Remember that parsing a cram files always needs reference file that was used while creating cram file.<br />
+<br />
+<br />
+<br />
+<br /></div>

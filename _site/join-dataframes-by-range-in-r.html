@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/join-dataframes-by-range-in-r">Nov 9, 2017 - Join dataframes by range in R</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+There are times where you would like to know the gene/transcript/exon for your SNP of interest. So you have SNP details in one data frame and gene and it's coordinates in another dataframe. For SNP, let us say you are have SNP ID and position (with/without other information) and for chromosome/gene/transcript/exon, you have coordinates (start and stop) and ID (chromosome number/gene symbol/transcript symbol/exon number).&nbsp;</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+Now problem is to join both the data frames so you can get chromosome/gene/transcript/exon name/ID and coordinates. Let me take an example here:</div>
+<br />
+<b>SNPs of interest:</b><br />
+<b>&nbsp;</b><br />
+<b>&nbsp;&nbsp; SNV &nbsp;&nbsp;&nbsp; pos<br />1&nbsp;&nbsp; SNP1&nbsp; 899983<br />2&nbsp;&nbsp; SNP2&nbsp; 937283<br />3&nbsp;&nbsp; SNP3&nbsp; 951771<br />4&nbsp;&nbsp; SNP4&nbsp; 991102<br />5&nbsp;&nbsp; SNP5 1034215<br />6&nbsp;&nbsp; SNP6 1063818</b><br />
+<br />
+Code to create this table/dataframe in R:<br />
+======================================== <br />
+$ df1&lt;-data.frame(SNV=paste0("SNP",seq(1,6)),<br />
+&nbsp;&nbsp;&nbsp; pos=c(899983,937283,951771,991102,1034215,1063818)) <br />
+============================================<br />
+<br />
+<b>Reference genes and coordinates:</b><br />
+<br />
+<b>&nbsp; gene&nbsp; start&nbsp;&nbsp;&nbsp; stop<br />1&nbsp;&nbsp; g1&nbsp; 355079&nbsp; 355336<br />2&nbsp;&nbsp; g2&nbsp; 446820&nbsp; 462604<br />3&nbsp;&nbsp; g3&nbsp; 700794&nbsp; 707341<br />4&nbsp;&nbsp; g4&nbsp; 887159 1236478<br />5&nbsp;&nbsp; g5&nbsp; 110971&nbsp; 112320<br />6&nbsp;&nbsp; g6&nbsp; 156060&nbsp; 284753 </b><br />
+<br />
+Code to create this table/dataframe in R:<br />
+==========================================<br />
+df2&lt;-data.frame(gene=c('g1','g2','g3','g4','g5','g6'),<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start=c(355079,446820,700794,887159,110971,156060),<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop=c(355336,462604,707341,1236478,112320,284753))<br />
+==========================================<br />
+<br />
+Now the problem we are trying to address to is where does my SNP lie and which gene has the variants and coordinates of the gene(s) that houses the variants.<br />
+<br />
+This can be done in more than 2 ways in R. Let us solve this problem in two ways.<br />
+<br />
+Code using <a href="https://cran.r-project.org/web/packages/fuzzyjoin/index.html" target="_blank">fuzzyjoin</a> library:<br />
+<br />
+<b>$ library(fuzzyjoin)</b><br />
+<b>$ fuzzy_join(df1, df2, by = c("pos" = "start", "pos" = "stop"), match_fun = list(`&gt;=`, `&lt;=`)) </b><br />
+<br />
+output:<br />
+&nbsp;&nbsp; SNV&nbsp;&nbsp;&nbsp;&nbsp; pos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene&nbsp; start&nbsp;&nbsp;&nbsp; stop<br />1 SNP1&nbsp; 899983&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />2 SNP2&nbsp; 937283&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />3 SNP3&nbsp; 951771&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />4 SNP4&nbsp; 991102&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />5 SNP5 1034215&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />6 SNP6 1063818&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp; 887159 1236478<br />
+<br />
+It seems that all variants on g4 gene. Now what we did in above code was to join two dataframes and column "pos" from df1 on two columns of df2 ("start" and "stop"). We ask the code to look for variant position that more than or equal to start and less than or equal to stop i.e in between the start and stop of df2.<br />
+<br />
+Let us do the same, with <a href="https://cran.r-project.org/web/packages/sqldf/index.html" target="_blank">sqldf</a> library:<br />
+<br />
+<b>$ library(sqldf)&nbsp;&nbsp;&nbsp; <br />$ sqldf("select * from df1 left join df2 on&nbsp; df1.pos between df2.start and df2.stop")&nbsp;</b><br />
+<b><br /></b>
+output:<br />SNV&nbsp;&nbsp;&nbsp;&nbsp; pos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gene&nbsp; start&nbsp;&nbsp;&nbsp; stop<br />1 SNP1&nbsp; 899983&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />2 SNP2&nbsp; 937283&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />3 SNP3&nbsp; 951771&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />4 SNP4&nbsp; 991102&nbsp;&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />5 SNP5 1034215&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br />6 SNP6 1063818&nbsp;&nbsp; g4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 887159 1236478<br /><b></b><br />
+<br />
+<br /></div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/parse-kegg-output-with-miller" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/extract-kegg-pathways-and-pathway" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

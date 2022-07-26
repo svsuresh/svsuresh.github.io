@@ -1,0 +1,56 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div>
+Most of the bioinformaticians are familiar with BCFtools, VCFlib and samtools. Now that they moved to github, some of them are not available as binaries. For eg. Samtools is available as binary in linux repositories, BCFtools and VCF lib are not. Following is the note to compile and install, all the three tools in one go. This is because bcftools depend on vcflib in compiling.&nbsp; Following note is tested on Ubuntu trusty, 64bit.<br />
+<br />
+1) Install git.<br />
+<br />
+sudo apt-get install git -y<br />
+<br />
+This should work on most of the times, in ubuntu.<br />
+<br />
+2) Once you install the git, run following commands:<br />
+<br />
+<ul style="text-align: left;">
+<li>git clone --branch=develop git://github.com/samtools/htslib.git
+            </li>
+<li>git clone --branch=develop git://github.com/samtools/bcftools.git
+            </li>
+<li>git clone --branch=develop git://github.com/samtools/samtools.git&nbsp;</li>
+</ul>
+These commands should create 3 folders : samtools, bcftools, htslib.<br />
+<br />
+3) To install&nbsp; bcftools<br />
+<ol style="text-align: left;">
+<li>Navigate to bcftools folder <br />command: cd bcftools<br /> </li>
+<li>Compile bcftools by running following command<br />command: sudo make<br /></li>
+<li>This would create a executable file named "bcftool" </li>
+<li>Move the executable to /usr/bin folder&nbsp; or to the folder which is in user's path of executables.<br />&nbsp;</li>
+</ol>
+</div>
+<div>
+4) To install&nbsp; vcftools</div>
+<ol style="text-align: left;">
+<li>Navigate to vcftools folder <br />command: cd vcftools<br /> </li>
+<li>Compile vcftools by running following command<br />command: sudo make<br /></li>
+<li>This would create multiple executable files within "vcftools" folder, named bin </li>
+<li>Move the executable to /usr/bin folder&nbsp; or to the folder which is in user's path of executables.</li>
+</ol>
+<br />
+<div>
+5) To install samtools</div>
+<ol style="text-align: left;">
+<li>Navigate to samtools folder <br />command: cd samtools<br /> </li>
+<li>Compile samtools by running following command<br />command: sudo make<br /></li>
+<li>This would create an executable file named samtools </li>
+<li>Move the executable to /usr/bin folder&nbsp; or to the folder which is in user's path of executables.</li>
+</ol>
+<br />
+How to upgrade and compile:<br />
+<br />
+1)&nbsp; Navigate to the folder (for eg. samtools folder mentioned above)<br />
+2)&nbsp; Run following command to pull the most recent/updated versions of the software<br />
+<br />command: git pull<br />
+This would update the folder with latest code. However, if you already have the latest version, a message would appear that code is up to date.<br />
+<br />
+3) Once the folder is updated, run make command again to compile the executable. Replace the earlier binaries with new binaries.<br />
+<br /></div>

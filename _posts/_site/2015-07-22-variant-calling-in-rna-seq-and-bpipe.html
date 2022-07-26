@@ -1,0 +1,78 @@
+<div dir="ltr" style="text-align: left;" trbidi="on">
+RNA seq in general is used for quantification of expression. However, the same data can be used for variant identification and further annotation. There are pipelines that outline variant calling using RNAseq data including GATK best practices workflow for variant calling using RNA seq data. In addition, there are several NGS data analysis and annotation specific platforms are being available now a days like Gemini (for variant annotation). Few of the data analysis (pipeline) tools are Pegassus, Galaxy, Bpipe, Ruffus etc. A small comparison can be found <a href="https://code.google.com/p/bpipe/wiki/ComparisonToWorkflowTools" target="_blank">here</a>.<br />
+<br />
+In this note, a small Bpipe script is included for calling variants. Workflow of the pipeline is explained below:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-Z1SHOowpyz0/Va_P1hgcsZI/AAAAAAAAAUU/k-XChkhjYJE/s1600/bp_rnaseq_vc_workflow.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="490" src="http://2.bp.blogspot.com/-Z1SHOowpyz0/Va_P1hgcsZI/AAAAAAAAAUU/k-XChkhjYJE/s640/bp_rnaseq_vc_workflow.png" width="640" /></a></div>
+<div dir="ltr" id="docs-internal-guid-a15d698a-b6bf-e7c1-34f5-2096364c936f" style="line-height: 1.7999999999999998; margin-bottom: 0pt; margin-top: 0pt;">
+<span style="background-color: transparent; color: black; font-family: Verdana; font-size: 18.666666666666664px; font-style: normal; font-variant: normal; font-weight: normal; text-decoration: none; vertical-align: baseline;">Tools used</span></div>
+<br />
+Bedtools (vcf intersection), Bwa (alignment and indexing),&nbsp; freebayes (variant calling), picardtools (deduplication), samtools (sorting and variant calling),&nbsp; vcflib (variant merging, sorting)<br />
+<br />
+Following is the pipeline: Please replace with appropriate directories on your system<br />
+<br />
+====================================================================<br />
+&nbsp;fastqc={<br />
+&nbsp;&nbsp; &nbsp;exec "fastqc ./data/reads.end1.fq -o ./fastqc"<br />
+&nbsp;&nbsp; &nbsp;exec "fastqc ./data/reads.end2.fq -o ./fastqc"<br />
+}<br />
+<br />
+cutadapt={<br />
+&nbsp;&nbsp; &nbsp;exec "cutadapt -q 20 -o ./cutadapt/reads.end1.cutadapt.fq -p ./cutadapt/reads.end2.cutadapt.fq ./data/reads.end1.fq ./data/reads.end2.fq &gt; ./cutadapt/cutadapt_qual.log"<br />
+}<br />
+<br />
+indexref={<br />
+&nbsp;&nbsp; &nbsp;exec "bwa index ./data/chr20.fa"<br />
+}<br />
+<br />
+align={<br />
+&nbsp;&nbsp; &nbsp;exec "bwa mem -t 4 -M ./data/chr20.fa ./cutadapt/reads.end1.cutadapt.fq ./cutadapt/reads.end2.cutadapt.fq &gt; ./bwa/bwa.err &gt; ./bwa/na12878.q20.cutadapt.sam"<br />
+}<br />
+<br />
+sort={<br />
+&nbsp;&nbsp; &nbsp;exec "samtools view -bSu ./bwa/na12878.q20.cutadapt.sam&nbsp; | samtools sort - ./samtools/na12878.q20.cutadapt.sorted"<br />
+}<br />
+<br />
+dedup={ <br />
+&nbsp;&nbsp; &nbsp;exec "java -jar /opt/picard-tools-1.119/MarkDuplicates.jar METRICS_FILE=./picard/na12878.q20.cutadapt.sorted.dedup.metrics REMOVE_DUPLICATES=true ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT I=./samtools/na12878.q20.cutadapt.sorted.bam O=./picard/na12878.q20.cutadapt.sorted.dedup.bam"<br />
+}<br />
+<br />
+bamindex={<br />
+&nbsp;&nbsp; &nbsp;exec "samtools index ./picard/na12878.q20.cutadapt.sorted.dedup.bam"<br />
+}<br />
+<br />
+samtools_vc = {<br />
+&nbsp;&nbsp; &nbsp;exec "samtools mpileup -uf ./data/chr20.fa ./picard/na12878.q20.cutadapt.sorted.dedup.bam | bcftools call -mv -Ov - &gt; ./variantcalling/samtools.na12878.q20.cutadapt.sorted.dedup.vcf"<br />
+}<br />
+&nbsp;&nbsp; <br />
+freebayes_vc={ <br />
+&nbsp;&nbsp; &nbsp;exec "freebayes -f ./data/chr20.fa ./picard/na12878.q20.cutadapt.sorted.dedup.bam &gt; ./variantcalling/freebayes.na12878.q20.cutadapt.sorted.dedup.vcf"<br />
+}<br />
+<br />
+gatk_vc= {<br />
+&nbsp;&nbsp; &nbsp;exec "java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar -T HaplotypeCaller&nbsp; -R ./data/chr20.fa -I ./picard/na12878.q20.cutadapt.sorted.dedup.bam -L 20 --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30&nbsp; -o ./variantcalling/gatk.na12878.q20.cutadapt.sorted.dedup.vcf"<br />
+}<br />
+<br />
+mergevcf= {<br />
+exec "vcfcombine ./variantcalling/*.vcf &gt; ./variantcalling/fb_sam.vcf"<br />
+}<br />
+uniquevcf= {<br />
+exec "vcfuniq ./variantcalling/fb_sam.vcf &gt; ./variantcalling/fb_sam.uniq.vcf"<br />
+}<br />
+cvariants={<br />
+exec "bedtools intersect -a ./variantcalling/fb_sam.uniq.vcf -b ./data/hg19.genome.refseq.gtf -wa -wb &gt; ./variantcalling/coding_variants.txt"<br />
+}<br />
+ncvariants={<br />
+exec "bedtools intersect -v -a ./variantcalling/fb_sam.uniq.vcf -b ./data/hg19.genome.refseq.gtf &gt; ./variantcalling/noncoding_variants.txt"<br />
+}<br />
+Bpipe.run {<br />
+&nbsp;&nbsp; &nbsp;fastqc+cutadapt+indexref+align+sort+dedup+bamindex+samtools_vc+freebayes_vc+mergevcf+uniquevcf+cvariants+ncvariants<br />
+}<br />
+==================================================================== <br />
+<div dir="ltr" id="docs-internal-guid-a15d698a-b6bf-e7c1-34f5-2096364c936f" style="line-height: 1.7999999999999998; margin-bottom: 0pt; margin-top: 0pt;">
+Note: Yet to add annotations using VEP (ENSEMBL) and SNpeff.&nbsp; Please note that intersection using bedtools can also take bed files for annotation.<br />
+<span style="background-color: transparent; color: black; font-family: Verdana; font-size: 18.666666666666664px; font-style: normal; font-variant: normal; font-weight: normal; text-decoration: none; vertical-align: baseline;"></span></div>
+<div dir="ltr" id="docs-internal-guid-a15d698a-b6bf-e7c1-34f5-2096364c936f" style="line-height: 1.7999999999999998; margin-bottom: 0pt; margin-top: 0pt;">
+<span style="background-color: transparent; color: black; font-family: Verdana; font-size: 18.666666666666664px; font-style: normal; font-variant: normal; font-weight: normal; text-decoration: none; vertical-align: baseline;"><br /></span></div>
+</div>

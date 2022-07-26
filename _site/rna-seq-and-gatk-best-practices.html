@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Biologist's bioinformatics notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/theme.css" rel="stylesheet" type="text/css">
+  <link href="/css/syntax.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <meta name="google-site-verification" content="fhL4tu7YrFAnIGAUl7DqfxgyLuyY6vE5h8o6fUwzoJM" />
+</head>
+
+<body>
+  <nav class="navbar-fixed-top bg-primary">
+    <span class="navbar-brand">Bioinformatics notes from a biologist</span>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/"><i class="fas fa-home fa-2x"></i> Home</a></li>
+      <li class="active"><a href="/archive.html"><i class="fas fa-archive fa-2x"></i> Archive</a></li>
+    </ul>
+  </nav>
+</body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 hidden-xs">
+            <div class=well>
+  <div class="sidebar">
+    09 August 2021
+  </div>
+  <div class="sidebar">
+    <h1>Recent Posts</h1>
+    <ul>
+        
+          <li><a href="/split_fasta_by_header_regex">Split fasta file into multiple files based on partial headers</a></li>
+        
+          <li><a href="/add_filenames_to_all_the_columns_in_bulk">Append file name at the end of each column for all CSV files</a></li>
+        
+          <li><a href="/add_duplicate_count_to_headers">Add count to duplicated IDs in fasta file</a></li>
+        
+          <li><a href="/remove_bases">Remove bases in between the sequences</a></li>
+        
+          <li><a href="/retain_unique_values">Retain only unique values in the data</a></li>
+        
+    </ul>
+  </div>
+  <div class="sidebar">
+    <h1>Links</h1>
+<ul>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/svsk/">Linkedin</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://www.github.com/svsuresh">Github</a></li>
+</ul>
+
+  </div>
+</div>
+        </div>
+        <div class="col-md-9">
+          <div class="article">
+            <div class="well">
+                <h1><a href="/rna-seq-and-gatk-best-practices">Oct 11, 2015 - RNA seq variant calling best practice pipeline</a></h1>
+            <div class="post-content">
+            <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: justify;">
+<a href="http://3.bp.blogspot.com/-Pom_gCwWfOI/Vhl528eYNrI/AAAAAAAAAZ0/pgZ0O3gDJ3Q/s1600/RNAseq_p2_gatk_implemented.png" style="margin-left: 1em; margin-right: 1em;"></a><a href="https://www.broadinstitute.org/gatk/" target="_blank">GATK</a>, provided by Broad institute, has become <i>defacto</i> standard for calling variants in WES, WGS and targeted/panel based sequencing&nbsp; data for many labs across the world. In addition, GATK team provided best practices workflows&nbsp;</div>
+<ul style="text-align: justify;">
+<li>To help novice analysts&nbsp;</li>
+<li>To introduce workflows routinely used at ivory towers of research to rest of the world</li>
+<li>To standardize workflows across the labs (thus countries) to get reproducible results</li>
+</ul>
+<div style="text-align: justify;">
+Till recent times, GATK team provided workflows only DNAseq data, but not for RNAseq. However, GATK team came up<a href="https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels-"> best practices</a> workflow for calling variants using RNAseq as outlined below:</div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-gsyChvzSGfM/VhlzfHMAgQI/AAAAAAAAAZg/922GzfjzqE0/s1600/RNAseq_p2_gatk.png" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="320" src="http://2.bp.blogspot.com/-gsyChvzSGfM/VhlzfHMAgQI/AAAAAAAAAZg/922GzfjzqE0/s400/RNAseq_p2_gatk.png" width="400" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: center;">
+(Based on workflow outlined <a href="https://www.broadinstitute.org/gatk/guide/article?id=3891" target="_blank">here</a>) </div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://cdn.vanillaforums.com/gatk.vanillaforums.com/FileUpload/fa/e60ecf89bd1b2645d9fce68ccf3919.png" style="margin-left: 1em; margin-right: 1em;"><br /></a></div>
+<div style="text-align: left;">
+</div>
+<div style="text-align: left;">
+In this note, following steps are executed and below the steps, a flow diagram is shown.</div>
+<ol style="text-align: left;">
+<li>Quality check by fastqc</li>
+<li>Trimming by cutadapt</li>
+<li>Alignment by tophat</li>
+<li>Alignment statistics collection by samtools</li>
+<li>Sorting aligned file by samtools</li>
+<li>Index the aligned file by samtools</li>
+<li>Deduplicating aligned file by picard</li>
+<li>Add Read Groups (RG) tag by picard</li>
+<li>Splitting N cigar reads by GATK</li>
+<li>Indel Recalibration (Creating intervals and Indel realignment with GATK)</li>
+<li>Recalibration&nbsp; files (First pass and Second pass with GATK)</li>
+<li>Quality check for recalibration (before and after plots by GATK)</li>
+<li>Base quality score recalibration (BQSR)</li>
+<li>Variant calling&nbsp;</li>
+<li>Variant filtering</li>
+</ol>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto;"><tbody><tr><td style="text-align: center;"><a href="https://1.bp.blogspot.com/-7wIqjzVYO90/XuxzomxobeI/AAAAAAAABag/bxPLh3eQVIQtSl-4xvl_ahMYxBX8SjihwCK4BGAsYHg/s960/RNAseq_p2_gatk_implemented.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" data-original-height="720" data-original-width="960" height="469" src="https://1.bp.blogspot.com/-7wIqjzVYO90/XuxzomxobeI/AAAAAAAABag/bxPLh3eQVIQtSl-4xvl_ahMYxBX8SjihwCK4BGAsYHg/w625-h469/RNAseq_p2_gatk_implemented.png" width="625" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Add caption<br /></td></tr></tbody></table>
+<div style="text-align: center;">
+&nbsp;<a href="http://3.bp.blogspot.com/-Pom_gCwWfOI/Vhl528eYNrI/AAAAAAAAAZ0/pgZ0O3gDJ3Q/s1600/RNAseq_p2_gatk_implemented.png" style="margin-left: 1em; margin-right: 1em;"> </a></div>
+<div style="text-align: left;">
+RNA seq data for this note is downloaded from&nbsp; <a href="https://test.galaxyproject.org/library_common/browse_library?show_deleted=False&amp;cntrller=library&amp;use_panels=False&amp;id=d1d508fb296552d5" target="_blank">here</a> and below is the bash script for running the pipeline: ( Please note that following additional steps are also included in the pipeline, but they are commented out. Do not mix variant calling (VCF) with genomic variant calling (gVCF))</div>
+<div style="text-align: left;">
+<ul style="text-align: left;">
+<li>Discordant and concordant variant filtering</li>
+<li>gVCF calling</li>
+<li>merging gVCFs</li>
+</ul>
+User should have raw_reads directory in the current directory with all the fastq files and knows the reference path. Replace reference paths with appropriate </div>
+<div style="text-align: left;">
+</div>
+<div style="text-align: left;">
+######################</div>
+<div style="text-align: left;">
+####bash script starts######</div>
+<div style="text-align: left;">
+#####################</div>
+<div style="text-align: left;">
+</div>
+<div style="text-align: left;">
+&nbsp;for i in $(ls ./raw_reads | grep ^[^d]| rev | cut -c 10- | rev | uniq)<br />
+do <br />
+<br />
+# Make direcotry for fastqc<br />
+mkdir -p ${i%}_fastqc<br />
+<br />
+# Run fastqc<br />
+fastqc -o ./${i%}_fastqc -f fastq /home/user/rnaseq/raw_reads/${i%}_R1.fastq /home/user/rnaseq/raw_reads/${i%}_R2.fastq<br />
+<br />
+# Make directory to store cutadapt results<br />
+mkdir -p cutadapt<br />
+<br />
+#Run cutadapt<br />
+cutadapt --quality-cutoff=20 --format=fastq -o ./cutadapt/${i%}_R1.cutadapt.fastq -p ./cutadapt/${i%}_R2.cutadapt.fastq /home/user/rnaseq/raw_reads/${i%}_R1.fastq /home/user/rnaseq/raw_reads/${i%}_R2.fastq<br />
+<br />
+# Run top hat and save the out with directory extension _tophatout <br />
+tophat2&nbsp; --no-coverage-search -o ./${i%}_tophat_out -G ./reference/genes_chr12.gtf -p 2 ./reference/chr12 ./cutadapt/${i%}_R1.cutadapt.fastq ./cutadapt/${i%}_R2.cutadapt.fastq <br />
+<br />
+# Collect the stats<br />
+samtools flagstat ./${i%}_tophat_out/accepted_hits.bam &gt; ./${i%}_tophat_out/accepted_hits.flagstats<br />
+<br />
+#Sort bam <br />
+samtools sort&nbsp; -T /tmp/align.bam ./${i%}_tophat_out/accepted_hits.bam -o ./${i%}_tophat_out/accepted_hits.pos.sorted.bam <br />
+<br />
+# Index the bam<br />
+samtools index ./${i%}_tophat_out/accepted_hits.pos.sorted.bam<br />
+<br />
+# picard mkdir<br />
+mkdir -p ${i%}_picard<br />
+<br />
+# Dedup bam<br />
+java -jar /opt/picard-tools-1.119/MarkDuplicates.jar \<br />
+&nbsp;&nbsp; &nbsp;METRICS_FILE=${i%}_picard/${i%}.dedup.metrics \<br />
+&nbsp;&nbsp; &nbsp;REMOVE_DUPLICATES=true ASSUME_SORTED=true \<br />
+&nbsp;&nbsp; &nbsp;VALIDATION_STRINGENCY=LENIENT \<br />
+&nbsp;&nbsp; &nbsp;CREATE_INDEX=true \<br />
+&nbsp;&nbsp; &nbsp;I=./${i%}_tophat_out/accepted_hits.pos.sorted.bam \<br />
+&nbsp;&nbsp; &nbsp;O=./${i%}_picard/q20.cutadapt.sorted.dedup.bam<br />
+<br />
+# Add read groups<br />
+java -jar /opt/picard-tools-1.119/AddOrReplaceReadGroups.jar \<br />
+&nbsp;&nbsp; &nbsp;I=./${i%}_picard/q20.cutadapt.sorted.dedup.bam \<br />
+&nbsp;&nbsp; &nbsp;O=./${i%}_picard/q20.cutadapt.sorted.dedup.rg.bam \<br />
+&nbsp;&nbsp; &nbsp;CREATE_INDEX=true SO=coordinate RGID=${i%%_*} RGLB=${i%} RGPL=ILLUMINA RGSM=${i%} RGPU=GCCAAT <br />
+<br />
+# mkdir gatk<br />
+mkdir -p ./${i%}_gatk<br />
+<br />
+# Split N cigar reads<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T SplitNCigarReads \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./${i%}_picard/q20.cutadapt.sorted.dedup.rg.bam \<br />
+&nbsp;&nbsp; &nbsp;-o ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.bam \<br />
+&nbsp;&nbsp; &nbsp;-U ALLOW_N_CIGAR_READS<br />
+<br />
+#Sort bam <br />
+samtools sort&nbsp; -T /tmp/align.bam ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.bam -o ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.bam <br />
+<br />
+# Index the bam<br />
+samtools index ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.bam&nbsp;&nbsp; <br />
+<br />
+# Create intervals<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T RealignerTargetCreator \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.bam \<br />
+&nbsp;&nbsp; &nbsp;--known /home/user/ngs_exercise/data/hg19/Mills_and_1000G_gold_standard.indels.hg19.chr12.vcf \<br />
+&nbsp;&nbsp; &nbsp;-L chr12 -o ./${i%}_gatk/forIndelRealigner.intervals<br />
+<br />
+# Realign bam files<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T IndelRealigner \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.bam&nbsp; \<br />
+&nbsp;&nbsp; &nbsp;-known /home/user/ngs_exercise/data/hg19/Mills_and_1000G_gold_standard.indels.hg19.chr12.vcf \<br />
+&nbsp;&nbsp; &nbsp;-L chr12 \<br />
+&nbsp;&nbsp; &nbsp;-targetIntervals ./${i%}_gatk/forIndelRealigner.intervals \<br />
+&nbsp;&nbsp; &nbsp;-o ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.bam <br />
+<br />
+#&nbsp; Base recalibration First pass<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T BaseRecalibrator \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.bam \<br />
+&nbsp;&nbsp; &nbsp;-knownSites /home/user/rnaseq/reference/chr12.dbsnp.b141.b37.hg19.tidy.vcf \<br />
+&nbsp;&nbsp; &nbsp;-o ./${i%}_gatk/recal_data.table<br />
+<br />
+#&nbsp; Base recalibration second pass<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T BaseRecalibrator \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.bam \<br />
+&nbsp;&nbsp; &nbsp;-knownSites /home/user/rnaseq/reference/chr12.dbsnp.b141.b37.hg19.tidy.vcf \<br />
+&nbsp;&nbsp; &nbsp;-L chr12 \<br />
+&nbsp;&nbsp; &nbsp;-knownSites /home/user/ngs_exercise/data/hg19/Mills_and_1000G_gold_standard.indels.hg19.chr12.vcf \<br />
+&nbsp;&nbsp; &nbsp;-BQSR ./${i%}_gatk/recal_data.table \<br />
+&nbsp;&nbsp; &nbsp;-o ./${i%}_gatk/post_recal_data.table <br />
+<br />
+# Create plots<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T AnalyzeCovariates \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-L chr12 \<br />
+&nbsp;&nbsp; &nbsp;-before ./${i%}_gatk/recal_data.table \<br />
+&nbsp;&nbsp; &nbsp;-after ./${i%}_gatk/post_recal_data.table \<br />
+&nbsp;&nbsp; &nbsp;-plots ./${i%}_gatk/recalibration_plots.pdf<br />
+<br />
+# Apply BQSR to sequence<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T PrintReads \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.bam \<br />
+&nbsp;&nbsp; &nbsp;-L chr12 \<br />
+&nbsp;&nbsp; &nbsp;-BQSR ./${i%}_gatk/recal_data.table \<br />
+&nbsp;&nbsp; &nbsp;-o ./${i%}_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.recal.bam <br />
+<br />
+# Variant calling<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T HaplotypeCaller \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./MeOH_REP1_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.recal.bam \<br />
+&nbsp;&nbsp; &nbsp;-I ./MeOH_REP2_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.recal.bam \<br />
+&nbsp;&nbsp; &nbsp;-I ./MeOH_REP3_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.recal.bam \<br />
+&nbsp;&nbsp; &nbsp;--dbsnp /home/user/rnaseq/reference/chr12.dbsnp.b141.b37.hg19.tidy.vcf \<br />
+&nbsp;&nbsp; &nbsp;-dontUseSoftClippedBases \<br />
+&nbsp;&nbsp; &nbsp;-stand_call_conf 20 \<br />
+&nbsp;&nbsp; &nbsp;-stand_emit_conf 20 \<br />
+&nbsp;&nbsp; &nbsp;-o ./meoh_output.raw.snps.indels.vcf<br />
+&nbsp;&nbsp; <br />
+&nbsp;java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T HaplotypeCaller \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-I ./R3G_REP1_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.recal.bam \<br />
+&nbsp;&nbsp; &nbsp;-I ./R3G_REP2_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.recal.bam \<br />
+&nbsp;&nbsp; &nbsp;-I ./R3G_REP3_gatk/q20.cutadapt.sorted.dedup.snc.sorted.realigned.recal.bam \<br />
+&nbsp;&nbsp; &nbsp;--dbsnp /home/user/rnaseq/reference/chr12.dbsnp.b141.b37.hg19.tidy.vcf \<br />
+&nbsp;&nbsp; &nbsp;-dontUseSoftClippedBases \<br />
+&nbsp;&nbsp; &nbsp;-stand_call_conf 20 \<br />
+&nbsp;&nbsp; &nbsp;-stand_emit_conf 20 \<br />
+&nbsp;&nbsp; &nbsp;-o ./r3g_output.raw.snps.indels.vcf<br />
+<br />
+# Discordant calls&nbsp;&nbsp; <br />
+#java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+#&nbsp;&nbsp; -T SelectVariants \<br />
+#&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+#&nbsp; -V ./meoh_output.raw.snps.indels.vcf \<br />
+#&nbsp;&nbsp; --discordance ./r3g_output.raw.snps.indels.vcf \<br />
+#&nbsp;&nbsp; -o doutput.vcf \<br />
+<br />
+# Concordant calls<br />
+#java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+#&nbsp;&nbsp; -T SelectVariants \<br />
+#&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+#&nbsp;&nbsp; -V ./meoh_output.raw.snps.indels.vcf \<br />
+#&nbsp;&nbsp; --concordance ./r3g_output.raw.snps.indels.vcf \<br />
+#&nbsp;&nbsp; -o coutput.vcf \<br />
+<br />
+<br />
+# Variant filtering<br />
+java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+&nbsp;&nbsp; &nbsp;-T VariantFiltration \<br />
+&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+&nbsp;&nbsp; &nbsp;-V ./${i%}_gatk/output.raw.snps.indels.vcf \<br />
+&nbsp;&nbsp; &nbsp;-window 35 \<br />
+&nbsp;&nbsp; &nbsp;-cluster 3 \<br />
+&nbsp;&nbsp; &nbsp;-filterName FS \<br />
+&nbsp;&nbsp; &nbsp;-filter "FS &gt; 30.0" \<br />
+&nbsp;&nbsp; &nbsp;-filterName QD \<br />
+&nbsp;&nbsp; &nbsp;-filter "QD &lt; 2.0" \<br />
+&nbsp;&nbsp; &nbsp;-o ./${i%}_gatk/output.raw.snps.indels.filtered.vcf &nbsp;&nbsp; <br />
+<br />
+#GenotypeGVCFs MeOH<br />
+#java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+#&nbsp;&nbsp; &nbsp;-T GenotypeGVCFs \<br />
+#&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+#&nbsp;&nbsp; &nbsp;-V ./MeOH_REP1_gatk/output.raw.snps.indels.g.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-V ./MeOH_REP2_gatk/output.raw.snps.indels.g.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-V ./MeOH_REP3_gatk/output.raw.snps.indels.g.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-o meoh_output.vcf<br />
+<br />
+#GenotypeGVCFs R3G<br />
+#java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+#&nbsp;&nbsp; &nbsp;-T GenotypeGVCFs \<br />
+#&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+#&nbsp;&nbsp; &nbsp;-V ./R3G_REP1_gatk/output.raw.snps.indels.g.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-V ./R3G_REP2_gatk/output.raw.snps.indels.g.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-V ./R3G_REP3_gatk/output.raw.snps.indels.g.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-o r3g_output.vcf<br />
+<br />
+#GenotypeGVCFs combine R3G Meoh<br />
+#java -jar /opt/gatk-3.4-46/GenomeAnalysisTK.jar \<br />
+#&nbsp;&nbsp; &nbsp;-T CombineGVCFs \<br />
+#&nbsp;&nbsp; &nbsp;-R /home/user/rnaseq/reference/chr12.fa \<br />
+#&nbsp;&nbsp; &nbsp;-V r3g_output.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-V meoh_output.vcf \<br />
+#&nbsp;&nbsp; &nbsp;-o meoh_r3g_output.vcf<br />
+&nbsp;&nbsp; <br />
+done</div>
+<div style="text-align: left;">
+##############################</div>
+<div style="text-align: left;">
+###bash script ends##############</div>
+<div style="text-align: left;">
+####################</div>
+<div style="text-align: left;">
+<br /></div>
+<div>
+</div>
+</div>
+
+            </div>
+          </div>
+          <div class="pagination">
+              
+                <a class="btn btn-default" href="/qpcr-ddct-and-tab-separated-values" class="next">Newer Post</a>
+              
+              
+                <a class="btn btn-default" href="/transcriptomics-microarray-data-analysis" class="previous">Older Post</a>
+              
+          </div>
+        </div>
+    </div>
+</div>
+
+<body>
+<html>	
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12 footer navbar-inverse navbar-fixed-bottom">
+            <p class="copyright">&copy;2021 Biologist's bioinformatics notes. Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme by <a href="https://github.com/scotte/jekyll-clean">Scott Emmons</a>
+            under
+            <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
